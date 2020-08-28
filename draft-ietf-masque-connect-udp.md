@@ -28,7 +28,7 @@ to the HTTP CONNECT method, but it uses UDP instead of TCP.
 
 Discussion of this work is encouraged to happen on the MASQUE IETF mailing
 list [](masque@ietf.org) or on the GitHub repository which contains the draft:
-[](https://github.com/DavidSchinazi/masque-drafts).
+[](https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp).
 
 
 --- middle
@@ -42,7 +42,7 @@ uses UDP {{!UDP=RFC0768}} instead of TCP {{!TCP=RFC0793}}.
 
 Discussion of this work is encouraged to happen on the MASQUE IETF mailing
 list [](masque@ietf.org) or on the GitHub repository which contains the draft:
-[](https://github.com/DavidSchinazi/masque-drafts).
+[](https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp).
 
 
 ## Conventions and Definitions {#conventions}
