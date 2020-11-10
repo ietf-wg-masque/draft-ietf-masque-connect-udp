@@ -87,12 +87,16 @@ destination, separated by a colon. For example,
      Host: server.example.com:443
 ~~~
 
+{::options req-id="connect-udp-authority" req-type="must" req="Client sends  `:authority` in `CONNECT-UDP` requests" /}
+
 When using HTTP/2 {{!H2=RFC7540}} or later, CONNECT-UDP requests use HTTP
 pseudo-headers with the following requirements:
 
 * The ":method" pseudo-header field is set to "CONNECT-UDP".
 
 * The ":scheme" and ":path" pseudo-header fields MUST be omitted.
+
+{::options req-id="connect-udp-no-scheme-path" req-type="must" req="Client does not include  `:scheme` and `:path` in `CONNECT-UDP` requests" /}
 
 * The ":authority" pseudo-header field contains the host and port to connect
 to (equivalent to the authority-form of the request-target of CONNECT-UDP
@@ -123,6 +127,9 @@ in a 2xx (Successful) response to CONNECT. A client MUST treat a response
 to CONNECT-UDP containing any Content-Length or Transfer-Encoding header
 fields as malformed.
 
+{::options req-id="connect-udp-no-content-length" req-type="must" req="Server does not include  `Transfer-Encoding` or `Content-Length` in `CONNECT-UDP` responses" /}
+{::options req-id="connect-udp-reject-content-length" req-type="must" req="Client rejects responses that include  `Transfer-Encoding` or `Content-Length` in `CONNECT-UDP` responses" /}
+
 A payload within a CONNECT-UDP request message has no defined semantics;
 a CONNECT-UDP request with a non-empty payload is malformed.
 
@@ -136,6 +143,8 @@ QUIC DATAGRAM frames. This support is ascertained by checking receipt of the
 H3_DATAGRAM SETTINGS Parameter. Note that when there are multiple proxies
 involved, this support needs to be ascertained on all the HTTP connections
 that will carry proxied UDP packets.
+
+{::options req-id="connect-udp-datagram" req-type="supported" req="Supports HTTP/3 datagrams by sending `H3_DATAGRAM` in `SETTINGS`" /}
 
 If the client supports HTTP/3 datagrams and has received the H3_DATAGRAM
 SETTINGS Parameter on this connection, it SHOULD attempt to use HTTP/3
@@ -157,6 +166,8 @@ datagram encoding to send proxied UDP packets for this particular destination.
 It then encodes the payload of UDP datagrams into the payload of HTTP/3
 datagrams.
 
+{::options req-id="connect-udp-flow-id-echo" req-type="must" req="Proxy echoes `Datagram-Flow-Id` header in successful replies" /}
+
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its CONNECT-UDP request, noting however that those may not be
 processed by the proxy if it responds to the CONNECT-UDP request with a
@@ -164,6 +175,8 @@ failure, or if they arrive before the CONNECT-UDP request.
 
 If HTTP/3 datagrams are not supported, the stream is used to convey UDP
 payloads, by prefixing them with a 16-bit length.
+
+{::options req-id="connect-udp-lv" req-type="supported" req="When HTTP/3 datagrams are not supported, sends datagrams on a stream using a 16-bit length field" /}
 
 # Datagram-Flow-Id Header Definition {#header}
 
@@ -188,6 +201,7 @@ socket, it MUST validate the IP source address and UDP source port on received
 packets to ensure they match the client's CONNECT-UDP request. Packets that do
 not match MUST be discarded by the server.
 
+{::options req-id="connect-udp-validate-tuple" req-type="must" req="Server discards UDP packets that do not match any client's request" /}
 
 # Security Considerations {#security}
 
