@@ -121,6 +121,7 @@ part of the request or response themselves.
 
 Responses to the CONNECT-UDP method are not cacheable.
 
+
 # Datagram Encoding of Proxied UDP Packets {#datagram-encoding}
 
 When the HTTP connection supports HTTP/3 datagrams
@@ -299,6 +300,7 @@ HTTP Method Registry (IETF review) maintained at
   | CONNECT-UDP |  no  |     no     | This document |
   +-------------+------+------------+---------------+
 ~~~
+
 
 ## URI Scheme Registration {#iana-scheme}
 
