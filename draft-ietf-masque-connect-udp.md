@@ -173,38 +173,54 @@ parameters on the "Datagram-Flow-Id" header if it does not understand their
 semantics.
 
 
-# Stream Encoding of Proxied UDP Packets {#stream-encoding}
+# Stream Chunks {#stream-chunks}
 
-If HTTP/3 datagrams are not supported, the stream is used to convey UDP
-payloads, by using the following format (using the notation from the
-"Notational Conventions" section of {{QUIC}}):
+The bidirectional stream that the CONNECT-UDP request was sent on is a
+sequence of CONNECT-UDP Stream Chunks, which are defined as a sequence of
+type-length-value tuples using the following format (using the notation from
+the "Notational Conventions" section of {{QUIC}}):
+
+~~~
+CONNECT-UDP Stream {
+  CONNECT-UDP Stream Chunk (..) ...,
+}
+~~~
+{: #stream-chunk-format title="CONNECT-UDP Stream Format"}
 
 ~~~
 CONNECT-UDP Stream Chunk {
-  CONNECT-UDP Stream Chunk Type (i) = 0x00,
-  UDP Payload Length (i),
-  UDP Payload (..),
+  CONNECT-UDP Stream Chunk Type (i),
+  CONNECT-UDP Stream Chunk Length (i),
+  CONNECT-UDP Stream Chunk Value (..),
 }
 ~~~
-{: #stream-chunk-format title="CONNECT-UDP Stream Chunk Format"}
+{: #stream-format title="CONNECT-UDP Stream Chunk Format"}
 
 CONNECT-UDP Stream Chunk Type:
 
-: A variable-length integer indicating the Type of the CONNECT-UDP Stream Chunk,
-set to 0x00 to indicate a UDP Payload.
+: A variable-length integer indicating the Type of the CONNECT-UDP Stream
+Chunk. Endpoints that receive a chunk with an unknown CONNECT-UDP Stream Chunk
+Type MUST silently skip over that chunk.
 
-UDP Payload Length:
+CONNECT-UDP Stream Chunk Length:
 
-: The length of the UDP Payload field following this field.
+: The length of the CONNECT-UDP Stream Chunk Value field following this field.
+Note that this field can have a value of zero.
 
-UDP Payload:
+CONNECT-UDP Stream Chunk Value:
 
-: The payload of the UDP datagram.
+: The payload of this chunk. Its semantics are determined by the value of the
+CONNECT-UDP Stream Chunk Type field.
 
-The bidirectional stream that the CONNECT-UDP request was sent on is a sequence
-of CONNECT-UDP Stream Chunks. The CONNECT-UDP Stream Chunk Type is designed to
-allow future extensibility. Endpoints that receive a chunk with an unknown
-CONNECT-UDP Stream Chunk Type MUST silently skip over that chunk.
+
+# Stream Encoding of Proxied UDP Packets {#stream-encoding}
+
+CONNECT-UDP Stream Chunks can be used to convey UDP payloads, by using a
+CONNECT-UDP Stream Chunk Type of UDP_PACKET (value 0x00). The payload of UDP
+packets is encoded in its unmodified entirety in the CONNECT-UDP Stream Chunk
+Value field. This is necessary when the version of HTTP in use does not
+support QUIC DATAGRAM frames, but MAY also be used when datagrams are
+supported. Note that empty UDP payloads are allowed.
 
 
 # Proxy Handling {#proxy-handling}
@@ -355,7 +371,8 @@ NOT appear in the listing of assigned values.
 # Acknowledgments {#acknowledgments}
 {:numbered="false"}
 
-This proposal was inspired directly or indirectly by prior work from many
-people. The author would like to thank Eric Rescorla for suggesting to
-use an HTTP method to proxy UDP. Thanks to Lucas Pardue for their inputs on
-this document.
+This document is a product of the MASQUE Working Group, and the author thanks
+all MASQUE enthusiasts for their contibutions. This proposal was inspired
+directly or indirectly by prior work from many people. In particular, the
+author would like to thank Eric Rescorla for suggesting to use an HTTP method
+to proxy UDP. Thanks to Lucas Pardue for their inputs on this document.
