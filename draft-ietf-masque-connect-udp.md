@@ -133,25 +133,27 @@ If the client has both sent and received the H3_DATAGRAM SETTINGS Parameter
 with value 1 on this connection, it SHOULD attempt to use HTTP/3 datagrams.
 This is accomplished by requesting a datagram flow identifier from the flow
 identifier allocation service {{H3DGRAM}}. That service generates an even flow
-identifier, and the client sends it to the proxy by using the
-"Datagram-Flow-Id" header; see {{H3DGRAM}}. A CONNECT-UDP request with an odd
-flow identifier is malformed.
+identifier, and the client sends it to the proxy by using the unnamed element
+in a "Datagram-Flow-Id" header; see {{H3DGRAM}}. A CONNECT-UDP request with an
+odd flow identifier is malformed.
 
 The proxy that is creating the UDP socket to the destination responds to the
 CONNECT-UDP request with a 2xx (Successful) response, and indicates it supports
-datagram encoding by echoing the "Datagram-Flow-Id" header. Once the client has
+datagram encoding by sending a "Datagram-Flow-Id" header with the same unnamed
+element from the "Datagram-Flow-Id" header it received. Once the client has
 received the "Datagram-Flow-Id" header on the successful response, it knows
 that it can use the HTTP/3 datagram encoding to send proxied UDP packets for
 this particular request. It then encodes the payload of UDP datagrams into the
-payload of HTTP/3 datagrams. Is the CONNECT-UDP response does not carry the
+payload of HTTP/3 datagrams. If the CONNECT-UDP response does not carry the
 "Datagram-Flow-Id" header, then the datagram encoding is not available for this
 request. A CONNECT-UDP response that carries the "Datagram-Flow-Id" header but
-with a different flow identifier than the one sent on the request is malformed.
+with a different unnamed flow identifier than the one sent on the request is
+malformed.
 
 When the proxy processes a new CONNECT-UDP request, it MUST ensure that the
-datagram flow identifier is not equal to flow identifiers from other requests:
-if it is, the proxy MUST reject the request with a 4xx (Client Error) status
-code. Extensions MAY weaken or remove this requirement.
+unnamed datagram flow identifier is not equal to flow identifiers from other
+requests: if it is, the proxy MUST reject the request with a 4xx (Client
+Error) status code. Extensions MAY weaken or remove this requirement.
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its CONNECT-UDP request, noting however that those may not be
@@ -166,11 +168,12 @@ of datagrams as an error, because the client could have sent them
 optimistically before receiving the response. In this scenario, the proxy MUST
 discard those datagrams.
 
-Extensions to CONNECT-UDP MAY leverage parameters on the "Datagram-Flow-Id"
-header (parameters are defined in Section 3.1.2 of
-{{!STRUCT-HDR=I-D.ietf-httpbis-header-structure}}). Proxies MUST NOT echo
-parameters on the "Datagram-Flow-Id" header if it does not understand their
-semantics.
+Extensions to CONNECT-UDP MAY leverage named elements or parameters in the
+"Datagram-Flow-Id" header (named elements are defined in {{H3DGRAM}} and
+parameters are defined in Section 3.1.2 of
+{{!STRUCT-HDR=I-D.ietf-httpbis-header-structure}}). Proxies MUST NOT echo named
+elements or parameters on the "Datagram-Flow-Id" header if they do not
+understand their semantics.
 
 
 # Stream Chunks {#stream-chunks}
@@ -251,18 +254,23 @@ connections if there are HTTP intermediaries involved; see Section 2.3 of
 
 Intermediaries that support both CONNECT-UDP and HTTP/3 datagrams MUST
 negotiate flow identifiers separately on the client-facing and server-facing
-connections. This is accomplished by having the intermediary parse the
-"Datagram-Flow-Id" header on all CONNECT-UDP requests it receives, and sending
-the same value in the "Datagram-Flow-Id" header on the response. The
-intermediary then ascertains whether it can use datagrams on the server-facing
-connection. If they are supported (as indicated by the H3_DATAGRAM SETTINGS
-parameter), the intermediary uses its own flow identifier allocation service to
-allocate a flow identifier for the server-facing connection, and waits for the
-server's reply to see if the server sent the "Datagram-Flow-Id" header on the
-response. The intermediary then translates datagrams between the two
-connections by using the flow identifier specific to that connection. An
-intermediary MAY also choose to use datagrams on only one of the two
-connections, and translate between datagrams and streams.
+connections. This is accomplished by having the intermediary parse the unnamed
+element of the "Datagram-Flow-Id" header on all CONNECT-UDP requests it
+receives, and sending the same unnamed element in the "Datagram-Flow-Id" header
+on the response. The intermediary then ascertains whether it can use datagrams
+on the server-facing connection. If they are supported (as indicated by the
+H3_DATAGRAM SETTINGS parameter), the intermediary uses its own flow identifier
+allocation service to allocate a flow identifier for the server-facing
+connection, and waits for the server's reply to see if the server sent the
+"Datagram-Flow-Id" header on the response. The intermediary then translates
+datagrams between the two connections by using the flow identifier specific to
+that connection. An intermediary MAY also choose to use datagrams on only one
+of the two connections, and translate between datagrams and streams.
+
+Intermediaries MUST NOT echo nor forward named elements or parameters on the
+"Datagram-Flow-Id" header if they do not understand their semantics.
+Extensions to CONNECT-UDP that leverage named elements or parameters in the
+"Datagram-Flow-Id" header MUST specify how they are handled by intermediaries.
 
 
 # Performance Considerations {#performance}
