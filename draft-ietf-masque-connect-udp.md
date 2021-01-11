@@ -292,6 +292,31 @@ reduce performance as both can sometimes independently retransmit the same
 data. To avoid this, HTTP/3 datagrams SHOULD be used.
 
 
+## Tunneling of ECN Marks
+
+CONNECT-UDP does not create an IP-in-IP tunnel, so the guidance in {{?RFC6040}}
+about transferring ECN marks between inner and outer IP headers does not apply.
+
+If a client or proxy with a connection containing a CONNECT-UDP stream disables
+congestion control in accordance with {{performance}}, it MUST NOT signal ECN
+support on that connection. That is, it MUST mark all IP headers with the
+Not-ECT codepoint. It MAY continue to report ECN feedback via ACK_ECN frames, as
+the peer may not have disabled congestion control.
+
+Note that CONNECT-UDP clients do not have the ability in this specification to
+control the ECN codepoints on datagrams the proxy sends to the server, nor can
+proxies communicate the markings of each incoming server packet to the client.
+
+Nevertheless, a CONNECT-UDP proxy MUST NOT copy the ECT codepoint from the
+outer IP header to the IP headers it adds to datagrams encoded therein.
+
+Similarly, a CONNECT-UDP proxy MUST NOT copy the ECN markings in datagrams it
+receives from the server to the outer IP header that delivers those datagrams to
+the client. This signal would reduce throughput on the outer connection due to
+upstream congestion related to only one of its connections, and the signal would
+not reach the original server, potentially causing data loss at the proxy.
+
+
 # Security Considerations {#security}
 
 There are significant risks in allowing arbitrary clients to establish a
