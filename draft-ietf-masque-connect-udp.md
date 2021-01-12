@@ -285,6 +285,12 @@ HTTP connection MUST NOT disable congestion control unless it has an
 out-of-band way of knowing with absolute certainty that the inner traffic is
 congestion-controlled.
 
+If a client or proxy with a connection containing a CONNECT-UDP stream disables
+congestion control, it MUST NOT signal ECN support on that connection. That is,
+it MUST mark all IP headers with the Not-ECT codepoint. It MAY continue to
+report ECN feedback via ACK_ECN frames, as the peer may not have disabled
+ congestion control.
+
 When the protocol running over UDP that is being proxied uses loss recovery
 (e.g., {{QUIC}}), and the underlying HTTP connection runs over TCP, the proxied
 traffic will incur at least two nested loss recovery mechanisms. This can
@@ -296,26 +302,16 @@ data. To avoid this, HTTP/3 datagrams SHOULD be used.
 
 CONNECT-UDP does not create an IP-in-IP tunnel, so the guidance in {{?RFC6040}}
 about transferring ECN marks between inner and outer IP headers does not apply.
-
-If a client or proxy with a connection containing a CONNECT-UDP stream disables
-congestion control in accordance with {{performance}}, it MUST NOT signal ECN
-support on that connection. That is, it MUST mark all IP headers with the
-Not-ECT codepoint. It MAY continue to report ECN feedback via ACK_ECN frames, as
-the peer may not have disabled congestion control.
+There is no inner IP header in CONNECT-UDP tunnels.
 
 Note that CONNECT-UDP clients do not have the ability in this specification to
 control the ECN codepoints on UDP packets the proxy sends to the server, nor can
 proxies communicate the markings of each UDP packet from server to proxy.
 
-Nevertheless, a CONNECT-UDP proxy MUST NOT copy the ECT codepoint from the
-outer IP header to the IP headers it adds to datagrams encoded therein.
-
-Similarly, a CONNECT-UDP proxy MUST NOT copy the ECN markings in datagrams it
-receives from the server to the outer IP header that delivers those datagrams to
-the client. This signal would reduce throughput on the outer connection due to
-upstream congestion related to only one of its connections, and the signal would
-not reach the original server, potentially causing data loss at the proxy.
-
+A CONNECT-UDP proxy MUST ignore ECN bits in the IP header of UDP packets
+received from the server, and MUST set the ECN bits to Not-ECT on UDP packets
+t sends to the server. These do not relate to the ECN markings of packets sent
+between client and proxy in any way.
 
 # Security Considerations {#security}
 
