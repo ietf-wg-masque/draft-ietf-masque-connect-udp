@@ -310,7 +310,7 @@ proxies communicate the markings of each UDP packet from server to proxy.
 
 A CONNECT-UDP proxy MUST ignore ECN bits in the IP header of UDP packets
 received from the server, and MUST set the ECN bits to Not-ECT on UDP packets
-t sends to the server. These do not relate to the ECN markings of packets sent
+it sends to the server. These do not relate to the ECN markings of packets sent
 between client and proxy in any way.
 
 # Security Considerations {#security}
