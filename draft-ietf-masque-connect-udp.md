@@ -305,7 +305,7 @@ the peer may not have disabled congestion control.
 
 Note that CONNECT-UDP clients do not have the ability in this specification to
 control the ECN codepoints on UDP packets the proxy sends to the server, nor can
-proxies communicate the markings of each incoming server packet to the client.
+proxies communicate the markings of each UDP packet from server to proxy.
 
 Nevertheless, a CONNECT-UDP proxy MUST NOT copy the ECT codepoint from the
 outer IP header to the IP headers it adds to datagrams encoded therein.
