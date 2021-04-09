@@ -3,6 +3,7 @@ title: The CONNECT-UDP HTTP Method
 abbrev: CONNECT-UDP
 docname: draft-ietf-masque-connect-udp-latest
 category: std
+wg: MASQUE
 
 ipr: trust200902
 keyword: Internet-Draft
