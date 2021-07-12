@@ -16,14 +16,13 @@ Abstract
    This document describes the CONNECT-UDP HTTP method.  CONNECT-UDP is
    similar to the HTTP CONNECT method, but it uses UDP instead of TCP.
 
-   Discussion of this work is encouraged to happen on the MASQUE IETF
-   mailing list masque@ietf.org or on the GitHub repository which
-   contains the draft: https://github.com/ietf-wg-masque/draft-ietf-
-   masque-connect-udp.
-
 Discussion Venues
 
    This note is to be removed before publishing as an RFC.
+
+   Discussion of this document takes place on the MASQUE WG mailing list
+   (masque@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/masque/.
 
    Source for this draft and an issue tracker can be found at
    https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp.
@@ -88,11 +87,6 @@ Table of Contents
    This document describes the CONNECT-UDP HTTP method.  CONNECT-UDP is
    similar to the HTTP CONNECT method (see section 4.3.6 of [RFC7231]),
    but it uses UDP [UDP] instead of TCP [TCP].
-
-   Discussion of this work is encouraged to happen on the MASQUE IETF
-   mailing list masque@ietf.org or on the GitHub repository which
-   contains the draft: https://github.com/ietf-wg-masque/draft-ietf-
-   masque-connect-udp.
 
 1.1.  Conventions and Definitions
 

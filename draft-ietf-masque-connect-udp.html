@@ -9,9 +9,6 @@
 <meta content="
        This document describes the CONNECT-UDP HTTP method. CONNECT-UDP is similar
 to the HTTP CONNECT method, but it uses UDP instead of TCP. 
-       Discussion of this work is encouraged to happen on the MASQUE IETF mailing
-list   or on the GitHub repository which contains the draft:
- . 
     " name="description">
 <meta content="xml2rfc 3.9.1" name="generator">
 <meta content="Internet-Draft" name="keyword">
@@ -1047,17 +1044,16 @@ address div.right {
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document describes the CONNECT-UDP HTTP method. CONNECT-UDP is similar
 to the HTTP CONNECT method, but it uses UDP instead of TCP.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">Discussion of this work is encouraged to happen on the MASQUE IETF mailing
-list <span><a href="masque@ietf.org">masque@ietf.org</a></span> or on the GitHub repository which contains the draft:
-<span><a href="https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp">https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp</a></span>.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
 <a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
       </h2>
 <p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
-<p id="section-note.1-2">Source for this draft and an issue tracker can be found at
-  <span><a href="https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp">https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this document takes place on the MASQUE WG mailing list (masque@ietf.org),
+  which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/masque/">https://mailarchive.ietf.org/arch/browse/masque/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+  <span><a href="https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp">https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1106,76 +1102,76 @@ list <span><a href="masque@ietf.org">masque@ietf.org</a></span> or on the GitHub
         <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
 <a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
         </h2>
-<nav class="toc"><ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.1">
+<nav class="toc"><ul class="compact ulBare ulEmpty toc">
+<li class="compact ulBare ulEmpty toc" id="section-toc.1-1.1">
             <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
-<ul class="toc compact ulEmpty ulBare">
-<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.1.2.1">
+<ul class="ulEmpty compact ulBare toc">
+<li class="ulEmpty compact ulBare toc" id="section-toc.1-1.1.2.1">
                 <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-conventions-and-definitions" class="xref">Conventions and Definitions</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.2">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.2">
             <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-supported-http-versions" class="xref">Supported HTTP Versions</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.3">
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-the-connect-udp-method" class="xref">The CONNECT-UDP Method</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.4">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.4">
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-datagram-encoding-of-proxie" class="xref">Datagram Encoding of Proxied UDP Packets</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.5">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.5">
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-stream-chunks" class="xref">Stream Chunks</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.6">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.6">
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-stream-encoding-of-proxied-" class="xref">Stream Encoding of Proxied UDP Packets</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.7">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.7">
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-proxy-handling" class="xref">Proxy Handling</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.8">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.8">
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-http-intermediaries" class="xref">HTTP Intermediaries</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.9">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.9">
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-performance-considerations" class="xref">Performance Considerations</a></p>
-<ul class="toc compact ulEmpty ulBare">
-<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.9.2.1">
+<ul class="ulEmpty compact ulBare toc">
+<li class="ulEmpty compact ulBare toc" id="section-toc.1-1.9.2.1">
                 <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="xref">9.1</a>.  <a href="#name-tunneling-of-ecn-marks" class="xref">Tunneling of ECN Marks</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.10">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.10">
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.11">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.11">
             <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
-<ul class="toc compact ulEmpty ulBare">
-<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.11.2.1">
+<ul class="ulEmpty compact ulBare toc">
+<li class="ulEmpty compact ulBare toc" id="section-toc.1-1.11.2.1">
                 <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="xref">11.1</a>.  <a href="#name-http-method" class="xref">HTTP Method</a></p>
 </li>
-              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.11.2.2">
+              <li class="ulEmpty compact ulBare toc" id="section-toc.1-1.11.2.2">
                 <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="xref">11.2</a>.  <a href="#name-uri-scheme-registration" class="xref">URI Scheme Registration</a></p>
 </li>
-              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.11.2.3">
+              <li class="ulEmpty compact ulBare toc" id="section-toc.1-1.11.2.3">
                 <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="xref">11.3</a>.  <a href="#name-stream-chunk-type-registrat" class="xref">Stream Chunk Type Registration</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.12">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.12">
             <p id="section-toc.1-1.12.1"><a href="#section-12" class="xref">12</a>. <a href="#name-references" class="xref">References</a></p>
-<ul class="toc compact ulEmpty ulBare">
-<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.12.2.1">
+<ul class="ulEmpty compact ulBare toc">
+<li class="ulEmpty compact ulBare toc" id="section-toc.1-1.12.2.1">
                 <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="xref">12.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
 </li>
-              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.12.2.2">
+              <li class="ulEmpty compact ulBare toc" id="section-toc.1-1.12.2.2">
                 <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="xref">12.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.13">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.13">
             <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.14">
+          <li class="compact ulBare ulEmpty toc" id="section-toc.1-1.14">
             <p id="section-toc.1-1.14.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
 </li>
         </ul>
@@ -1190,9 +1186,6 @@ list <span><a href="masque@ietf.org">masque@ietf.org</a></span> or on the GitHub
 <p id="section-1-1">This document describes the CONNECT-UDP HTTP method. CONNECT-UDP is similar
 to the HTTP CONNECT method (see section 4.3.6 of <span>[<a href="#RFC7231" class="xref">RFC7231</a>]</span>), but it
 uses UDP <span>[<a href="#UDP" class="xref">UDP</a>]</span> instead of TCP <span>[<a href="#TCP" class="xref">TCP</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Discussion of this work is encouraged to happen on the MASQUE IETF mailing
-list <span><a href="masque@ietf.org">masque@ietf.org</a></span> or on the GitHub repository which contains the draft:
-<span><a href="https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp">https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp</a></span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <div id="conventions">
 <section id="section-1.1">
         <h3 id="name-conventions-and-definitions">
