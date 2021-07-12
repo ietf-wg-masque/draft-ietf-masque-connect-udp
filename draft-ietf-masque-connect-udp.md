@@ -53,12 +53,10 @@ document.
 
 # Supported HTTP Versions {#http-versions}
 
-The CONNECT-UDP method is defined for all versions of HTTP. When the HTTP
-version used runs over QUIC {{!QUIC=I-D.ietf-quic-transport}}, UDP payloads
-can be sent over QUIC DATAGRAM frames {{!DGRAM=I-D.ietf-quic-datagram}}.
-Otherwise they are sent on the stream where the CONNECT-UDP request was made.
-Note that, when the HTTP version in use does not support multiplexing streams
-(such as HTTP/1.1), then any reference to "stream" in this document is meant to
+The CONNECT-UDP method is defined for all versions of HTTP. UDP payloads are
+sent using HTTP Datagrams {{!HTTP-DGRAM=I-D.ietf-masque-h3-datagram}}. Note
+that, when the HTTP version in use does not support multiplexing streams (such
+as HTTP/1.1), then any reference to "stream" in this document is meant to
 represent the entire connection.
 
 
@@ -67,9 +65,9 @@ represent the entire connection.
 The CONNECT-UDP method requests that the recipient establish a tunnel over a
 single HTTP stream to the destination origin server identified by the
 request-target and, if successful, thereafter restrict its behavior to blind
-forwarding of packets, in both directions, until the tunnel is closed.
-Tunnels are commonly used to create an end-to-end virtual connection, which can
-then be secured using QUIC or another protocol running over UDP.
+forwarding of packets, in both directions, until the tunnel is closed. Tunnels
+are commonly used to create an end-to-end virtual connection, which can then be
+secured using QUIC {{!QUIC=RFC9000}} or another protocol running over UDP.
 
 The request-target of a CONNECT-UDP request is a URI {{!RFC3986}} which uses
 the "masque" scheme and an immutable path of "/". For example:
@@ -107,115 +105,39 @@ to CONNECT-UDP containing any Content-Length or Transfer-Encoding header
 fields as malformed.
 
 A payload within a CONNECT-UDP request message has no defined semantics;
-a CONNECT-UDP request with a non-empty payload is malformed. Note that the
-CONNECT-UDP stream is used to convey UDP packets, but they are not semantically
-part of the request or response themselves.
+a CONNECT-UDP request with a non-empty payload is malformed.
 
 Responses to the CONNECT-UDP method are not cacheable.
 
 
-# Datagram Encoding of Proxied UDP Packets {#datagram-encoding}
+# Encoding of Proxied UDP Packets {#datagram-encoding}
 
-When the HTTP connection supports HTTP/3 datagrams
-{{!H3DGRAM=I-D.schinazi-masque-h3-datagram}}, UDP packets can be encoded using
-QUIC DATAGRAM frames. This support is ascertained by checking the received
-value of the H3_DATAGRAM SETTINGS Parameter.
+UDP packets are encoded using HTTP Datagrams {{HTTP-DGRAM}}. The payload of a
+UDP packet (referred to as "data octets" in {{UDP}}) is sent unmodified in the
+"HTTP Datagram Payload" field of an HTTP Datagram. In order to use HTTP
+Datagrams, the CONNECT-UDP client will first decide whether or not to use HTTP
+Datagram Contexts and then register its context ID (or lack thereof) using the
+corresponding registration capsule, see {{HTTP-DGRAM}}.
 
-If the client has both sent and received the H3_DATAGRAM SETTINGS Parameter
-with value 1 on this connection, it SHOULD attempt to use HTTP/3 datagrams.
-This is accomplished by requesting a datagram flow identifier from the flow
-identifier allocation service {{H3DGRAM}}. That service generates an even flow
-identifier, and the client sends it to the proxy by using the unnamed element
-in a "Datagram-Flow-Id" header; see {{H3DGRAM}}. A CONNECT-UDP request with an
-odd flow identifier is malformed.
+Since HTTP Datagrams require prior negotiation (for example, in HTTP/3 it is
+necessary to both send and receive the H3_DATAGRAM SETTINGS Parameter), clients
+MUST NOT send any HTTP Datagrams until they have established support on a given
+connection. If negotiation of HTTP Datagrams fails (for example if an HTTP/3
+SETTINGS frame was received without the H3_DATAGRAM SETTINGS Parameter), the
+client MUST consider its CONNECT-UDP request as failed.
 
 The proxy that is creating the UDP socket to the destination responds to the
 CONNECT-UDP request with a 2xx (Successful) response, and indicates it supports
-datagram encoding by sending a "Datagram-Flow-Id" header with the same unnamed
-element from the "Datagram-Flow-Id" header it received. Once the client has
-received the "Datagram-Flow-Id" header on the successful response, it knows
-that it can use the HTTP/3 datagram encoding to send proxied UDP packets for
-this particular request. It then encodes the payload of UDP datagrams into the
-payload of HTTP/3 datagrams. If the CONNECT-UDP response does not carry the
-"Datagram-Flow-Id" header, then the datagram encoding is not available for this
-request. A CONNECT-UDP response that carries the "Datagram-Flow-Id" header but
-with a different unnamed flow identifier than the one sent on the request is
-malformed.
-
-When the proxy processes a new CONNECT-UDP request, it MUST ensure that the
-unnamed datagram flow identifier is not equal to flow identifiers from other
-requests: if it is, the proxy MUST reject the request with a 4xx (Client
-Error) status code. Extensions MAY weaken or remove this requirement.
+HTTP Datagrams by sending the corresponding registration capsule.
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its CONNECT-UDP request, noting however that those may not be
 processed by the proxy if it responds to the CONNECT-UDP request with a
-failure or without echoing the "Datagram-Flow-Id" header, or if the datagrams
-arrive before the CONNECT-UDP request.
+failure, or if the datagrams arrive before the CONNECT-UDP request.
 
-Note that a proxy can send the H3_DATAGRAM SETTINGS Parameter with a value of
-1 while disabling datagrams on a particular request by not echoing the
-"Datagram-Flow-Id" header. If the proxy does this, it MUST NOT treat receipt
-of datagrams as an error, because the client could have sent them
-optimistically before receiving the response. In this scenario, the proxy MUST
-discard those datagrams.
-
-Extensions to CONNECT-UDP MAY leverage named elements or parameters in the
-"Datagram-Flow-Id" header (named elements are defined in {{H3DGRAM}} and
-parameters are defined in Section 3.1.2 of
-{{!STRUCT-HDR=I-D.ietf-httpbis-header-structure}}). Proxies MUST NOT echo named
-elements or parameters on the "Datagram-Flow-Id" header if they do not
-understand their semantics.
-
-
-# Stream Chunks {#stream-chunks}
-
-The bidirectional stream that the CONNECT-UDP request was sent on is a
-sequence of CONNECT-UDP Stream Chunks, which are defined as a sequence of
-type-length-value tuples using the following format (using the notation from
-the "Notational Conventions" section of {{QUIC}}):
-
-~~~
-CONNECT-UDP Stream {
-  CONNECT-UDP Stream Chunk (..) ...,
-}
-~~~
-{: #stream-chunk-format title="CONNECT-UDP Stream Format"}
-
-~~~
-CONNECT-UDP Stream Chunk {
-  CONNECT-UDP Stream Chunk Type (i),
-  CONNECT-UDP Stream Chunk Length (i),
-  CONNECT-UDP Stream Chunk Value (..),
-}
-~~~
-{: #stream-format title="CONNECT-UDP Stream Chunk Format"}
-
-CONNECT-UDP Stream Chunk Type:
-
-: A variable-length integer indicating the Type of the CONNECT-UDP Stream
-Chunk. Endpoints that receive a chunk with an unknown CONNECT-UDP Stream Chunk
-Type MUST silently skip over that chunk.
-
-CONNECT-UDP Stream Chunk Length:
-
-: The length of the CONNECT-UDP Stream Chunk Value field following this field.
-Note that this field can have a value of zero.
-
-CONNECT-UDP Stream Chunk Value:
-
-: The payload of this chunk. Its semantics are determined by the value of the
-CONNECT-UDP Stream Chunk Type field.
-
-
-# Stream Encoding of Proxied UDP Packets {#stream-encoding}
-
-CONNECT-UDP Stream Chunks can be used to convey UDP payloads, by using a
-CONNECT-UDP Stream Chunk Type of UDP_PACKET (value 0x00). The payload of UDP
-packets is encoded in its unmodified entirety in the CONNECT-UDP Stream Chunk
-Value field. This is necessary when the version of HTTP in use does not
-support QUIC DATAGRAM frames, but MAY also be used when datagrams are
-supported. Note that empty UDP payloads are allowed.
+Extensions to CONNECT-UDP MAY leverage the "Context Extensions" field of
+registration capsules in order to negotiate different semantics or encoding for
+UDP payloads.
 
 
 # Proxy Handling {#proxy-handling}
@@ -235,34 +157,6 @@ The lifetime of the socket is tied to the CONNECT-UDP stream. The proxy MUST
 keep the socket open while the CONNECT-UDP stream is open. Proxies MAY choose
 to close sockets due to a period of inactivity, but they MUST close the
 CONNECT-UDP stream before closing the socket.
-
-
-# HTTP Intermediaries {#intermediaries}
-
-HTTP/3 DATAGRAM flow identifiers are specific to a given HTTP/3 connection.
-However, in some cases, an HTTP request may travel across multiple HTTP
-connections if there are HTTP intermediaries involved; see Section 2.3 of
-{{RFC7230}}.
-
-Intermediaries that support both CONNECT-UDP and HTTP/3 datagrams MUST
-negotiate flow identifiers separately on the client-facing and server-facing
-connections. This is accomplished by having the intermediary parse the unnamed
-element of the "Datagram-Flow-Id" header on all CONNECT-UDP requests it
-receives, and sending the same unnamed element in the "Datagram-Flow-Id" header
-on the response. The intermediary then ascertains whether it can use datagrams
-on the server-facing connection. If they are supported (as indicated by the
-H3_DATAGRAM SETTINGS parameter), the intermediary uses its own flow identifier
-allocation service to allocate a flow identifier for the server-facing
-connection, and waits for the server's reply to see if the server sent the
-"Datagram-Flow-Id" header on the response. The intermediary then translates
-datagrams between the two connections by using the flow identifier specific to
-that connection. An intermediary MAY also choose to use datagrams on only one
-of the two connections, and translate between datagrams and streams.
-
-Intermediaries MUST NOT echo nor forward named elements or parameters on the
-"Datagram-Flow-Id" header if they do not understand their semantics.
-Extensions to CONNECT-UDP that leverage named elements or parameters in the
-"Datagram-Flow-Id" header MUST specify how they are handled by intermediaries.
 
 
 # Performance Considerations {#performance}
@@ -353,38 +247,6 @@ masque-URI = "masque:" "//" host ":" port "/"
 
 The "host" and "port" component MUST NOT be empty, and the "port" component
 MUST NOT be 0.
-
-
-## Stream Chunk Type Registration {#iana-chunk-type}
-
-This document will request IANA to create a "CONNECT-UDP Stream Chunk Type"
-registry. This registry governs a 62-bit space, and follows the registration
-policy for QUIC registries as defined in {{QUIC}}. In addition to the fields
-required by the QUIC policy, registrations in this registry MUST include the
-following fields:
-
-Type:
-
-: A short mnemonic for the type.
-
-Description:
-
-: A brief description of the type semantics, which MAY be a summary if a
-specification reference is provided.
-
-The initial contents of this registry are:
-
-~~~
-  +-------+------------+-----------------------+---------------+
-  | Value |    Type    |      Description      |   Reference   |
-  +-------+------------+-----------------------+---------------+
-  | 0x00  | UDP_PACKET | Payload of UDP packet | This document |
-  +-------+------------+-----------------------+---------------+
-~~~
-
-Each value of the format `37 * N + 23` for integer values of N (that is, 23,
-60, 97, ...) are reserved; these values MUST NOT be assigned by IANA and MUST
-NOT appear in the listing of assigned values.
 
 
 --- back
