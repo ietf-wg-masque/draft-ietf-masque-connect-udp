@@ -2,10 +2,10 @@
 
 
 
-Network Working Group                                        D. Schinazi
+MASQUE                                                       D. Schinazi
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                            9 April 2021
-Expires: 11 October 2021
+Intended status: Standards Track                            12 July 2021
+Expires: 13 January 2022
 
 
                       The CONNECT-UDP HTTP Method
@@ -43,7 +43,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 October 2021.
+   This Internet-Draft will expire on 13 January 2022.
 
 Copyright Notice
 
@@ -441,9 +441,9 @@ Table of Contents
 
    [DGRAM]    Pauly, T., Kinnear, E., and D. Schinazi, "An Unreliable
               Datagram Extension to QUIC", Work in Progress, Internet-
-              Draft, draft-ietf-quic-datagram-02, 16 February 2021,
+              Draft, draft-ietf-quic-datagram-03, 12 July 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              datagram-02.txt>.
+              datagram-03>.
 
    [H2]       Belshe, M., Peon, R., and M. Thomson, Ed., "Hypertext
               Transfer Protocol Version 2 (HTTP/2)", RFC 7540,
@@ -454,13 +454,13 @@ Table of Contents
               HTTP/3", Work in Progress, Internet-Draft, draft-schinazi-
               masque-h3-datagram-04, 5 January 2021,
               <https://datatracker.ietf.org/doc/html/draft-schinazi-
-              masque-h3-datagram-04.txt>.
+              masque-h3-datagram-04>.
 
    [QUIC]     Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
               and Secure Transport", Work in Progress, Internet-Draft,
               draft-ietf-quic-transport-34, 14 January 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              transport-34.txt>.
+              transport-34>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -496,7 +496,7 @@ Table of Contents
               HTTP", Work in Progress, Internet-Draft, draft-ietf-
               httpbis-header-structure-19, 3 June 2020,
               <https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-
-              header-structure-19.txt>.
+              header-structure-19>.
 
    [TCP]      Postel, J., "Transmission Control Protocol", STD 7,
               RFC 793, DOI 10.17487/RFC0793, September 1981,
