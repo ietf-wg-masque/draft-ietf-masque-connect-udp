@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-05-27T01:44:26.766109+00:00",
+  "timestamp": "2021-07-13T01:03:51.409064+00:00",
   "repo": "ietf-wg-masque/draft-ietf-masque-connect-udp",
   "labels": [
     {
@@ -1547,15 +1547,15 @@
       "id": "MDU6SXNzdWU3ODMwODUxMTg=",
       "title": "Are stream chunks HTTP/3 frames?",
       "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/28",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "marten-seemann",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "The draft is not clear if stream chunks are \r\n1. HTTP/3 frames (and as such serialized onto the QUIC stream directly), or \r\n2. if they're supposed to be sent as the payload of HTTP/3 DATA frames.\r\n\r\nI assume 1., and I'd be happy to come up with an editorial PR to clarify this.",
       "createdAt": "2021-01-11T05:50:33Z",
-      "updatedAt": "2021-01-13T16:33:34Z",
-      "closedAt": null,
+      "updatedAt": "2021-07-12T22:07:18Z",
+      "closedAt": "2021-07-12T22:07:18Z",
       "comments": [
         {
           "author": "DavidSchinazi",
@@ -1577,6 +1577,13 @@
           "body": "What's the benefit of defining a new frame? CONNECT uses DATA frames; a departure from that would increase complexity.",
           "createdAt": "2021-01-13T16:33:34Z",
           "updatedAt": "2021-01-13T16:33:34Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Overcome by events: stream chunks were removed in 649890881aaa92548b5a0fb37a7622b409b281fd. Closing.",
+          "createdAt": "2021-07-12T22:07:18Z",
+          "updatedAt": "2021-07-12T22:07:18Z"
         }
       ]
     },
@@ -1711,15 +1718,15 @@
       "id": "MDU6SXNzdWU3ODQyMTI0MTU=",
       "title": "Should datagram extension be RECOMMENDED",
       "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/34",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "gloinul",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "I understand that we can't require datagram support as we need fallback to other HTTP versions. However, can we at least RECOMMEND datagram be implemented?\r\n\r\n",
       "createdAt": "2021-01-12T12:58:05Z",
-      "updatedAt": "2021-01-12T15:56:12Z",
-      "closedAt": null,
+      "updatedAt": "2021-07-12T22:08:05Z",
+      "closedAt": "2021-07-12T22:08:05Z",
       "comments": [
         {
           "author": "DavidSchinazi",
@@ -1727,6 +1734,13 @@
           "body": "I thought that this was clear implicitly, but we could make it explicit - can you send a PR?",
           "createdAt": "2021-01-12T15:56:12Z",
           "updatedAt": "2021-01-12T15:56:12Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Overcome by events: we now have a dependency on HTTP Datagrams since 649890881aaa92548b5a0fb37a7622b409b281fd. Closing.",
+          "createdAt": "2021-07-12T22:08:05Z",
+          "updatedAt": "2021-07-12T22:08:05Z"
         }
       ]
     },
@@ -1792,15 +1806,15 @@
       "id": "MDU6SXNzdWU3ODQ2MzI2Mjk=",
       "title": "Datagram-Flow-Id header or just use a Chunk type?",
       "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/37",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "The draft currently recommends use of a header to allocate datagram flow ids.  But it could equally use chunks to add these.  That might be a way to avoid over-allocation in the case that you need multiple flows.  Rather than allocating all the flows up front, they could be added as necessary.",
       "createdAt": "2021-01-12T22:14:10Z",
-      "updatedAt": "2021-01-14T01:28:26Z",
-      "closedAt": null,
+      "updatedAt": "2021-07-12T22:08:23Z",
+      "closedAt": "2021-07-12T22:08:23Z",
       "comments": [
         {
           "author": "martinthomson",
@@ -1843,6 +1857,13 @@
           "body": "This sounds a bit like how PRIORITY_UPDATE is intended to work, it carries the same encoded values as the Priority header. We chose to restrict that to the control stream (or stream 0) because conventional requests close the stream in the send direction. CONNECT-* streams are by definition different because the stream remains open. I",
           "createdAt": "2021-01-14T01:28:26Z",
           "updatedAt": "2021-01-14T01:28:26Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Overcome by events: Datagram-Flow-Id was removed in 649890881aaa92548b5a0fb37a7622b409b281fd. Closing.",
+          "createdAt": "2021-07-12T22:08:23Z",
+          "updatedAt": "2021-07-12T22:08:23Z"
         }
       ]
     },
@@ -1851,15 +1872,15 @@
       "id": "MDU6SXNzdWU3ODUzMDE5ODk=",
       "title": "Consider using the Flow ID as stream chunk ID instead of having chunk types",
       "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/38",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "tfpauly",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Currently, using CONNECT-UDP over DATAGRAMs and over HTTP streams use entirely different mechanisms for identifying data:\r\n\r\n- DATAGRAMS use a Datagram Flow ID, which allows the request headers to define meanings and mappings\r\n- The fallback to stream case uses an IANA registry of chunk types\r\n\r\nI think we can simplify this by always using the Flow ID. The Flow ID can replace the \"type\" in the stream chunk, making the content of the chunks identical to DATAGRAM frames (length + flow ID + payload).",
       "createdAt": "2021-01-13T17:35:26Z",
-      "updatedAt": "2021-03-10T03:00:53Z",
-      "closedAt": null,
+      "updatedAt": "2021-07-12T22:08:49Z",
+      "closedAt": "2021-07-12T22:08:49Z",
       "comments": [
         {
           "author": "mirjak",
@@ -2042,6 +2063,13 @@
           "body": "@LPardue Thank you for sharing the history.\r\n\r\nOne way of moving forward without revisiting the decision that have been made during dispatching would be to split the negotiation of the flows being used and _how_ they are being used. We could continue using `datagram-flow-id` header field to name the flow IDs that we'd use for H3_DATAGRAM frames, but there's no reason to use the same header field for expressing how each of the flow is going to be used by CONNECT-UDP.\r\n\r\nThat said, I tend to wonder if trying to use multiple flow IDs on a single CONNECT-UDP stream is worth the effort, when the benefit is saving like one byte per datagram. As @mirjak pointed out [far above](https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/38#issuecomment-762131025), we could add a type field to the payload of H3_DATAGRAM frames used for CONNECT-UDP streams. Then, negotiation of how types are going to be used becomes an issue specific to CONNECT-UDP.",
           "createdAt": "2021-03-10T00:17:12Z",
           "updatedAt": "2021-03-10T03:00:53Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Overcome by events: flow IDs were removed in 649890881aaa92548b5a0fb37a7622b409b281fd. Closing.",
+          "createdAt": "2021-07-12T22:08:49Z",
+          "updatedAt": "2021-07-12T22:08:49Z"
         }
       ]
     },
@@ -2050,15 +2078,15 @@
       "id": "MDU6SXNzdWU4MDE1ODQ1NTk=",
       "title": "Encoding of stream chunks on connected streams",
       "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/39",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "MikeBishop",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "The text says this about the encoding of stream chunks:\r\n\r\n> The bidirectional stream that the CONNECT-UDP request was sent on is a sequence of CONNECT-UDP Stream Chunks....\r\n\r\nIt's not clearly stated whether HTTP/3 frames stop being used and these stream chunks are written directly into the QUIC stream, or if Stream Chunks are the payload of HTTP/3 DATA frames which are then written into the QUIC stream, or if Stream Chunks are a new HTTP/3 frame type being defined.\r\n\r\nCONNECT uses DATA frames, saying this:\r\n\r\n> All DATA frames on the stream correspond to data sent or received on the TCP connection. The payload of any DATA frame sent by the client is transmitted by the proxy to the TCP server; data received from the TCP server is packaged into DATA frames by the proxy. Note that the size and number of TCP segments is not guaranteed to map predictably to the size and number of HTTP DATA or QUIC STREAM frames.\r\n\r\nGiven that support for CONNECT-UDP is not negotiated *a priori*, I think using DATA frames is the only sensible answer in the current state of the text, but the draft doesn't say that clearly.  New HTTP/2 and HTTP/3 frame types for Stream Chunks would also be a viable design that reduces framing overhead, but that's clearly not what the draft currently envisions, since no frame type is registered or defined.",
       "createdAt": "2021-02-04T19:47:16Z",
-      "updatedAt": "2021-04-16T14:15:07Z",
-      "closedAt": null,
+      "updatedAt": "2021-07-12T22:09:01Z",
+      "closedAt": "2021-07-12T22:09:00Z",
       "comments": [
         {
           "author": "DavidSchinazi",
@@ -2080,6 +2108,13 @@
           "body": "Intermediaries, mostly.  Putting chunks in the DATA payload means only the host processing the \"request\" has to deal with them.  A new frame type means any intermediary needs to understand them at least enough to relay them.  While I find the idea of an intermediary that processes frames but doesn't process HTTP to be questionable, this appeared to be an implicit assumption in several of the discussions yesterday.\r\n\r\nIf there is no such intermediary, I think a frame type would probably be a cleaner way to spell this, but it's largely a bikeshed.",
           "createdAt": "2021-04-16T14:15:07Z",
           "updatedAt": "2021-04-16T14:15:07Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Overcome by events: stream chunks were removed in 649890881aaa92548b5a0fb37a7622b409b281fd. Closing.",
+          "createdAt": "2021-07-12T22:09:00Z",
+          "updatedAt": "2021-07-12T22:09:00Z"
         }
       ]
     },
@@ -2126,15 +2161,15 @@
       "id": "MDU6SXNzdWU4MDk1Nzk3MTI=",
       "title": "Echoing \"Datagram-Flow-Id\" when the request is rejected",
       "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/41",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "LPardue",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "There can be cases where a proxy detects a request that contains a \"Datagram-Flow-Id\" is otherwise rejected e.g. missing a mandatory field, contains an odd-numbered ID,  or perhaps the server just decides to return a 5xx. In such cases it is not clear if the proxy should echo the \"Datagram-Flow-Id\" or not. I don't have a strong preference either way but if its the proxy's choice, we might want to document this so that people don't make assumptions and get surprised.",
       "createdAt": "2021-02-16T19:17:30Z",
-      "updatedAt": "2021-02-16T20:48:23Z",
-      "closedAt": null,
+      "updatedAt": "2021-07-12T22:09:21Z",
+      "closedAt": "2021-07-12T22:09:21Z",
       "comments": [
         {
           "author": "DavidSchinazi",
@@ -2163,6 +2198,13 @@
           "body": "I probably need to think on it a bit. This seems like one of those difficult to avoid overlaps, so not surprised to see it.\r\n\r\nOn the one hand, I like that the concept of flow-id is somewhat abstract in h3-datagram. We don't need to get bogged down with some implementation detail that might not apply to a different kind of usage. \r\n\r\nOn the other hand, we do spend a whole section defining a header field encoding. So we could refer to the offer/echo pattern as one example way to do things. This might also lend itself nicely to discussing the echo behaviour when named parameters (or whatever we want to call them) are not understood, close to the definition of said parameters. \r\n\r\nI am probably slightly leaning to the second hand here but don't have many cycles to contribute a PR right now.",
           "createdAt": "2021-02-16T20:48:23Z",
           "updatedAt": "2021-02-16T20:48:23Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Overcome by events: Datagram-Flow-Id was removed in 649890881aaa92548b5a0fb37a7622b409b281fd. Closing.",
+          "createdAt": "2021-07-12T22:09:20Z",
+          "updatedAt": "2021-07-12T22:09:20Z"
         }
       ]
     },
@@ -2230,15 +2272,15 @@
       "id": "MDU6SXNzdWU4Mjg0MTk1ODQ=",
       "title": "Move \"Stream Encoding of Proxied UDP Packets\" to a more appropriate location",
       "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/43",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "achernya",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Currently, the text of the connect-udp draft contains section \"Stream Encoding of Proxied UDP Packets\", which describes how H3_DATAGRAM can be sent over a reliable stream, e.g., for use with H2 or whenever reliable transmission of datagrams is needed.\r\n\r\nOne of the current ip-proxying-requirements is that we should be able to optionally transmit datagrams in a reliable fashion.\r\n\r\nWhen we get to writing an implementation of ip-proxying, it would be a bit off to cite the connect-udp draft. One way we could fix this is to move this section to the h3-datagram draft.",
       "createdAt": "2021-03-10T22:32:11Z",
-      "updatedAt": "2021-04-15T18:15:34Z",
-      "closedAt": null,
+      "updatedAt": "2021-07-12T22:10:09Z",
+      "closedAt": "2021-07-12T22:10:09Z",
       "comments": [
         {
           "author": "mirjak",
@@ -2246,6 +2288,13 @@
           "body": "I don't want to capture this issue, but I think we should actually reconsider if we really want different CONNECT-UDP and CONNECT_IP methods or just have one CONNECT-X method and provide information on which protocol headers are in the payload or not (and potentially need to be added by the proxy before sending the packet out) in e.g. a HTTP pseudo-headers.",
           "createdAt": "2021-04-15T18:15:33Z",
           "updatedAt": "2021-04-15T18:15:33Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Overcome by events: that section was removed in 649890881aaa92548b5a0fb37a7622b409b281fd. Closing.",
+          "createdAt": "2021-07-12T22:10:09Z",
+          "updatedAt": "2021-07-12T22:10:09Z"
         }
       ]
     },
