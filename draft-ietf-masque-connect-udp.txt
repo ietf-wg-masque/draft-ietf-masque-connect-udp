@@ -4,8 +4,8 @@
 
 MASQUE                                                       D. Schinazi
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                            12 July 2021
-Expires: 13 January 2022
+Intended status: Standards Track                            15 July 2021
+Expires: 16 January 2022
 
 
                       The CONNECT-UDP HTTP Method
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 January 2022.
+   This Internet-Draft will expire on 16 January 2022.
 
 Copyright Notice
 
@@ -175,9 +175,7 @@ Table of Contents
    consider its CONNECT-UDP request as failed.
 
    The proxy that is creating the UDP socket to the destination responds
-   to the CONNECT-UDP request with a 2xx (Successful) response, and
-   indicates it supports HTTP Datagrams by sending the corresponding
-   registration capsule.
+   to the CONNECT-UDP request with a 2xx (Successful) response.
 
    Clients MAY optimistically start sending proxied UDP packets before
    receiving the response to its CONNECT-UDP request, noting however
@@ -306,11 +304,11 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/rfc7540>.
 
    [HTTP-DGRAM]
-              Schinazi, D. and L. Pardue, "Using QUIC Datagrams with
-              HTTP/3", Work in Progress, Internet-Draft, draft-ietf-
-              masque-h3-datagram-02, 26 May 2021,
+              Schinazi, D. and L. Pardue, "Using Datagrams with HTTP",
+              Work in Progress, Internet-Draft, draft-ietf-masque-h3-
+              datagram-03, 12 July 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-masque-
-              h3-datagram-02>.
+              h3-datagram-03>.
 
    [QUIC]     Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based
               Multiplexed and Secure Transport", RFC 9000,
