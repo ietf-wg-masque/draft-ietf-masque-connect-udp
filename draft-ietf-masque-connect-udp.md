@@ -127,8 +127,7 @@ SETTINGS frame was received without the H3_DATAGRAM SETTINGS Parameter), the
 client MUST consider its CONNECT-UDP request as failed.
 
 The proxy that is creating the UDP socket to the destination responds to the
-CONNECT-UDP request with a 2xx (Successful) response, and indicates it supports
-HTTP Datagrams by sending the corresponding registration capsule.
+CONNECT-UDP request with a 2xx (Successful) response.
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its CONNECT-UDP request, noting however that those may not be
