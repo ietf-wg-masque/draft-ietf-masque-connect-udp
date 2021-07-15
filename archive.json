@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-07-13T01:03:51.409064+00:00",
+  "timestamp": "2021-07-15T01:03:23.629381+00:00",
   "repo": "ietf-wg-masque/draft-ietf-masque-connect-udp",
   "labels": [
     {
@@ -2394,6 +2394,58 @@
           "body": "@unicomp21 it does sound like MASQUE, but it's not specific to this git repository. Please join the MASQUE mailing list <https://www.ietf.org/mailman/listinfo/masque> then email <masque@ietf.org> with details of exactly what you're trying to do and why.",
           "createdAt": "2021-05-25T16:06:23Z",
           "updatedAt": "2021-05-25T16:06:23Z"
+        }
+      ]
+    },
+    {
+      "number": 48,
+      "id": "MDU6SXNzdWU5NDQ0NjQxOTI=",
+      "title": "Registration capsule from proxy needed?",
+      "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/48",
+      "state": "OPEN",
+      "author": "ihlar",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 4 states that the proxy responds to a CONNECT-UDP request with 2xx and a corresponding registration capsule to indicate end-to-end support of datagrams. \r\nIf the client sends a REGISTER_DATAGRAM_CONTEXT capsule, the corresponding capsule from the proxy will be of the same kind, and it will register a new server-generated context ID. So now we would have two context IDs for the same stream, which seems a bit unnecessary. \r\n\r\nCould we simply omit the step where the proxy sends a registration capsule and simply state that a 2xx response to the CONNECT-UDP request is sufficient indication of end-to-end datagram support?\r\n",
+      "createdAt": "2021-07-14T14:04:34Z",
+      "updatedAt": "2021-07-14T16:16:28Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "LPardue",
+          "authorAssociation": "NONE",
+          "body": "> If the client sends a REGISTER_DATAGRAM_CONTEXT capsule, the corresponding capsule from the proxy will be of the same kind, and it will register a new server-generated context ID.\r\n\r\nMy reading of the spec is different, https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-03#section-4.1 says\r\n\r\n> once a  context ID is registered, it can be used in both directions.\r\n\r\nSo for example, if the client sends a request on stream 4 and then REGISTER_DATAGRAM_CONTEXT { Context ID (0)}, the server will respond with REGISTER_DATAGRAM_CONTEXT { Context ID (0)} to confirm that the context is accepted. ",
+          "createdAt": "2021-07-14T15:12:59Z",
+          "updatedAt": "2021-07-14T15:12:59Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "NONE",
+          "body": "> My reading of the spec is different, https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-03#section-4.1 says\r\n> \r\n> > once a  context ID is registered, it can be used in both directions.\r\n> \r\n> So for example, if the client sends a request on stream 4 and then REGISTER_DATAGRAM_CONTEXT { Context ID (0)}, the server will respond with REGISTER_DATAGRAM_CONTEXT { Context ID (0)} to confirm that the context is accepted.\r\n\r\nThat makes sense, I was assuming that the \"used in both directions\" referred to datagrams. I think my confusion in part came from the same section that says:\r\n\r\n> servers MUST NOT register client-initiated Context IDs.\r\n\r\nBut sending a registration capsule with an already registered context ID is not a new registration I suppose.\r\nMaybe it's good to clarify this a bit in the datagram spec. I'll open a separate issue there. \r\n",
+          "createdAt": "2021-07-14T15:42:13Z",
+          "updatedAt": "2021-07-14T15:42:13Z"
+        },
+        {
+          "author": "LPardue",
+          "authorAssociation": "NONE",
+          "body": "> Maybe it's good to clarify this a bit in the datagram spec. I'll open a separate issue there.\r\n\r\nI agree the draft is a bit ambiguous here. ",
+          "createdAt": "2021-07-14T15:45:22Z",
+          "updatedAt": "2021-07-14T15:45:22Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Indeed, the spec is unclear here, my apologies. I got this wrong when I rewrote the old Datagram-Flow-Id text. The server doesn't need to echo the registration capsule here since the client's registration is bidirectional.\r\n\r\n@LPardue we should add text to HTTP Datagrams to clarify what we want to do about echoing registrations, is it\r\n1. required\r\n2. allowed\r\n3. forbidden\r\n\r\nI'm leaning towards (3) unless we have a use case for communicating the fact that a context is \"accepted\" and in which case I'd say (2).",
+          "createdAt": "2021-07-14T16:05:22Z",
+          "updatedAt": "2021-07-14T16:05:22Z"
+        },
+        {
+          "author": "LPardue",
+          "authorAssociation": "NONE",
+          "body": "Aha! In that case I apologise too. This seems important for interop!\r\n\r\nNow I remember, I think some people felt registration ack wasn't needed as long as there was a way to reject. And we have that with CLOSE_DATAGRAM_CONTEXT. So I think (3), modelled as implicit accept and explicit close, sounds good. That cuts down the chatter (and probably simplifies some code in my implementation).",
+          "createdAt": "2021-07-14T16:16:28Z",
+          "updatedAt": "2021-07-14T16:16:28Z"
         }
       ]
     }
