@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-07-15T01:03:23.629381+00:00",
+  "timestamp": "2021-07-18T01:04:50.122238+00:00",
   "repo": "ietf-wg-masque/draft-ietf-masque-connect-udp",
   "labels": [
     {
@@ -2402,15 +2402,15 @@
       "id": "MDU6SXNzdWU5NDQ0NjQxOTI=",
       "title": "Registration capsule from proxy needed?",
       "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/issues/48",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ihlar",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Section 4 states that the proxy responds to a CONNECT-UDP request with 2xx and a corresponding registration capsule to indicate end-to-end support of datagrams. \r\nIf the client sends a REGISTER_DATAGRAM_CONTEXT capsule, the corresponding capsule from the proxy will be of the same kind, and it will register a new server-generated context ID. So now we would have two context IDs for the same stream, which seems a bit unnecessary. \r\n\r\nCould we simply omit the step where the proxy sends a registration capsule and simply state that a 2xx response to the CONNECT-UDP request is sufficient indication of end-to-end datagram support?\r\n",
       "createdAt": "2021-07-14T14:04:34Z",
-      "updatedAt": "2021-07-14T16:16:28Z",
-      "closedAt": null,
+      "updatedAt": "2021-07-15T01:23:00Z",
+      "closedAt": "2021-07-15T01:23:00Z",
       "comments": [
         {
           "author": "LPardue",
@@ -2663,6 +2663,34 @@
           ]
         }
       ]
+    },
+    {
+      "number": 49,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjkwMzIyMTc4",
+      "title": "remove incorrect server registration echo",
+      "url": "https://github.com/ietf-wg-masque/draft-ietf-masque-connect-udp/pull/49",
+      "state": "MERGED",
+      "author": "DavidSchinazi",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This text was a mistake I made when converting from Datagram-Flow-Id to capsules.\r\n\r\nCloses #48.",
+      "createdAt": "2021-07-15T01:21:34Z",
+      "updatedAt": "2021-07-15T01:23:00Z",
+      "baseRepository": "ietf-wg-masque/draft-ietf-masque-connect-udp",
+      "baseRefName": "main",
+      "baseRefOid": "649890881aaa92548b5a0fb37a7622b409b281fd",
+      "headRepository": "ietf-wg-masque/draft-ietf-masque-connect-udp",
+      "headRefName": "noecho",
+      "headRefOid": "ae227553f0a112bb80df9eaefc4df9426b0c326a",
+      "closedAt": "2021-07-15T01:23:00Z",
+      "mergedAt": "2021-07-15T01:23:00Z",
+      "mergedBy": "DavidSchinazi",
+      "mergeCommit": {
+        "oid": "9d56c9f4c59b82ff3a2ddbc8d71bbb52e941d4f4"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
