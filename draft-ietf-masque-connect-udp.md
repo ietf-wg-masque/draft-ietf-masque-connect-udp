@@ -153,7 +153,9 @@ not match MUST be discarded by the proxy.
 The lifetime of the socket is tied to the CONNECT-UDP stream. The proxy MUST
 keep the socket open while the CONNECT-UDP stream is open. Proxies MAY choose
 to close sockets due to a period of inactivity, but they MUST close the
-CONNECT-UDP stream before closing the socket.
+CONNECT-UDP stream before closing the socket. If a proxy is notified by its
+operating system that its socket is no longer usable, it MUST close the
+CONNECT-UDP stream.
 
 
 # Performance Considerations {#performance}
