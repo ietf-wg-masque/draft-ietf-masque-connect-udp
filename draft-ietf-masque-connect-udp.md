@@ -122,9 +122,7 @@ corresponding registration capsule, see {{HTTP-DGRAM}}.
 Since HTTP Datagrams require prior negotiation (for example, in HTTP/3 it is
 necessary to both send and receive the H3_DATAGRAM SETTINGS Parameter), clients
 MUST NOT send any HTTP Datagrams until they have established support on a given
-connection. If negotiation of HTTP Datagrams fails (for example if an HTTP/3
-SETTINGS frame was received without the H3_DATAGRAM SETTINGS Parameter), the
-client MUST consider its CONNECT-UDP request as failed.
+connection.
 
 The proxy that is creating the UDP socket to the destination responds to the
 CONNECT-UDP request with a 2xx (Successful) response.
