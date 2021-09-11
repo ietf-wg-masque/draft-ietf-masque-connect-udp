@@ -74,6 +74,7 @@ Clients are configured to use UDP Proxying over HTTP via an URI Template
 ~~~
 https://masque.example.org/{target_host}/{target_port}/
 https://proxy.example.org:4443/masque?h={target_host}&p={target_port}
+https://proxy.example.org:4443/masque{?target_host,target_port}
 ~~~
 {: #fig-template-examples title="URI Template Examples"}
 
