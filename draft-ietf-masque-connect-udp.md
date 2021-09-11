@@ -61,8 +61,8 @@ client and the proxy, those are referred to as "intermediaries" in this
 document.
 
 Note that, when the HTTP version in use does not support multiplexing streams
-(such as HTTP/1.1), so any reference to "stream" in this document
-represents the entire connection.
+(such as HTTP/1.1), any reference to "stream" in this document represents the
+entire connection.
 
 
 # Configuration of Clients {#client-config}
@@ -122,7 +122,11 @@ socket to the requested target.
 
 Unlike TCP, UDP is connection-less. The proxy that opens the UDP socket has no
 way of knowing whether the destination is reachable. Therefore it needs to
-respond to the request without waiting for a packet from the target.
+respond to the request without waiting for a packet from the target. However,
+if the target_host is a DNS name, the proxy MUST perform DNS resolution before
+replying to the HTTP request. If DNS resolution fails, the proxy MUST fail the
+request and SHOULD send details using the Proxy-Status header
+{{?PROXY-STATUS=I-D.ietf-httpbis-proxy-status}}.
 
 Proxies can use connected UDP sockets if their operating system supports them,
 as that allows the proxy to rely on the kernel to only send it UDP packets that
