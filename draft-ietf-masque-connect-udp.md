@@ -61,8 +61,8 @@ client and the proxy, those are referred to as "intermediaries" in this
 document.
 
 Note that, when the HTTP version in use does not support multiplexing streams
-(such as HTTP/1.1), then any reference to "stream" in this document is meant to
-represent the entire connection.
+(such as HTTP/1.1), so any reference to "stream" in this document
+represents the entire connection.
 
 
 # Configuration of Clients {#client-config}
@@ -122,7 +122,7 @@ socket to the requested target.
 
 Unlike TCP, UDP is connection-less. The proxy that opens the UDP socket has no
 way of knowing whether the destination is reachable. Therefore it needs to
-respond to the request without waiting for a TCP SYN-ACK.
+respond to the request without waiting for a packet from the target.
 
 Proxies can use connected UDP sockets if their operating system supports them,
 as that allows the proxy to rely on the kernel to only send it UDP packets that
@@ -137,7 +137,7 @@ sockets due to a period of inactivity, but they MUST close the request stream
 before closing the socket. If a proxy is notified by its operating system that
 its socket is no longer usable, it MUST close the request stream.
 
-A successfull response (as defined in {{resp1}} and {{resp23}}) indicates that
+A successful response (as defined in {{resp1}} and {{resp23}}) indicates that
 the proxy has opened a socket to the requested target and is willing to proxy
 UDP payloads. Any response other than a successful response indicates that the
 request has failed, and the client MUST therefore abort the request.
