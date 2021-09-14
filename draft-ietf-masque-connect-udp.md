@@ -259,21 +259,23 @@ HEADERS
 
 # Encoding of Proxied UDP Packets {#datagram-encoding}
 
-UDP packets are encoded using HTTP Datagrams {{HTTP-DGRAM}}. The payload of a
-UDP packet (referred to as "data octets" in {{UDP}}) is sent unmodified in the
-"HTTP Datagram Payload" field of an HTTP Datagram. In order to use HTTP
-Datagrams, the client will first decide whether or not to use HTTP Datagram
-Contexts and then register its context ID (or lack thereof) using the
-corresponding registration capsule, see {{HTTP-DGRAM}}.
+UDP packets are encoded using HTTP Datagrams {{HTTP-DGRAM}} with the
+UDP_PAYLOAD HTTP Datagram Format Type (see value in {{iana-format-type}}). When
+using the UDP_PAYLOAD HTTP Datagram Format Type, the payload of a UDP packet
+(referred to as "data octets" in {{UDP}}) is sent unmodified in the "HTTP
+Datagram Payload" field of an HTTP Datagram.
+
+In order to use HTTP Datagrams, the client will first decide whether or not to
+use HTTP Datagram Contexts and then register its context ID (or lack thereof)
+using the corresponding registration capsule, see {{HTTP-DGRAM}}.
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its UDP proxying request, noting however that those may not be
 processed by the proxy if it responds to the request with a failure, or if the
 datagrams are received by the proxy before the request.
 
-Extensions to this mechanism MAY leverage the "Context Extensions" field of
-registration capsules in order to negotiate different semantics or encoding for
-UDP payloads.
+Extensions to this mechanism MAY define new HTTP Datagram Format Types in order
+to use different semantics or encodings for UDP payloads.
 
 
 # Performance Considerations {#performance}
@@ -356,6 +358,17 @@ Expected Version Tokens:
 Reference:
 
 : This document.
+
+
+## Datagram Format Type {#iana-format-type}
+
+This document will request IANA to register UDP_PAYLOAD in the "HTTP Datagram
+Format Types" registry established by {{HTTP-DGRAM}}.
+
+|    Type     |   Value   | Specification |
+|:------------|:----------|:--------------|
+| UDP_PAYLOAD | 0xff6f00  | This Document |
+{: #iana-format-type-table title="Registered Datagram Format Type"}
 
 
 --- back
