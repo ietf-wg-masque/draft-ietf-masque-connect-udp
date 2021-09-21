@@ -267,7 +267,10 @@ Datagram Payload" field of an HTTP Datagram.
 
 In order to use HTTP Datagrams, the client will first decide whether or not to
 use HTTP Datagram Contexts and then register its context ID (or lack thereof)
-using the corresponding registration capsule, see {{HTTP-DGRAM}}.
+using the corresponding registration capsule, see {{HTTP-DGRAM}}. When sending
+a REGISTER_DATAGRAM_CONTEXT or REGISTER_DATAGRAM_NO_CONTEXT capsule using the
+"Datagram Format Type" set to UDP_PAYLOAD, the "Datagram Format Additional
+Data" field SHALL be empty.
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its UDP proxying request, noting however that those may not be
