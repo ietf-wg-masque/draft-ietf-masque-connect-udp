@@ -257,6 +257,19 @@ HEADERS
 {: #fig-resp-h2 title="Example HTTP Response over HTTP/2"}
 
 
+## Note About Draft Versions
+
+\[\[RFC editor: please remove this section before publication.]]
+
+In order to allow implementations to support multiple draft versions of this
+specification during its development, we introduce the "connect-udp-version"
+header. When sent by the client, it contains a list of draft numbers supported
+by the client (e.g., "connect-udp-version: 0, 2"). When sent by the proxy, it
+contains a single draft number selected by the proxy from the list provided by
+the client (e.g., "connect-udp-version: 2"). Sending this header is RECOMMENDED
+but not required.
+
+
 # Encoding of Proxied UDP Packets {#datagram-encoding}
 
 UDP packets are encoded using HTTP Datagrams {{HTTP-DGRAM}} with the
