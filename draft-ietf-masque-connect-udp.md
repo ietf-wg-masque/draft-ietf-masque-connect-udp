@@ -91,10 +91,10 @@ interoperability with such clients.
 
 # HTTP Exchanges
 
-This document defines the "masque-udp" HTTP Upgrade Token. "masque-udp" uses
+This document defines the "connect-udp" HTTP Upgrade Token. "connect-udp" uses
 the Capsule Protocol as defined in {{HTTP-DGRAM}}.
 
-A "masque-udp" request requests that the recipient establish a tunnel over a
+A "connect-udp" request requests that the recipient establish a tunnel over a
 single HTTP stream to the destination target server identified by the
 "target_host" and "target_port" variables of the URI template (see
 {{client-config}}). If the request is successful, the proxy commits to
@@ -162,7 +162,7 @@ When using HTTP/1.1, a UDP proxying request will meet the following requirements
 
 * the request SHALL include a single "Connection" header with value "Upgrade".
 
-* the request SHALL include a single "Upgrade" header with value "masque-udp".
+* the request SHALL include a single "Upgrade" header with value "connect-udp".
 
 For example, if the client is configured with URI template
 "https://proxy.example.org/{target_host}/{target_port}/" and wishes to open a
@@ -173,7 +173,7 @@ request:
 CONNECT https://proxy.example.org/192.0.2.42/443/ HTTP/1.1
 Host: proxy.example.org
 Connection: upgrade
-Upgrade: masque-udp
+Upgrade: connect-udp
 ~~~
 {: #fig-req-h1 title="Example HTTP Request over HTTP/1.1"}
 
@@ -187,7 +187,7 @@ requirements:
 
 * the reponse SHALL include a single "Connection" header with value "Upgrade".
 
-* the response SHALL include a single "Upgrade" header with value "masque-udp".
+* the response SHALL include a single "Upgrade" header with value "connect-udp".
 
 * the response SHALL NOT include any Transfer-Encoding or Content-Length header
   fields.
@@ -200,7 +200,7 @@ For example, the proxy could respond with:
 ~~~
 HTTP/1.1 101 Switching Protocols
 Connection: upgrade
-Upgrade: masque-udp
+Upgrade: connect-udp
 ~~~
 {: #fig-resp-h1 title="Example HTTP Response over HTTP/1.1"}
 
@@ -212,7 +212,7 @@ proxying requests use HTTP pseudo-headers with the following requirements:
 
 * The ":method" pseudo-header field SHALL be "CONNECT".
 
-* The ":protocol" pseudo-header field SHALL be "masque-udp".
+* The ":protocol" pseudo-header field SHALL be "connect-udp".
 
 * The ":authority" pseudo-header field SHALL contain the authority of the proxy.
 
@@ -231,7 +231,7 @@ request:
 ~~~
 HEADERS
 :method = CONNECT
-:protocol = masque-udp
+:protocol = connect-udp
 :scheme = https
 :path = /192.0.2.42/443/
 :authority = proxy.example.org
@@ -348,13 +348,13 @@ ossification of UDP-based protocols by proxies.
 
 ## HTTP Upgrade Token {#iana-upgrade}
 
-This document will request IANA to register "masque-udp" in the
+This document will request IANA to register "connect-udp" in the
 HTTP Upgrade Token Registry maintained at
 <[](https://www.iana.org/assignments/http-upgrade-tokens)>.
 
 Value:
 
-: masque-udp
+: connect-udp
 
 Description:
 
