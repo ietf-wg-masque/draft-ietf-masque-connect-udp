@@ -325,6 +325,21 @@ reduce performance as both can sometimes independently retransmit the same
 data. To avoid this, HTTP/3 datagrams SHOULD be used.
 
 
+## MTU Considerations
+
+When using HTTP/3 with the QUIC Datagram extension
+{{!DGRAM=I-D.ietf-quic-datagram}}, UDP payloads are transmitted in QUIC
+DATAGRAM frames. Since those cannot be fragmented, they can only carry payloads
+up to a given length determined by the QUIC connection configuration and the
+path MTU. If a proxy is using QUIC DATAGRAM frames and it receives a UDP
+payload from the target that will not fit inside a QUIC DATAGRAM frame, the
+proxy SHOULD NOT send the UDP payload in a DATAGRAM capsule, as that defeats
+the end-to-end unreliability characteristic that methods such as Datagram
+Packetization Layer Path MTU Discovery (DPLPMTUD) depend on {{?RFC8899}}. In
+this scenario, the proxy SHOULD drop the UDP payload and send an ICMP "Packet
+Too Big" message to the target {{?RFC4443}}.
+
+
 ## Tunneling of ECN Marks
 
 UDP proxying does not create an IP-in-IP tunnel, so the guidance in {{?RFC6040}}
