@@ -25,6 +25,9 @@ normative:
   MESSAGING: I-D.ietf-httpbis-messaging
   SEMANTICS: I-D.ietf-httpbis-semantics
 
+informative:
+  BEHAVE: RFC4787
+
 --- abstract
 
 This document describes how to proxy UDP over HTTP. Similar to how the CONNECT
@@ -137,10 +140,12 @@ ensure they match the client's request. Packets that do not match MUST be
 discarded by the proxy.
 
 The lifetime of the socket is tied to the request stream. The proxy MUST keep
-the socket open while the request stream is open. Proxies MAY choose to close
-sockets due to a period of inactivity, but they MUST close the request stream
-before closing the socket. If a proxy is notified by its operating system that
-its socket is no longer usable, it MUST close the request stream.
+the socket open while the request stream is open. If a proxy is notified by its
+operating system that its socket is no longer usable, it MUST close the request
+stream. Proxies MAY choose to close sockets due to a period of inactivity, but
+they MUST close the request stream before closing the socket. Proxies that
+close sockets after a period of inactivity SHOULD NOT use a period lower than
+two minutes, see {{Section 4.3 of BEHAVE}}.
 
 A successful response (as defined in {{resp1}} and {{resp23}}) indicates that
 the proxy has opened a socket to the requested target and is willing to proxy
