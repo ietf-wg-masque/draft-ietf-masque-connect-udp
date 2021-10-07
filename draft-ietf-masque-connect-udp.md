@@ -86,8 +86,8 @@ port but not the scheme, proxy authority, path, nor query, there exist proxy
 configuration interfaces that only allow the user to configure the proxy host
 and the proxy port. Client implementations of this specification that are
 constrained by such limitations MUST use the default template which is defined
-as: "https://{proxy_host}:{proxy_port}/{target_host}/{target_port}/" where
-"proxy_host" and "proxy_port" are the configured host and port of the proxy
+as: "https://$PROXY_HOST:$PROXY_PORT/{target_host}/{target_port}/" where
+$PROXY_HOST and $PROXY_PORT are the configured host and port of the proxy
 respectively. Proxy deployments SHOULD use the default template to facilitate
 interoperability with such clients.
 
