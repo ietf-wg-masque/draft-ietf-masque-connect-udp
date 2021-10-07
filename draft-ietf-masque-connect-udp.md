@@ -117,6 +117,7 @@ proxying request with a non-empty payload is malformed.
 
 Responses to UDP proxying requests are not cacheable.
 
+
 ## Proxy Handling
 
 Upon receiving a UDP proxying request, the recipient proxy extracts the
@@ -359,6 +360,7 @@ A UDP proxy MUST ignore ECN bits in the IP header of UDP packets received from
 the server, and MUST set the ECN bits to Not-ECT on UDP packets it sends to the
 server. These do not relate to the ECN markings of packets sent between client
 and proxy in any way.
+
 
 # Security Considerations {#security}
 
