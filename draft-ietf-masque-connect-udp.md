@@ -284,18 +284,17 @@ using the UDP_PAYLOAD HTTP Datagram Format Type, the payload of a UDP packet
 (referred to as "data octets" in {{UDP}}) is sent unmodified in the "HTTP
 Datagram Payload" field of an HTTP Datagram.
 
-In order to use HTTP Datagrams, the client will first decide whether or not to
-use HTTP Datagram Contexts and then register its context ID (or lack thereof)
-using the corresponding registration capsule, see {{HTTP-DGRAM}}.
+In order to use HTTP Datagrams, the client will first decide whether or not it
+will attempt to use HTTP Datagram Contexts and then register its context ID (or
+lack thereof) using the corresponding registration capsule, see {{HTTP-DGRAM}}.
 
-When sending a REGISTER_DATAGRAM_CONTEXT or REGISTER_DATAGRAM_NO_CONTEXT
-capsule using the "Datagram Format Type" set to UDP_PAYLOAD, the "Datagram
-Format Additional Data" field SHALL be empty. Servers MUST NOT register
-contexts using the UDP_PAYLOAD HTTP Datagram Format Type. Clients MUST NOT
-register more than one context using the UDP_PAYLOAD HTTP Datagram Format Type.
-Endpoints MUST NOT close contexts using the UDP_PAYLOAD HTTP Datagram Format
-Type. If an endpoint detects a violation of any of these requirements, it MUST
-abort the stream.
+When sending a registration capsule using the "Datagram Format Type" set to
+UDP_PAYLOAD, the "Datagram Format Additional Data" field SHALL be empty.
+Servers MUST NOT register contexts using the UDP_PAYLOAD HTTP Datagram Format
+Type. Clients MUST NOT register more than one context using the UDP_PAYLOAD
+HTTP Datagram Format Type. Endpoints MUST NOT close contexts using the
+UDP_PAYLOAD HTTP Datagram Format Type. If an endpoint detects a violation of
+any of these requirements, it MUST abort the stream.
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its UDP proxying request, noting however that those may not be
