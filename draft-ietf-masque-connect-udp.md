@@ -276,33 +276,37 @@ the client (e.g., "connect-udp-version: 2"). Sending this header is RECOMMENDED
 but not required.
 
 
-# Encoding of Proxied UDP Packets {#datagram-encoding}
+# HTTP Datagram Payload Format {#format}
 
-UDP packets are encoded using HTTP Datagrams {{HTTP-DGRAM}} with the
-UDP_PAYLOAD HTTP Datagram Format Type (see value in {{iana-format-type}}). When
-using the UDP_PAYLOAD HTTP Datagram Format Type, the payload of a UDP packet
-(referred to as "data octets" in {{UDP}}) is sent unmodified in the "HTTP
-Datagram Payload" field of an HTTP Datagram.
+When associated with UDP proxying request streams, the HTTP Datagram Payload
+field of HTTP Datagrams (see {{HTTP-DGRAM}}) carries the following semantics:
 
-In order to use HTTP Datagrams, the client will first decide whether or not it
-will attempt to use HTTP Datagram Contexts and then register its context ID (or
-lack thereof) using the corresponding registration capsule, see {{HTTP-DGRAM}}.
+~~~
+UDP Proxying HTTP Datagram Payload {
+  To Be Determined (TBD),
+  Payload (..),
+}
+~~~
+{: #dgram-format title="UDP Proxying HTTP Datagram Format"}
 
-When sending a registration capsule using the "Datagram Format Type" set to
-UDP_PAYLOAD, the "Datagram Format Additional Data" field SHALL be empty.
-Servers MUST NOT register contexts using the UDP_PAYLOAD HTTP Datagram Format
-Type. Clients MUST NOT register more than one context using the UDP_PAYLOAD
-HTTP Datagram Format Type. Endpoints MUST NOT close contexts using the
-UDP_PAYLOAD HTTP Datagram Format Type. If an endpoint detects a violation of
-any of these requirements, it MUST abort the stream.
+To Be Determined:
+
+: The design team meetings will continue until morale improves.
+
+Payload:
+
+: The payload of the datagram, whose semantics depend on value of the previous
+field. Note that this field can be empty.
+
+UDP packets are encoded using HTTP Datagrams with the To Be Determined field set
+to TBD0. When the To Be Determined is set to TBD0, the Context Payload field
+contains the unmodified payload of a UDP packet (referred to as "data octets" in
+{{UDP}}).
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its UDP proxying request, noting however that those may not be
 processed by the proxy if it responds to the request with a failure, or if the
 datagrams are received by the proxy before the request.
-
-Extensions to this mechanism MAY define new HTTP Datagram Format Types in order
-to use different semantics or encodings for UDP payloads.
 
 
 # Performance Considerations {#performance}
@@ -401,17 +405,6 @@ Expected Version Tokens:
 Reference:
 
 : This document.
-
-
-## Datagram Format Type {#iana-format-type}
-
-This document will request IANA to register UDP_PAYLOAD in the "HTTP Datagram
-Format Types" registry established by {{HTTP-DGRAM}}.
-
-|    Type     |   Value   | Specification |
-|:------------|:----------|:--------------|
-| UDP_PAYLOAD | 0xff6f00  | This Document |
-{: #iana-format-type-table title="Registered Datagram Format Type"}
 
 
 --- back
