@@ -276,33 +276,58 @@ the client (e.g., "connect-udp-version: 2"). Sending this header is RECOMMENDED
 but not required.
 
 
-# Encoding of Proxied UDP Packets {#datagram-encoding}
+# Context Identifiers
 
-UDP packets are encoded using HTTP Datagrams {{HTTP-DGRAM}} with the
-UDP_PAYLOAD HTTP Datagram Format Type (see value in {{iana-format-type}}). When
-using the UDP_PAYLOAD HTTP Datagram Format Type, the payload of a UDP packet
-(referred to as "data octets" in {{UDP}}) is sent unmodified in the "HTTP
-Datagram Payload" field of an HTTP Datagram.
+This protocol allows future extensions to exchange HTTP Datagrams which carry
+different semantics from UDP payloads. Some of these extensions can augment UDP
+payloads with additional data, while others can exchange data that is completely
+separate from UDP payloads. In order to accomplish this, all HTTP Datagrams
+associated with UDP Proxying request streams start with a context ID, see
+{{format}}.
 
-In order to use HTTP Datagrams, the client will first decide whether or not it
-will attempt to use HTTP Datagram Contexts and then register its context ID (or
-lack thereof) using the corresponding registration capsule, see {{HTTP-DGRAM}}.
+Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). The context ID value of
+zero is reserved for UDP payloads, while non-zero values are dynamically
+allocated: non-zero even-numbered context IDs are client-initiated, and
+odd-numbered context IDs are server-initiated. Extensions can use the next
+available context ID for their own purposes. Note that, once allocated, any
+context ID can be used by both client and server - only allocation carries
+separate namespaces to avoid requiring synchronization. Additionally, note that
+the context ID namespace is tied to a given HTTP request: it is possible for the
+same numeral context ID to be used simultaneously in distinct requests.
 
-When sending a registration capsule using the "Datagram Format Type" set to
-UDP_PAYLOAD, the "Datagram Format Additional Data" field SHALL be empty.
-Servers MUST NOT register contexts using the UDP_PAYLOAD HTTP Datagram Format
-Type. Clients MUST NOT register more than one context using the UDP_PAYLOAD
-HTTP Datagram Format Type. Endpoints MUST NOT close contexts using the
-UDP_PAYLOAD HTTP Datagram Format Type. If an endpoint detects a violation of
-any of these requirements, it MUST abort the stream.
+
+# HTTP Datagram Payload Format {#format}
+
+When associated with UDP proxying request streams, the HTTP Datagram Payload
+field of HTTP Datagrams (see {{HTTP-DGRAM}}) carries the following semantics:
+
+~~~
+UDP Proxying HTTP Datagram Payload {
+  Context ID (i),
+  Context Payload (..),
+}
+~~~
+{: #dgram-fromat title="UDP Proxying HTTP Datagram Format"}
+
+Context ID:
+
+: A variable-length integer that contains the value of the Context ID. Endpoints
+MUST silently drop any received HTTP Datagram which carries an unknown Context
+ID.
+
+Context Payload:
+
+: The payload of the datagram, whose semantics depend on value of the context
+ID. Note that this field can be empty.
+
+UDP packets are encoded using HTTP Datagrams with the Context ID set to zero.
+When the Context ID is set to zero, the Context Payload field contains the
+unmodified payload of a UDP packet (referred to as "data octets" in {{UDP}}).
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its UDP proxying request, noting however that those may not be
 processed by the proxy if it responds to the request with a failure, or if the
 datagrams are received by the proxy before the request.
-
-Extensions to this mechanism MAY define new HTTP Datagram Format Types in order
-to use different semantics or encodings for UDP payloads.
 
 
 # Performance Considerations {#performance}
@@ -403,18 +428,41 @@ Reference:
 : This document.
 
 
-## Datagram Format Type {#iana-format-type}
-
-This document will request IANA to register UDP_PAYLOAD in the "HTTP Datagram
-Format Types" registry established by {{HTTP-DGRAM}}.
-
-|    Type     |   Value   | Specification |
-|:------------|:----------|:--------------|
-| UDP_PAYLOAD | 0xff6f00  | This Document |
-{: #iana-format-type-table title="Registered Datagram Format Type"}
-
-
 --- back
+
+# Example: Registering Contexts with Capsules {#register}
+
+Extensions can define a new Capsule type (see {{HTTP-DGRAM}}) that is used to
+register a context ID with the peer endpoint. Registering a context ID is the
+action by which an endpoint informs its peer of the semantics and format of a
+given context ID.
+
+For example, if an extension wanted to convey the time at which a UDP packet was
+received, it could define a new capsule type (REGISTER_TIMESTAMP_CONTEXT_ID)
+that includes a context ID value. Endpoints that understand this new capsule
+type would be able to consequently handle and parse datagrams on the context ID,
+while all other endpoints would ignore the datagrams.
+
+~~~
+REGISTER_TIMESTAMP_CONTEXT_ID Capsule {
+  Type (i) = REGISTER_TIMESTAMP_CONTEXT_ID,
+  Length (i),
+  Context ID (i),
+}
+~~~
+{: #ex-capsule title="Example: Format of REGISTER_TIMESTAMP_CONTEXT_ID Capsule"}
+
+The extension would also define the format of its HTTP Datagram Context Payload
+field:
+
+~~~
+Context Payload for UDP with Timestamp {
+  Timestamp (64),
+  UDP Payload (...),
+}
+~~~
+{: #ex-dgram title="Example: Format of UDP Payload with Timestamp"}
+
 
 # Acknowledgments {#acknowledgments}
 {:numbered="false"}
