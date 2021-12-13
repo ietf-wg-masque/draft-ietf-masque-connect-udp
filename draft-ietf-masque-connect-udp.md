@@ -300,6 +300,8 @@ a Datagram Format Type value of 0. In this format, the payload of a UDP packet
 
 Extensions to this mechanism MAY define new Connect-UDP Datagram Format Types
 in order to use different semantics or encodings for UDP payloads and metadata.
+Extensions SHOULD define HTTP header fields that can be used to negotiate
+the support of different Datagram Format Types.
 
 # Performance Considerations {#performance}
 
