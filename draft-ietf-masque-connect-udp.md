@@ -276,34 +276,30 @@ the client (e.g., "connect-udp-version: 2"). Sending this header is RECOMMENDED
 but not required.
 
 
-# Encoding of Proxied UDP Packets {#datagram-encoding}
+# Use of HTTP Datagrams {#datagram-encoding}
 
-UDP packets are encoded using HTTP Datagrams {{HTTP-DGRAM}} with the
-UDP_PAYLOAD HTTP Datagram Format Type (see value in {{iana-format-type}}). When
-using the UDP_PAYLOAD HTTP Datagram Format Type, the payload of a UDP packet
-(referred to as "data octets" in {{UDP}}) is sent unmodified in the "HTTP
-Datagram Payload" field of an HTTP Datagram.
+HTTP Datagrams {{HTTP-DGRAM}} associated with the "connect-udp" request are
+used to send UDP packets. The HTTP Datagram Payload starts with a
+variable-length integer that determines the format of the rest of the payload.
+The values for this integer are defined in the Connect-UDP Datagram Format
+Type registry {{iana-format-type}}.
 
-In order to use HTTP Datagrams, the client will first decide whether or not it
-will attempt to use HTTP Datagram Contexts and then register its context ID (or
-lack thereof) using the corresponding registration capsule, see {{HTTP-DGRAM}}.
+~~~
+   Connect-UDP HTTP/3 Datagram {
+     Quarter Stream ID (i),
+     Connect-UDP Datagram Format Type (i),
+     Connect-UDP Datagram Payload (..),
+   }
+~~~
+{: #fig-udp-format title="Connect-UDP HTTP/3 Datagram"}
 
-When sending a registration capsule using the "Datagram Format Type" set to
-UDP_PAYLOAD, the "Datagram Format Additional Data" field SHALL be empty.
-Servers MUST NOT register contexts using the UDP_PAYLOAD HTTP Datagram Format
-Type. Clients MUST NOT register more than one context using the UDP_PAYLOAD
-HTTP Datagram Format Type. Endpoints MUST NOT close contexts using the
-UDP_PAYLOAD HTTP Datagram Format Type. If an endpoint detects a violation of
-any of these requirements, it MUST abort the stream.
+This document defines the default UDP payload format, UDP_PAYLOAD, which uses
+a Datagram Format Type value of 0. In this format, the payload of a UDP packet
+(referred to as "data octets" in {{UDP}}) is sent unmodified in the
+"Connect-UDP Datagram Payload" field.
 
-Clients MAY optimistically start sending proxied UDP packets before receiving
-the response to its UDP proxying request, noting however that those may not be
-processed by the proxy if it responds to the request with a failure, or if the
-datagrams are received by the proxy before the request.
-
-Extensions to this mechanism MAY define new HTTP Datagram Format Types in order
-to use different semantics or encodings for UDP payloads.
-
+Extensions to this mechanism MAY define new Connect-UDP Datagram Format Types
+in order to use different semantics or encodings for UDP payloads and metadata.
 
 # Performance Considerations {#performance}
 
@@ -405,14 +401,24 @@ Reference:
 
 ## Datagram Format Type {#iana-format-type}
 
-This document will request IANA to register UDP_PAYLOAD in the "HTTP Datagram
-Format Types" registry established by {{HTTP-DGRAM}}.
+This document establishes a new IANA registry, "Connect-UDP Datagram
+Format Types", which governs a 62-bit space. Registrations in this registry
+MUST include the following fields:
+
+- Type: A name or label for the datagram format type.
+
+- Value: The value of the Connect-UDP Datagram Format Type field, which
+is a 62-bit integer.
+ 
+- Reference: A reference to a specification for the parameter. 
+This field MAY be empty.
+ 
+The registry is initially populated with one value, UDP_PAYLOAD:
 
 |    Type     |   Value   | Specification |
 |:------------|:----------|:--------------|
-| UDP_PAYLOAD | 0xff6f00  | This Document |
-{: #iana-format-type-table title="Registered Datagram Format Type"}
-
+| UDP_PAYLOAD | 0x00      | This Document |
+{: #iana-format-type-table title="Initial Connect-UDP Datagram Format Types"}
 
 --- back
 
