@@ -276,7 +276,7 @@ the client (e.g., "connect-udp-version: 2"). Sending this header is RECOMMENDED
 but not required.
 
 
-# Context Identifiers
+# Context Identifiers {#context-id}
 
 This protocol allows future extensions to exchange HTTP Datagrams which carry
 different semantics from UDP payloads. Some of these extensions can augment UDP
@@ -430,38 +430,86 @@ Reference:
 
 --- back
 
-# Example: Registering Contexts with Capsules {#register}
+# Example Extensions
 
-Extensions can define a new Capsule type (see {{HTTP-DGRAM}}) that is used to
-register a context ID with the peer endpoint. Registering a context ID is the
-action by which an endpoint informs its peer of the semantics and format of a
-given context ID.
+Extensions can define new semantics for the payload of HTTP Datagrams. The
+extension can then have an endpoint pick an available context ID using the
+allocation service ({{context-id}}) and register that context ID with their
+peer. Registration is the action by which an endpoint informs its peer of the
+semantics and format of a given context ID.
 
-For example, if an extension wanted to convey the time at which a UDP packet was
-received, it could define a new capsule type (REGISTER_TIMESTAMP_CONTEXT_ID)
-that includes a context ID value. Endpoints that understand this new capsule
-type would be able to consequently handle and parse datagrams on the context ID,
-while all other endpoints would ignore the datagrams.
 
-~~~
-REGISTER_TIMESTAMP_CONTEXT_ID Capsule {
-  Type (i) = REGISTER_TIMESTAMP_CONTEXT_ID,
-  Length (i),
-  Context ID (i),
-}
-~~~
-{: #ex-capsule title="Example: Format of REGISTER_TIMESTAMP_CONTEXT_ID Capsule"}
+## Registering Contexts with Headers
 
-The extension would also define the format of its HTTP Datagram Context Payload
-field:
+Extensions can define a new HTTP header to register a context ID with the peer
+endpoint.
+
+As an example, let's use an extension that conveys the time at which a UDP
+packet was received. The extension would first define the format of its HTTP
+Datagram Context Payload field:
 
 ~~~
 Context Payload for UDP with Timestamp {
   Timestamp (64),
-  UDP Payload (...),
+  UDP Payload (..),
 }
 ~~~
 {: #ex-dgram title="Example: Format of UDP Payload with Timestamp"}
+
+The extension would also define a new HTTP header (UDP-Timestamps) that includes
+a context ID value. Endpoints that understand this new HTTP header would be able
+to consequently handle and parse datagrams on the context ID, while all other
+endpoints would ignore the datagrams.
+
+~~~
+HEADERS
+:method = CONNECT
+:protocol = connect-udp
+:scheme = https
+:path = /192.0.2.42/443/
+:authority = proxy.example.org
+udp-timestamps = 42
+~~~
+{: #ex-hdr title="Example: Registration via header"}
+
+In this example request, HTTP Datagrams with context ID zero would only contain
+the UDP payload, whereas HTTP Datagrams with context ID 42 would also contain a
+timestamp.
+
+
+## Registering Contexts with Capsules
+
+Extensions can define a new Capsule type (see {{HTTP-DGRAM}}) to register a
+context ID with the peer endpoint.
+
+As an example, let's use an extension that compresses QUIC Connection IDs when
+the client is running QUIC over a UDP proxying tunnel. The extension would first
+define the transform applied to UDP payloads when compressing and decompressing,
+such as removing the bytes of the connection ID.
+
+The extension would also define a new capsule type
+(REGISTER_COMPRESSED_QUIC_CID) that includes a context ID value and the
+connection ID to compress. Endpoints that understand this new capsule type would
+be able to consequently handle and parse datagrams on the context ID, while all
+other endpoints would ignore the datagrams.
+
+~~~
+REGISTER_COMPRESSED_QUIC_CID Capsule {
+  Type (i) = REGISTER_COMPRESSED_QUIC_CID,
+  Length (i),
+  Context ID (i),
+  QUIC Connection ID (..),
+}
+~~~
+{: #ex-capsule title="Example: Registration via capsule"}
+
+
+## Composing Extensions
+
+A future extension could define how to compose extensions. For example, it could
+define a new HTTP header and/or capsule that maps a context ID to a list of
+extensions. That allows the sender to pick low context IDs for the combinations
+that it knows it will be sending often.
 
 
 # Acknowledgments {#acknowledgments}
