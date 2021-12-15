@@ -307,7 +307,7 @@ UDP Proxying HTTP Datagram Payload {
   Context Payload (..),
 }
 ~~~
-{: #dgram-fromat title="UDP Proxying HTTP Datagram Format"}
+{: #dgram-format title="UDP Proxying HTTP Datagram Format"}
 
 Context ID:
 
