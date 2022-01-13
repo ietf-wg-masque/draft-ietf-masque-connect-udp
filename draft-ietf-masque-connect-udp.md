@@ -276,6 +276,26 @@ the client (e.g., "connect-udp-version: 2"). Sending this header is RECOMMENDED
 but not required.
 
 
+# Context Identifiers {#context-id}
+
+This protocol allows future extensions to exchange HTTP Datagrams which carry
+different semantics from UDP payloads. Some of these extensions can augment UDP
+payloads with additional data, while others can exchange data that is completely
+separate from UDP payloads. In order to accomplish this, all HTTP Datagrams
+associated with UDP Proxying request streams start with a context ID, see
+{{format}}.
+
+Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). The context ID value of
+zero is reserved for UDP payloads, while non-zero values are dynamically
+allocated: non-zero even-numbered context IDs are client-initiated, and
+odd-numbered context IDs are server-initiated. Extensions can use the next
+available context ID for their own purposes. Note that, once allocated, any
+context ID can be used by both client and server - only allocation carries
+separate namespaces to avoid requiring synchronization. Additionally, note that
+the context ID namespace is tied to a given HTTP request: it is possible for the
+same numeral context ID to be used simultaneously in distinct requests.
+
+
 # HTTP Datagram Payload Format {#format}
 
 When associated with UDP proxying request streams, the HTTP Datagram Payload
@@ -283,25 +303,26 @@ field of HTTP Datagrams (see {{HTTP-DGRAM}}) carries the following semantics:
 
 ~~~
 UDP Proxying HTTP Datagram Payload {
-  To Be Determined (TBD),
+  Context ID (i),
   Payload (..),
 }
 ~~~
 {: #dgram-format title="UDP Proxying HTTP Datagram Format"}
 
-To Be Determined:
+Context ID:
 
-: The design team meetings will continue until morale improves.
+: A variable-length integer that contains the value of the Context ID. Endpoints
+MUST silently drop any received HTTP Datagram which carries an unknown Context
+ID.
 
 Payload:
 
 : The payload of the datagram, whose semantics depend on value of the previous
 field. Note that this field can be empty.
 
-UDP packets are encoded using HTTP Datagrams with the To Be Determined field set
-to TBD0. When the To Be Determined is set to TBD0, the Context Payload field
-contains the unmodified payload of a UDP packet (referred to as "data octets" in
-{{UDP}}).
+UDP packets are encoded using HTTP Datagrams with the Context ID set to zero.
+When the Context ID is set to zero, the Context Payload field contains the
+unmodified payload of a UDP packet (referred to as "data octets" in {{UDP}}).
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its UDP proxying request, noting however that those may not be
@@ -408,6 +429,88 @@ Reference:
 
 
 --- back
+
+# Example Extensions
+
+Extensions can define new semantics for the payload of HTTP Datagrams. The
+extension can then have an endpoint pick an available context ID using the
+allocation service ({{context-id}}) and register that context ID with their
+peer. Registration is the action by which an endpoint informs its peer of the
+semantics and format of a given context ID.
+
+
+## Registering Contexts with Headers
+
+Extensions can define a new HTTP header to register a context ID with the peer
+endpoint.
+
+As an example, let's use an extension that conveys the time at which a UDP
+packet was received. The extension would first define the format of its HTTP
+Datagram Context Payload field:
+
+~~~
+Context Payload for UDP with Timestamp {
+  Timestamp (64),
+  UDP Payload (..),
+}
+~~~
+{: #ex-dgram title="Example: Format of UDP Payload with Timestamp"}
+
+The extension would also define a new HTTP header (UDP-Timestamps) that includes
+a context ID value. Endpoints that understand this new HTTP header would be able
+to consequently handle and parse datagrams on the context ID, while all other
+endpoints would ignore the datagrams.
+
+~~~
+HEADERS
+:method = CONNECT
+:protocol = connect-udp
+:scheme = https
+:path = /192.0.2.42/443/
+:authority = proxy.example.org
+udp-timestamps = 42
+~~~
+{: #ex-hdr title="Example: Registration via header"}
+
+In this example request, HTTP Datagrams with context ID zero would only contain
+the UDP payload, whereas HTTP Datagrams with context ID 42 would also contain a
+timestamp.
+
+
+## Registering Contexts with Capsules
+
+Extensions can define a new Capsule type (see {{HTTP-DGRAM}}) to register a
+context ID with the peer endpoint.
+
+As an example, let's use an extension that compresses QUIC Connection IDs when
+the client is running QUIC over a UDP proxying tunnel. The extension would first
+define the transform applied to UDP payloads when compressing and decompressing,
+such as removing the bytes of the connection ID.
+
+The extension would also define a new capsule type
+(REGISTER_COMPRESSED_QUIC_CID) that includes a context ID value and the
+connection ID to compress. Endpoints that understand this new capsule type would
+be able to consequently handle and parse datagrams on the context ID, while all
+other endpoints would ignore the datagrams.
+
+~~~
+REGISTER_COMPRESSED_QUIC_CID Capsule {
+  Type (i) = REGISTER_COMPRESSED_QUIC_CID,
+  Length (i),
+  Context ID (i),
+  QUIC Connection ID (..),
+}
+~~~
+{: #ex-capsule title="Example: Registration via capsule"}
+
+
+## Composing Extensions
+
+A future extension could define how to compose extensions. For example, it could
+define a new HTTP header and/or capsule that maps a context ID to a list of
+extensions. That allows the sender to pick low context IDs for the combinations
+that it knows it will be sending often.
+
 
 # Acknowledgments {#acknowledgments}
 {:numbered="false"}
