@@ -283,25 +283,34 @@ field of HTTP Datagrams (see {{HTTP-DGRAM}}) carries the following semantics:
 
 ~~~
 UDP Proxying HTTP Datagram Payload {
-  To Be Determined (TBD),
+  UDP Proxying Datagram Format Type (i),
   Payload (..),
 }
 ~~~
 {: #dgram-format title="UDP Proxying HTTP Datagram Format"}
 
-To Be Determined:
+UDP Proxying Datagram Format Type:
 
-: The design team meetings will continue until morale improves.
+: A variable-length integer that contains the value of the Datagram Format Type.
+The values for this integer are defined in the UDP Proxying Datagram Format Type
+registry, see {{iana-format-type}}. Endpoints MUST silently drop any received
+HTTP Datagram which carries an unknown UDP Proxying Datagram Format Type.
 
 Payload:
 
 : The payload of the datagram, whose semantics depend on value of the previous
 field. Note that this field can be empty.
 
-UDP packets are encoded using HTTP Datagrams with the To Be Determined field set
-to TBD0. When the To Be Determined is set to TBD0, the Context Payload field
-contains the unmodified payload of a UDP packet (referred to as "data octets" in
-{{UDP}}).
+This document defines the default UDP payload format, UDP_PAYLOAD, which uses a
+Datagram Format Type value of 0. UDP packets are encoded using HTTP Datagrams
+with the Datagram Format Type field set to 0. When the Datagram Format Type is
+set to 0, the Context Payload field contains the unmodified payload of a UDP
+packet (referred to as "data octets" in {{UDP}}).
+
+Extensions to this mechanism MAY define new UDP Proxying Datagram Format Types
+in order to use different semantics or encodings for UDP payloads and metadata.
+Extensions SHOULD define HTTP header fields that can be used to negotiate
+the support of different Datagram Format Types.
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
 the response to its UDP proxying request, noting however that those may not be
@@ -407,7 +416,122 @@ Reference:
 : This document.
 
 
+## Datagram Format Type {#iana-format-type}
+
+This document establishes a new IANA registry, "UDP Proxying Datagram Format
+Types", which governs a 62-bit space. Registrations in this registry MUST
+include the following fields:
+
+- Type: A name or label for the datagram format type.
+
+- Value: The value of the UDP Proxying Datagram Format Type field, which is a
+  62-bit integer.
+
+- Reference: A reference to a specification for the parameter. This field MAY be
+  empty.
+
+The registry is initially populated with a single value:
+
+Type:
+
+: UDP_PAYLOAD
+
+Value:
+
+: 0x00
+
+Reference:
+
+: This document.
+
+
 --- back
+
+# Example Extensions
+
+## Static Example Extension
+
+As an example, let's use an extension that conveys the time at which a UDP
+packet was received. The extension would first register a new Datagram Format
+Type (UDP_WITH_TIMESTAMP)and then define the format of its HTTP Datagram Payload
+field for that format type:
+
+~~~
+Context Payload for UDP with Timestamp {
+  UDP Proxying Datagram Format Type (i) = UDP_WITH_TIMESTAMP,
+  Timestamp (64),
+  UDP Payload (..),
+}
+~~~
+{: #ex-dgram-stat title="Example: Format of UDP Payload with Timestamp"}
+
+The extension would also define a new HTTP header (UDP-Timestamps). Endpoints
+that understand this new HTTP header would be able to consequently handle and
+parse datagrams with this format type, while all other endpoints would ignore
+the datagrams.
+
+~~~
+HEADERS
+:method = CONNECT
+:protocol = connect-udp
+:scheme = https
+:path = /192.0.2.42/443/
+:authority = proxy.example.org
+udp-timestamps = ?1
+~~~
+{: #ex-hdr title="Static Example Extension"}
+
+
+## Dynamic Example Extension
+
+As an example, let's use an extension that compresses QUIC Connection IDs when
+the client is running QUIC over a UDP proxying tunnel. The extension would first
+define the transform applied to UDP payloads when compressing and decompressing,
+such as removing the bytes of the connection ID.
+
+The extension would then define to define the concept of a Context ID, which is
+a dynamically allocated 62-bit integer (0 to 2<sup>62</sup>-1). Even-numbered
+context IDs are client-initiated, and odd-numbered context IDs are
+server-initiated. The context ID namespace is tied to a given HTTP request: it
+is possible for the same numeral context ID to be used simultaneously in
+distinct requests.
+
+The extension would register a new Datagram Format Type
+(UDP_WITH_COMPRESSED_CID) and then define the format of its HTTP Datagram
+Payload field for that format type:
+
+~~~
+Context Payload for UDP with Compressed QUIC Connection ID {
+  UDP Proxying Datagram Format Type (i) = UDP_WITH_COMPRESSED_CID,
+  Context ID (i),
+  UDP Payload with Compressed QUIC Connection ID (..),
+}
+~~~
+{: #ex-dgram-dyn title="Example: Format of UDP Payload with Compressed CID"}
+
+The extension would also define a new capsule type
+(REGISTER_COMPRESSED_QUIC_CID) that includes a context ID value and the
+connection ID to compress. Endpoints that understand this new capsule type would
+be able to consequently handle and parse datagrams on the context ID, while all
+other endpoints would ignore the datagrams.
+
+~~~
+REGISTER_COMPRESSED_QUIC_CID Capsule {
+  Type (i) = REGISTER_COMPRESSED_QUIC_CID,
+  Length (i),
+  Context ID (i),
+  QUIC Connection ID (..),
+}
+~~~
+{: #ex-capsule title="Example: Registration via capsule"}
+
+
+## Composing Extensions
+
+A future extension could define how to compose extensions. For example, it could
+define a new HTTP header and/or capsule that maps a new datagram format type to
+a list of extensions.
+
 
 # Acknowledgments {#acknowledgments}
 {:numbered="false"}
