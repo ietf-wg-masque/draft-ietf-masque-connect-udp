@@ -279,7 +279,7 @@ but not required.
 # HTTP Datagram Payload Format {#format}
 
 When associated with UDP proxying request streams, the HTTP Datagram Payload
-field of HTTP Datagrams (see {{HTTP-DGRAM}}) carries the following semantics:
+field of HTTP Datagrams (see {{HTTP-DGRAM}}) has the following format:
 
 ~~~
 UDP Proxying HTTP Datagram Payload {
