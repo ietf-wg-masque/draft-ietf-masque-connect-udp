@@ -288,7 +288,7 @@ associated with UDP Proxying request streams start with a context ID, see
 Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). The context ID value of
 zero is reserved for UDP payloads, while non-zero values are dynamically
 allocated: non-zero even-numbered context IDs are client-initiated, and
-odd-numbered context IDs are server-initiated. Extensions can use the next
+odd-numbered context IDs are server-initiated. Extensions can use any
 available context ID for their own purposes. Note that, once allocated, any
 context ID can be used by both client and server - only allocation carries
 separate namespaces to avoid requiring synchronization. Additionally, note that
