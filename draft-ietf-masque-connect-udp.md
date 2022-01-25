@@ -285,17 +285,18 @@ separate from UDP payloads. In order to accomplish this, all HTTP Datagrams
 associated with UDP Proxying request streams start with a context ID, see
 {{format}}.
 
-Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1) using the variable-length defined in {{Section ?? of QUIC}}. The context ID value of
-0 is reserved for UDP payloads, while non-zero values are dynamically
-allocated: non-zero even-numbered context IDs are client-initiated, and
-odd-numbered context IDs are server-initiated. Implementations will provide a
-context ID allocation service. That service will allow extensions to request a
-unique context ID that they can subsequently use for their own purposes. This
-means that an HTTP client implementation of the context ID allocation service
-MUST only provide even-numbered IDs, while a server implementation MUST only
-provide odd-numbered IDs. The context allocation service MUST NOT return the
-same context ID twice. Note that, once allocated, any context ID can be used by
-both client and server - only allocation carries separate namespaces to avoid
+Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). Context IDs are encoded
+as variable-length integers, see {{Section 16 of QUIC}}. The context ID value of
+0 is reserved for UDP payloads, while non-zero values are dynamically allocated:
+non-zero even-numbered context IDs are client-initiated, and odd-numbered
+context IDs are server-initiated. Implementations will provide a context ID
+allocation service. That service will allow extensions to request a unique
+context ID that they can subsequently use for their own purposes. This means
+that an HTTP client implementation of the context ID allocation service MUST
+only provide even-numbered IDs, while a server implementation MUST only provide
+odd-numbered IDs. The context allocation service MUST NOT return the same
+context ID twice. Note that, once allocated, any context ID can be used by both
+client and server - only allocation carries separate namespaces to avoid
 requiring synchronization. Additionally, note that the context ID namespace is
 tied to a given HTTP request: it is possible for the same numeral context ID to
 be used simultaneously in distinct requests, potentially with different
@@ -455,21 +456,22 @@ endpoint.
 
 As an example, take an extension that conveys the time at which a UDP
 packet was received. The extension would first define the format of its HTTP
-Datagram Context Payload field:
+Datagram Payload field:
 
 ~~~
-Context Payload for UDP with Timestamp {
+UDP with Timestamp HTTP Datagrams {
+  Context ID (i),
   Timestamp (64),
   UDP Payload (..),
 }
 ~~~
 {: #ex-dgram title="Example: Format of UDP Payload with Timestamp"}
 
-The extension would also define a new HTTP header (UDP-Timestamps) that includes
-a context ID value. Servers that understand this new HTTP header would be able
-to consequently handle and parse datagrams on the context ID, while all other
-servers would silently drop the datagrams. Clients also indicate their support
-for receiving on this Context ID by registering it.
+The extension would also define a new HTTP header (Example-UDP-Timestamps) that
+includes a context ID value. Servers that understand this new HTTP header would
+be able to consequently handle and parse datagrams on the context ID, while all
+other servers would silently drop the datagrams. Clients also indicate their
+support for receiving on this Context ID by registering it.
 
 ~~~
 HEADERS
@@ -478,7 +480,7 @@ HEADERS
 :scheme = https
 :path = /192.0.2.42/443/
 :authority = proxy.example.org
-udp-timestamps = 42
+example-udp-timestamps = 42
 ~~~
 {: #ex-hdr title="Example: Registration via header"}
 
@@ -492,20 +494,20 @@ timestamp.
 Extensions can define a new Capsule type (see {{HTTP-DGRAM}}) to register a
 context ID with the peer endpoint.
 
-As an example, let's use an extension that compresses QUIC Connection IDs when
-the client is running QUIC over a UDP proxying tunnel. The extension would first
+As an example, take an extension that compresses QUIC Connection IDs when the
+client is running QUIC over a UDP proxying tunnel. The extension would first
 define the transform applied to UDP payloads when compressing and decompressing,
 such as removing the bytes of the connection ID.
 
 The extension would also define a new capsule type
-(REGISTER_COMPRESSED_QUIC_CID) that includes a context ID value and the
+(EXAMPLE_REGISTER_COMPRESSED_QUIC_CID) that includes a context ID value and the
 connection ID to compress. Endpoints that understand this new capsule type would
 be able to consequently handle and parse datagrams on the context ID, while all
 other endpoints would ignore the datagrams.
 
 ~~~
-REGISTER_COMPRESSED_QUIC_CID Capsule {
-  Type (i) = REGISTER_COMPRESSED_QUIC_CID,
+EXAMPLE_REGISTER_COMPRESSED_QUIC_CID Capsule {
+  Type (i) = EXAMPLE_REGISTER_COMPRESSED_QUIC_CID,
   Length (i),
   Context ID (i),
   QUIC Connection ID (..),
