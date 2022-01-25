@@ -304,15 +304,20 @@ semantics in distinct requests, potentially with different semantics.
 
 Registration is the action by which an endpoint informs its peer of the
 semantics and format of a given context ID.
+This document does not define how registration occurs, though some examples of
+how it might occur are provided in {{example-extensions}}.
+Depending on the method being used, it is possible for datagrams to be received with
+Context IDs which have not yet been registered, for instance due to a race
+condition in the arrival of the datagram and the registration.
 
 
 # HTTP Datagram Payload Format {#format}
 
 When associated with UDP proxying request streams, the HTTP Datagram Payload
-field of HTTP Datagrams (see {{HTTP-DGRAM}}) has the format in {{dgram-format}}.
+field of HTTP Datagrams (see {{HTTP-DGRAM}}) has the format defined in {{dgram-format}}.
 Note that when HTTP Datagrams are encoded using QUIC DATAGRAM frames, the
-Context ID field below directly follows the Quarter Stream ID field which is at
-the start of the QUIC DATAGRAM frame payload.
+Context ID field defined below directly follows the Quarter Stream ID field which is at
+the start of the QUIC DATAGRAM frame payload:
 
 ~~~
 UDP Proxying HTTP Datagram Payload {
@@ -472,7 +477,7 @@ UDP with Timestamp HTTP Datagrams {
 
 The extension would also define a new HTTP header (Example-UDP-Timestamps) that
 includes a context ID value. Servers that understand this new HTTP header would
-be able to consequently handle and parse datagrams on the context ID, while all
+be able to consequently handle and parse datagrams with the context ID, while all
 other servers would silently drop the datagrams. Clients also indicate their
 support for receiving on this Context ID by registering it.
 
