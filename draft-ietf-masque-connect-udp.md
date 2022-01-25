@@ -482,8 +482,13 @@ UDP with Timestamp HTTP Datagrams {
 The extension would also define a new HTTP header (Example-UDP-Timestamps) that
 includes a context ID value. Servers that understand this new HTTP header would
 be able to consequently handle and parse datagrams with the context ID, while all
-other servers would silently drop the datagrams. Clients also indicate their
-support for receiving on this Context ID by registering it.
+other servers would silently drop the datagrams.
+
+This specific extension would restrict registrations to the client, and have
+them be bidirectional in the sense that the client registering a context ID also
+indicates support for receiving on it. Other extensions could allow server
+registrations, and/or unidirectional registrations in the sense that
+registration would only imply usage in one direction.
 
 ~~~
 HEADERS
