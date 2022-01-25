@@ -285,22 +285,21 @@ separate from UDP payloads. In order to accomplish this, all HTTP Datagrams
 associated with UDP Proxying request streams start with a context ID, see
 {{format}}.
 
-Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). Context IDs are encoded
-as variable-length integers, see {{Section 16 of QUIC}}. The context ID value of
-0 is reserved for UDP payloads, while non-zero values are dynamically allocated:
-non-zero even-numbered context IDs are client-allocated, and odd-numbered
-context IDs are server-allocated. Implementations will provide a context ID
-allocation service. That service will allow extensions to request a unique
-context ID that they can subsequently use for their own purposes. This means
-that an HTTP client implementation of the context ID allocation service MUST
-only provide even-numbered IDs, while a server implementation MUST only provide
-odd-numbered IDs. The context allocation service MUST NOT return the same
-context ID twice, however it MAY return IDs in any order. Once allocated, any
-context ID can be used by both client and server - only allocation carries
-separate namespaces to avoid requiring synchronization. Additionally, note that
-the context ID namespace is tied to a given HTTP request: it is possible for a
-context ID with the same numeric value to be simultaneously assigned different
-semantics in distinct requests, potentially with different semantics.
+Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). Context IDs
+are encoded as variable-length integers, see {{Section 16 of
+QUIC}}. The context ID value of 0 is reserved for UDP payloads, while
+non-zero values are dynamically allocated: non-zero even-numbered
+context IDs are client-allocated, and odd-numbered context IDs are
+server-allocated. The context ID namespace is tied to a given HTTP
+request: it is possible for a context ID with the same numeric value
+to be simultaneously assigned different semantics in distinct
+requests, potentially with different semantics.  Context IDs must not
+be re-allocated within a given HTTP namespace but MAY be allocated in
+any order. Once allocated, any context ID can be used by both client
+and server - only allocation carries separate namespaces to avoid
+requiring synchronization.
+[Optional: Implementations are responsible for arbitrating requests
+for context IDs from multiple extensions.]
 
 Registration is the action by which an endpoint informs its peer of the
 semantics and format of a given context ID. This document does not define how
