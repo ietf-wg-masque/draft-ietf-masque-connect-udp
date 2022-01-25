@@ -298,8 +298,6 @@ be re-allocated within a given HTTP namespace but MAY be allocated in
 any order. Once allocated, any context ID can be used by both client
 and server - only allocation carries separate namespaces to avoid
 requiring synchronization.
-[Optional: Implementations are responsible for arbitrating requests
-for context IDs from multiple extensions.]
 
 Registration is the action by which an endpoint informs its peer of the
 semantics and format of a given context ID. This document does not define how
