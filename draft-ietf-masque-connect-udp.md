@@ -285,8 +285,8 @@ separate from UDP payloads. In order to accomplish this, all HTTP Datagrams
 associated with UDP Proxying request streams start with a context ID, see
 {{format}}.
 
-Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). The context ID value of
-zero is reserved for UDP payloads, while non-zero values are dynamically
+Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1) using the variable-length defined in {{Section ?? of QUIC}}. The context ID value of
+0 is reserved for UDP payloads, while non-zero values are dynamically
 allocated: non-zero even-numbered context IDs are client-initiated, and
 odd-numbered context IDs are server-initiated. Implementations will provide a
 context ID allocation service. That service will allow extensions to request a
@@ -453,7 +453,7 @@ peer.
 Extensions can define a new HTTP header to register a context ID with the peer
 endpoint.
 
-As an example, let's use an extension that conveys the time at which a UDP
+As an example, take an extension that conveys the time at which a UDP
 packet was received. The extension would first define the format of its HTTP
 Datagram Context Payload field:
 
