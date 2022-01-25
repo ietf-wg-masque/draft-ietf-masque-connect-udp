@@ -303,21 +303,21 @@ context ID with the same numeric value to be simultaneously assigned different
 semantics in distinct requests, potentially with different semantics.
 
 Registration is the action by which an endpoint informs its peer of the
-semantics and format of a given context ID.
-This document does not define how registration occurs, though some examples of
-how it might occur are provided in {{example-extensions}}.
-Depending on the method being used, it is possible for datagrams to be received with
-Context IDs which have not yet been registered, for instance due to a race
-condition in the arrival of the datagram and the registration.
+semantics and format of a given context ID. This document does not define how
+registration occurs, though some examples of how it might occur are provided in
+{{example-extensions}}. Depending on the method being used, it is possible for
+datagrams to be received with Context IDs which have not yet been registered,
+for instance due to reordering of the datagram and the registration packets
+during transmission.
 
 
 # HTTP Datagram Payload Format {#format}
 
 When associated with UDP proxying request streams, the HTTP Datagram Payload
-field of HTTP Datagrams (see {{HTTP-DGRAM}}) has the format defined in {{dgram-format}}.
-Note that when HTTP Datagrams are encoded using QUIC DATAGRAM frames, the
-Context ID field defined below directly follows the Quarter Stream ID field which is at
-the start of the QUIC DATAGRAM frame payload:
+field of HTTP Datagrams (see {{HTTP-DGRAM}}) has the format defined in
+{{dgram-format}}. Note that when HTTP Datagrams are encoded using QUIC DATAGRAM
+frames, the Context ID field defined below directly follows the Quarter Stream
+ID field which is at the start of the QUIC DATAGRAM frame payload:
 
 ~~~
 UDP Proxying HTTP Datagram Payload {
@@ -523,13 +523,8 @@ EXAMPLE_REGISTER_COMPRESSED_QUIC_CID Capsule {
 ~~~
 {: #ex-capsule title="Example: Registration via capsule"}
 
-
-## Composing Extensions
-
-A future extension could define how to compose extensions. For example, it could
-define a new HTTP header and/or capsule that maps a context ID to a list of
-extensions. That allows the sender to pick low context IDs for the combinations
-that it knows it will be sending often.
+This example extension would most likely also define a new HTTP header to
+indicate support.
 
 
 # Acknowledgments {#acknowledgments}
