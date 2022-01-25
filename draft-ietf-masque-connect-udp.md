@@ -331,8 +331,8 @@ Context ID:
 
 : A variable-length integer that contains the value of the Context ID. If an
 HTTP/3 datagram which carries an unknown Context ID is received, the receiver
-SHALL either drop that datagram silently or buffer it temporarily while awaiting
-the registration of the corresponding Context ID.
+SHALL either drop that datagram silently or buffer it temporarily (on the order
+of a round trip) while awaiting the registration of the corresponding Context ID.
 
 Payload:
 
