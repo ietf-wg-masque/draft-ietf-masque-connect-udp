@@ -295,12 +295,12 @@ context ID that they can subsequently use for their own purposes. This means
 that an HTTP client implementation of the context ID allocation service MUST
 only provide even-numbered IDs, while a server implementation MUST only provide
 odd-numbered IDs. The context allocation service MUST NOT return the same
-context ID twice. Note that, once allocated, any context ID can be used by both
-client and server - only allocation carries separate namespaces to avoid
-requiring synchronization. Additionally, note that the context ID namespace is
-tied to a given HTTP request: it is possible for the same numeral context ID to
-be used simultaneously in distinct requests, potentially with different
-semantics.
+context ID twice. Once allocated, any context ID can be used by both client and
+server - only allocation carries separate namespaces to avoid requiring
+synchronization. Additionally, note that the context ID namespace is tied to a
+given HTTP request: it is possible for a context ID with the same numeric value
+to be simultaneously assigned different semantics in distinct requests,
+potentially with different semantics.
 
 Registration is the action by which an endpoint informs its peer of the
 semantics and format of a given context ID.
