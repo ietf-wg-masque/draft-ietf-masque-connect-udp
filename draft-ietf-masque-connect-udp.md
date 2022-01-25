@@ -456,6 +456,10 @@ extension can then have an endpoint pick an available context ID using the
 allocation service ({{context-id}}) and register that context ID with their
 peer.
 
+Note that this appendix only exists to help illustrate MASQUE Working Group
+discussions while designing extensions. This appendix will be removed before
+MASQUE Working Group Last Call.
+
 
 ## Registering Contexts with Headers
 
