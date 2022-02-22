@@ -335,7 +335,7 @@ Payload:
 field. Note that this field can be empty.
 
 UDP packets are encoded using HTTP Datagrams with the Context ID set to zero.
-When the Context ID is set to zero, the Context Payload field contains the
+When the Context ID is set to zero, the Payload field contains the
 unmodified payload of a UDP packet (referred to as "data octets" in {{UDP}}).
 
 Clients MAY optimistically start sending proxied UDP packets before receiving
