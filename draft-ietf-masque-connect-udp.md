@@ -2,6 +2,7 @@
 title: UDP Proxying Support for HTTP
 abbrev: HTTP UDP CONNECT
 docname: draft-ietf-masque-connect-udp-latest
+submissiontype: IETF
 category: std
 wg: MASQUE
 
@@ -413,8 +414,6 @@ TCP SYN-ACK before the proxy can send it application data. UDP doesn't have
 this property, so a UDP proxy could send more data to an unwilling target than
 a CONNECT proxy. However, in practice denial of service attacks target open TCP
 ports so the TCP SYN-ACK does not offer much protection in real scenarios.
-Proxies MUST NOT introspect the contents of UDP payloads as that would lead to
-ossification of UDP-based protocols by proxies.
 
 
 # IANA Considerations {#iana}
