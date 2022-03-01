@@ -22,12 +22,6 @@ author:
     country: "United States of America"
     email: dschinazi.ietf@gmail.com
 
-normative:
-  MESSAGING: I-D.ietf-httpbis-messaging
-  SEMANTICS: I-D.ietf-httpbis-semantics
-
-informative:
-  BEHAVE: RFC4787
 
 --- abstract
 
@@ -41,28 +35,25 @@ proxy UDP. It is built using HTTP Extended CONNECT.
 # Introduction {#introduction}
 
 This document describes how to proxy UDP over HTTP. Similar to how the CONNECT
-method (see {{Section 9.3.6 of SEMANTICS}}) allows proxying TCP {{!TCP=RFC0793}}
-over HTTP, this document defines a new mechanism to proxy UDP {{!UDP=RFC0768}}.
+method (see {{Section 9.3.6 of !HTTP=I-D.ietf-httpbis-semantics}}) allows
+proxying TCP {{!TCP=RFC0793}} over HTTP, this document defines a new mechanism
+to proxy UDP {{!UDP=RFC0768}}.
 
 UDP Proxying supports all versions of HTTP and uses HTTP Datagrams
 {{!HTTP-DGRAM=I-D.ietf-masque-h3-datagram}}. When using HTTP/2 or HTTP/3, UDP
 proxying uses HTTP Extended CONNECT as described in {{!EXT-CONNECT2=RFC8441}}
 and {{!EXT-CONNECT3=I-D.ietf-httpbis-h3-websockets}}. When using HTTP/1.x, UDP
-proxying uses HTTP Upgrade as defined in {{Section 7.8 of SEMANTICS}}.
+proxying uses HTTP Upgrade as defined in {{Section 7.8 of HTTP}}.
 
 
 ## Conventions and Definitions {#conventions}
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
-"SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}}
-when, and only when, they appear in all capitals, as shown here.
+{::boilerplate bcp14-tagged}
 
-In this document, we use the term "proxy" to refer to the HTTP server that
-opens the UDP socket and responds to the UDP proxying request. If there are
-HTTP intermediaries (as defined in {{Section 3.7 of SEMANTICS}}) between the
-client and the proxy, those are referred to as "intermediaries" in this
-document.
+In this document, we use the term "proxy" to refer to the HTTP server that opens
+the UDP socket and responds to the UDP proxying request. If there are HTTP
+intermediaries (as defined in {{Section 3.7 of HTTP}}) between the client and
+the proxy, those are referred to as "intermediaries" in this document.
 
 Note that, when the HTTP version in use does not support multiplexing streams
 (such as HTTP/1.1), any reference to "stream" in this document represents the
@@ -147,7 +138,7 @@ operating system that its socket is no longer usable, it MUST close the request
 stream. Proxies MAY choose to close sockets due to a period of inactivity, but
 they MUST close the request stream when closing the socket. Proxies that close
 sockets after a period of inactivity SHOULD NOT use a period lower than two
-minutes, see {{Section 4.3 of BEHAVE}}.
+minutes, see {{Section 4.3 of ?BEHAVE=RFC4787}}.
 
 A successful response (as defined in {{resp1}} and {{resp23}}) indicates that
 the proxy has opened a socket to the requested target and is willing to proxy
@@ -167,7 +158,7 @@ When using HTTP/1.1, a UDP proxying request will meet the following requirements
 * the method SHALL be "CONNECT".
 
 * the request-target SHALL use absolute-form (see {{Section 3.2.2 of
-  MESSAGING}}).
+  !H1=I-D.draft-ietf-httpbis-messaging}}).
 
 * the request SHALL include a single Host header containing the origin of the
   proxy.
@@ -219,8 +210,9 @@ Upgrade: connect-udp
 
 ## HTTP Request over HTTP/2 and HTTP/3 {#req23}
 
-When using HTTP/2 {{!H2=RFC7540}} or HTTP/3 {{!H3=I-D.ietf-quic-http}}, UDP
-proxying requests use HTTP pseudo-headers with the following requirements:
+When using HTTP/2 {{!H2=I-D.draft-ietf-httpbis-http2bis}} or HTTP/3
+{{!H3=I-D.ietf-quic-http}}, UDP proxying requests use HTTP pseudo-headers with
+the following requirements:
 
 * The ":method" pseudo-header field SHALL be "CONNECT".
 
@@ -233,7 +225,7 @@ proxying requests use HTTP pseudo-headers with the following requirements:
   template expansion process has been completed.
 
 A UDP proxying request that does not conform to these restrictions is
-malformed (see {{Section 8.1.2.6 of H2}}).
+malformed (see {{Section 8.1.1 of H2}}).
 
 For example, if the client is configured with URI template
 "https://proxy.example.org/{target_host}/{target_port}/" and wishes to open a
@@ -390,23 +382,23 @@ QUIC DATAGRAM frame.
 ## MTU Considerations
 
 When using HTTP/3 with the QUIC Datagram extension
-{{!DGRAM=I-D.ietf-quic-datagram}}, UDP payloads are transmitted in QUIC
-DATAGRAM frames. Since those cannot be fragmented, they can only carry payloads
-up to a given length determined by the QUIC connection configuration and the
-path MTU. If a proxy is using QUIC DATAGRAM frames and it receives a UDP
-payload from the target that will not fit inside a QUIC DATAGRAM frame, the
-proxy SHOULD NOT send the UDP payload in a DATAGRAM capsule, as that defeats
-the end-to-end unreliability characteristic that methods such as Datagram
-Packetization Layer Path MTU Discovery (DPLPMTUD) depend on {{?RFC8899}}. In
-this scenario, the proxy SHOULD drop the UDP payload and send an ICMP "Packet
-Too Big" message to the target {{?RFC4443}}.
+{{!DGRAM=I-D.ietf-quic-datagram}}, UDP payloads are transmitted in QUIC DATAGRAM
+frames. Since those cannot be fragmented, they can only carry payloads up to a
+given length determined by the QUIC connection configuration and the path MTU.
+If a proxy is using QUIC DATAGRAM frames and it receives a UDP payload from the
+target that will not fit inside a QUIC DATAGRAM frame, the proxy SHOULD NOT send
+the UDP payload in a DATAGRAM capsule, as that defeats the end-to-end
+unreliability characteristic that methods such as Datagram Packetization Layer
+Path MTU Discovery (DPLPMTUD) depend on {{?DPLPMTUD=RFC8899}}. In this scenario,
+the proxy SHOULD drop the UDP payload and send an ICMP "Packet Too Big" message
+to the target {{?ICMP6=RFC4443}}.
 
 
 ## Tunneling of ECN Marks
 
-UDP proxying does not create an IP-in-IP tunnel, so the guidance in {{?RFC6040}}
-about transferring ECN marks between inner and outer IP headers does not apply.
-There is no inner IP header in UDP proxying tunnels.
+UDP proxying does not create an IP-in-IP tunnel, so the guidance in
+{{?ECN-TUNNEL=RFC6040}} about transferring ECN marks between inner and outer IP
+headers does not apply. There is no inner IP header in UDP proxying tunnels.
 
 Note that UDP proxying clients do not have the ability in this specification to
 control the ECN codepoints on UDP packets the proxy sends to the server, nor can
