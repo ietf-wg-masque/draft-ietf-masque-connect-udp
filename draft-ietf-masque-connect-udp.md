@@ -145,9 +145,9 @@ The lifetime of the socket is tied to the request stream. The proxy MUST keep
 the socket open while the request stream is open. If a proxy is notified by its
 operating system that its socket is no longer usable, it MUST close the request
 stream. Proxies MAY choose to close sockets due to a period of inactivity, but
-they MUST close the request stream before closing the socket. Proxies that
-close sockets after a period of inactivity SHOULD NOT use a period lower than
-two minutes, see {{Section 4.3 of BEHAVE}}.
+they MUST close the request stream when closing the socket. Proxies that close
+sockets after a period of inactivity SHOULD NOT use a period lower than two
+minutes, see {{Section 4.3 of BEHAVE}}.
 
 A successful response (as defined in {{resp1}} and {{resp23}}) indicates that
 the proxy has opened a socket to the requested target and is willing to proxy
