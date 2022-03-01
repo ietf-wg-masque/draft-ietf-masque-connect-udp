@@ -369,9 +369,10 @@ disabled congestion control.
 
 When the protocol running over UDP that is being proxied uses loss recovery
 (e.g., {{QUIC}}), and the underlying HTTP connection runs over TCP, the proxied
-traffic will incur at least two nested loss recovery mechanisms. This can
-reduce performance as both can sometimes independently retransmit the same
-data. To avoid this, HTTP/3 datagrams SHOULD be used.
+traffic will incur at least two nested loss recovery mechanisms. This can reduce
+performance as both can sometimes independently retransmit the same data. To
+avoid this, UDP proxying SHOULD be performed over HTTP/3 to allow leveraging the
+QUIC DATAGRAM frame.
 
 
 ## MTU Considerations
