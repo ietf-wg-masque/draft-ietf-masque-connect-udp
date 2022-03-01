@@ -154,6 +154,11 @@ the proxy has opened a socket to the requested target and is willing to proxy
 UDP payloads. Any response other than a successful response indicates that the
 request has failed, and the client MUST therefore abort the request.
 
+Proxies MUST NOT introduce fragmentation at the IP layer when forwarding HTTP
+Datagrams onto a UDP socket. In IPv4, the Don't Fragment (DF) bit MUST be set if
+possible, to prevent fragmentation on the path. Future extensions MAY remove
+these requirements.
+
 
 ## HTTP Request over HTTP/1.1 {#req1}
 
