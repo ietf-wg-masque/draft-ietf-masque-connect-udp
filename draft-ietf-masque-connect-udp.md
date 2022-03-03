@@ -134,11 +134,13 @@ discarded by the proxy.
 
 The lifetime of the socket is tied to the request stream. The proxy MUST keep
 the socket open while the request stream is open. If a proxy is notified by its
-operating system that its socket is no longer usable, it MUST close the request
-stream. Proxies MAY choose to close sockets due to a period of inactivity, but
-they MUST close the request stream when closing the socket. Proxies that close
-sockets after a period of inactivity SHOULD NOT use a period lower than two
-minutes, see {{Section 4.3 of ?BEHAVE=RFC4787}}.
+operating system that its socket is no longer usable (for example, this can
+happen when an ICMP "Destination Unreachable" message is received, see {{Section
+3.1 of ?ICMP6=RFC4443}}), it MUST close the request stream. Proxies MAY choose
+to close sockets due to a period of inactivity, but they MUST close the request
+stream when closing the socket. Proxies that close sockets after a period of
+inactivity SHOULD NOT use a period lower than two minutes, see {{Section 4.3 of
+?BEHAVE=RFC4787}}.
 
 A successful response (as defined in {{resp1}} and {{resp23}}) indicates that
 the proxy has opened a socket to the requested target and is willing to proxy
@@ -391,7 +393,7 @@ the UDP payload in a DATAGRAM capsule, as that defeats the end-to-end
 unreliability characteristic that methods such as Datagram Packetization Layer
 Path MTU Discovery (DPLPMTUD) depend on {{?DPLPMTUD=RFC8899}}. In this scenario,
 the proxy SHOULD drop the UDP payload and send an ICMP "Packet Too Big" message
-to the target {{?ICMP6=RFC4443}}.
+to the target, see {{Section 3.2 of ICMP6}}.
 
 
 ## Tunneling of ECN Marks
