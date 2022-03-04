@@ -545,6 +545,10 @@ indicate support.
 
 This document is a product of the MASQUE Working Group, and the author thanks
 all MASQUE enthusiasts for their contibutions. This proposal was inspired
-directly or indirectly by prior work from many people. In particular, the
-author would like to thank Eric Rescorla for suggesting to use an HTTP method
-to proxy UDP. Thanks to Lucas Pardue for their inputs on this document.
+directly or indirectly by prior work from many people. In particular, the author
+would like to thank Eric Rescorla for suggesting to use an HTTP method to proxy
+UDP. Thanks to Lucas Pardue for their inputs on this document. The extensibility
+design in this document came out of the HTTP Datagrams Design Team, whose
+members were Alan Frindell, Alex Chernyakhovsky, Ben Schwartz, Eric Rescorla,
+Lucas Pardue, Marcus Ihlar, Martin Thomson, Mike Bishop, Tommy Pauly, Victor
+Vasiliev, and the author of this document.
