@@ -89,8 +89,8 @@ interoperability with such clients.
 This document defines the "connect-udp" HTTP Upgrade Token. "connect-udp" uses
 the Capsule Protocol as defined in {{HTTP-DGRAM}}.
 
-A "connect-udp" request requests that the recipient establish a tunnel over a
-single HTTP stream to the destination target server identified by the
+A "connect-udp" request requests that the recipient proxy establish a tunnel
+over a single HTTP stream to the destination target identified by the
 "target_host" and "target_port" variables of the URI template (see
 {{client-config}}). If the request is successful, the proxy commits to
 converting received HTTP Datagrams into UDP packets and vice versa until the
@@ -293,12 +293,12 @@ Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). Context IDs are encoded
 as variable-length integers, see {{Section 16 of QUIC}}. The context ID value of
 0 is reserved for UDP payloads, while non-zero values are dynamically allocated:
 non-zero even-numbered context IDs are client-allocated, and odd-numbered
-context IDs are server-allocated. The context ID namespace is tied to a given
+context IDs are proxy-allocated. The context ID namespace is tied to a given
 HTTP request: it is possible for a context ID with the same numeric value to be
 simultaneously assigned different semantics in distinct requests, potentially
 with different semantics. Context IDs MUST NOT be re-allocated within a given
 HTTP namespace but MAY be allocated in any order. Once allocated, any context ID
-can be used by both client and server - only allocation carries separate
+can be used by both client and proxy - only allocation carries separate
 namespaces to avoid requiring synchronization.
 
 Registration is the action by which an endpoint informs its peer of the
@@ -484,13 +484,13 @@ UDP with Timestamp HTTP Datagrams {
 {: #ex-dgram title="Example: Format of UDP Payload with Timestamp"}
 
 The extension would also define a new HTTP header (Example-UDP-Timestamps) that
-includes a context ID value. Servers that understand this new HTTP header would
+includes a context ID value. Proxies that understand this new HTTP header would
 be able to consequently handle and parse datagrams with the context ID, while all
-other servers would silently drop the datagrams.
+other proxies would silently drop the datagrams.
 
 This specific extension would restrict registrations to the client, and have
 them be bidirectional in the sense that the client registering a context ID also
-indicates support for receiving on it. Other extensions could allow server
+indicates support for receiving on it. Other extensions could allow proxy
 registrations, and/or unidirectional registrations in the sense that
 registration would only imply usage in one direction.
 
