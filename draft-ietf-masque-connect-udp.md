@@ -403,19 +403,19 @@ UDP proxying does not create an IP-in-IP tunnel, so the guidance in
 headers does not apply. There is no inner IP header in UDP proxying tunnels.
 
 Note that UDP proxying clients do not have the ability in this specification to
-control the ECN codepoints on UDP packets the proxy sends to the server, nor can
-proxies communicate the markings of each UDP packet from server to proxy.
+control the ECN codepoints on UDP packets the proxy sends to the target, nor can
+proxies communicate the markings of each UDP packet from target to proxy.
 
 A UDP proxy MUST ignore ECN bits in the IP header of UDP packets received from
-the server, and MUST set the ECN bits to Not-ECT on UDP packets it sends to the
-server. These do not relate to the ECN markings of packets sent between client
+the target, and MUST set the ECN bits to Not-ECT on UDP packets it sends to the
+target. These do not relate to the ECN markings of packets sent between client
 and proxy in any way.
 
 
 # Security Considerations {#security}
 
 There are significant risks in allowing arbitrary clients to establish a tunnel
-to arbitrary servers, as that could allow bad actors to send traffic and have
+to arbitrary targets, as that could allow bad actors to send traffic and have
 it attributed to the proxy. Proxies that support UDP proxying SHOULD restrict
 its use to authenticated users.
 
