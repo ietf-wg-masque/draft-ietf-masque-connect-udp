@@ -171,7 +171,7 @@ these requirements.
 
 When using HTTP/1.1, a UDP proxying request will meet the following requirements:
 
-* the method SHALL be "CONNECT".
+* the method SHALL be "GET".
 
 * the request-target SHALL use absolute-form (see {{Section 3.2.2 of
   !H1=I-D.draft-ietf-httpbis-messaging}}).
@@ -189,7 +189,7 @@ UDP proxying tunnel to target 192.0.2.42:443, it could send the following
 request:
 
 ~~~
-CONNECT https://proxy.example.org/192.0.2.42/443/ HTTP/1.1
+GET https://proxy.example.org/192.0.2.42/443/ HTTP/1.1
 Host: proxy.example.org
 Connection: upgrade
 Upgrade: connect-udp
