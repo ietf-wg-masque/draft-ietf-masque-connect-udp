@@ -63,8 +63,8 @@ entire connection.
 # Configuration of Clients {#client-config}
 
 Clients are configured to use UDP Proxying over HTTP via an URI Template
-{{!TEMPLATE=RFC6570}}. The URI template MUST contain exactly two variables:
-"target_host" and "target_port". Examples are shown below:
+{{!TEMPLATE=RFC6570}} with the variables "target_host" and "target_port".
+Examples are shown below:
 
 ~~~
 https://masque.example.org/{target_host}/{target_port}/
@@ -72,6 +72,20 @@ https://proxy.example.org:4443/masque?h={target_host}&p={target_port}
 https://proxy.example.org:4443/masque{?target_host,target_port}
 ~~~
 {: #fig-template-examples title="URI Template Examples"}
+
+The URI template MUST be a level 3 template or lower. The URI template MUST be
+in absolute form, and MUST include non-empty scheme, authority and path
+components. The path component of the URI template MUST start with a slash "/".
+All template variables MUST be within the path component of the URI. The URI
+template MUST contain the two variables "target_host" and "target_port" and MAY
+contain other variables. The URI template MUST NOT contain any non-ASCII unicode
+characters and MUST only contain ASCII characters in the range 0x21-0x7E
+inclusive (note that percent-encoding is allowed). The URI template MUST NOT use
+Reserved Expansion ("+" operator), Fragment Expansion ("#" operator), Label
+Expansion with Dot-Prefix, Path Segment Expansion with Slash-Prefix, nor
+Path-Style Parameter Expansion with Semicolon-Prefix. If any of the requirements
+above are not met by a URI template, the client MUST reject its configuration
+and fail the request without sending it to the proxy.
 
 Since the original HTTP CONNECT method allowed conveying the target host and
 port but not the scheme, proxy authority, path, nor query, there exist proxy
