@@ -67,7 +67,7 @@ Clients are configured to use UDP Proxying over HTTP via an URI Template
 Examples are shown below:
 
 ~~~
-https://masque.example.org/{target_host}/{target_port}/
+https://masque.example.org/.well-known/masque/udp/{target_host}/{target_port}/
 https://proxy.example.org:4443/masque?h={target_host}&p={target_port}
 https://proxy.example.org:4443/masque{?target_host,target_port}
 ~~~
@@ -92,10 +92,11 @@ port but not the scheme, proxy authority, path, nor query, there exist proxy
 configuration interfaces that only allow the user to configure the proxy host
 and the proxy port. Client implementations of this specification that are
 constrained by such limitations MUST use the default template which is defined
-as: "https://$PROXY_HOST:$PROXY_PORT/{target_host}/{target_port}/" where
-$PROXY_HOST and $PROXY_PORT are the configured host and port of the proxy
-respectively. Proxy deployments SHOULD use the default template to facilitate
-interoperability with such clients.
+as:
+"https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/"
+where $PROXY_HOST and $PROXY_PORT are the configured host and port of the
+proxy respectively. Proxy deployments SHOULD use the default template to
+facilitate interoperability with such clients.
 
 
 # HTTP Exchanges
@@ -184,12 +185,13 @@ When using HTTP/1.1, a UDP proxying request will meet the following requirements
 * the request SHALL include a single "Upgrade" header with value "connect-udp".
 
 For example, if the client is configured with URI template
-"https://proxy.example.org/{target_host}/{target_port}/" and wishes to open a
+"https://proxy.example.org/.well-known/masque/udp/{target_host}/{target_port}/"
+and wishes to open a
 UDP proxying tunnel to target 192.0.2.42:443, it could send the following
 request:
 
 ~~~
-GET https://proxy.example.org/192.0.2.42/443/ HTTP/1.1
+GET https://proxy.example.org/.well-known/masque/udp/192.0.2.42/443/ HTTP/1.1
 Host: proxy.example.org
 Connection: upgrade
 Upgrade: connect-udp
@@ -253,7 +255,7 @@ HEADERS
 :method = CONNECT
 :protocol = connect-udp
 :scheme = https
-:path = /192.0.2.42/443/
+:path = /.well-known/masque/udp/192.0.2.42/443/
 :authority = proxy.example.org
 ~~~
 {: #fig-req-h2 title="Example HTTP Request over HTTP/2"}
@@ -445,8 +447,8 @@ ports so the TCP SYN-ACK does not offer much protection in real scenarios.
 
 ## HTTP Upgrade Token {#iana-upgrade}
 
-This document will request IANA to register "connect-udp" in the
-HTTP Upgrade Token Registry maintained at
+This document will request IANA to register "connect-udp" in the HTTP Upgrade
+Token Registry maintained at
 <[](https://www.iana.org/assignments/http-upgrade-tokens)>.
 
 Value:
@@ -455,15 +457,43 @@ Value:
 
 Description:
 
-: Proxying of UDP Payloads.
+: Proxying of UDP Payloads
 
 Expected Version Tokens:
 
-: None.
+: None
 
 Reference:
 
-: This document.
+: This document
+
+
+## Well-Known URI {#iana-uri}
+
+This document will request IANA to register "masque/udp" in the Well-Known URIs
+Registry maintained at
+<[](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml)>.
+
+URI Suffix:
+
+: masque/udp
+
+Change Controller:
+
+: IETF
+
+Reference:
+
+: This document
+
+Status:
+
+: permanent (if this document is approved)
+
+Related Information:
+
+: Includes all resources identified with the path prefix
+"/.well-known/masque/udp/"	
 
 
 --- back
