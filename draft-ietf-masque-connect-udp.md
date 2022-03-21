@@ -319,8 +319,8 @@ namespaces to avoid requiring synchronization.
 
 Registration is the action by which an endpoint informs its peer of the
 semantics and format of a given context ID. This document does not define how
-registration occurs, though some examples of how it might occur are provided in
-{{example-extensions}}. Depending on the method being used, it is possible for
+registration occurs. Future extensions MAY use HTTP headers or capsules to
+register contexts. Depending on the method being used, it is possible for
 datagrams to be received with Context IDs which have not yet been registered,
 for instance due to reordering of the datagram and the registration packets
 during transmission.
@@ -497,92 +497,6 @@ Related Information:
 
 
 --- back
-
-# Example Extensions
-
-Extensions can define new semantics for the payload of HTTP Datagrams. The
-extension can then have an endpoint pick an available locally-allocated context
-ID (see {{context-id}}) and register that context ID with their peer.
-
-Note that this appendix only exists to help illustrate MASQUE Working Group
-discussions while designing extensions. This appendix will be removed before
-MASQUE Working Group Last Call.
-
-
-## Registering Contexts with Headers
-
-Extensions can define a new HTTP header to register a context ID with the peer
-endpoint.
-
-As an example, take an extension that conveys the time at which a UDP
-packet was received. The extension would first define the format of its HTTP
-Datagram Payload field:
-
-~~~
-UDP with Timestamp HTTP Datagrams {
-  Context ID (i),
-  Timestamp (64),
-  UDP Payload (..),
-}
-~~~
-{: #ex-dgram title="Example: Format of UDP Payload with Timestamp"}
-
-The extension would also define a new HTTP header (Example-UDP-Timestamps) that
-includes a context ID value. Proxies that understand this new HTTP header would
-be able to consequently handle and parse datagrams with the context ID, while all
-other proxies would silently drop the datagrams.
-
-This specific extension would restrict registrations to the client, and have
-them be bidirectional in the sense that the client registering a context ID also
-indicates support for receiving on it. Other extensions could allow proxy
-registrations, and/or unidirectional registrations in the sense that
-registration would only imply usage in one direction.
-
-~~~
-HEADERS
-:method = CONNECT
-:protocol = connect-udp
-:scheme = https
-:path = /192.0.2.42/443/
-:authority = proxy.example.org
-example-udp-timestamps = 42
-~~~
-{: #ex-hdr title="Example: Registration via header"}
-
-In this example request, HTTP Datagrams with context ID zero would only contain
-the UDP payload, whereas HTTP Datagrams with context ID 42 would also contain a
-timestamp.
-
-
-## Registering Contexts with Capsules
-
-Extensions can define a new Capsule type (see {{HTTP-DGRAM}}) to register a
-context ID with the peer endpoint.
-
-As an example, take an extension that compresses QUIC Connection IDs when the
-client is running QUIC over a UDP proxying tunnel. The extension would first
-define the transform applied to UDP payloads when compressing and decompressing,
-such as removing the bytes of the connection ID.
-
-The extension would also define a new capsule type
-(EXAMPLE_REGISTER_COMPRESSED_QUIC_CID) that includes a context ID value and the
-connection ID to compress. Endpoints that understand this new capsule type would
-be able to consequently handle and parse datagrams on the context ID, while all
-other endpoints would ignore the datagrams.
-
-~~~
-EXAMPLE_REGISTER_COMPRESSED_QUIC_CID Capsule {
-  Type (i) = EXAMPLE_REGISTER_COMPRESSED_QUIC_CID,
-  Length (i),
-  Context ID (i),
-  QUIC Connection ID (..),
-}
-~~~
-{: #ex-capsule title="Example: Registration via capsule"}
-
-This example extension would most likely also define a new HTTP header to
-indicate support.
-
 
 # Acknowledgments {#acknowledgments}
 {:numbered="false"}
