@@ -3,23 +3,43 @@ title: UDP Proxying Support for HTTP
 abbrev: HTTP UDP CONNECT
 docname: draft-ietf-masque-connect-udp-latest
 submissiontype: IETF
-category: std
-wg: MASQUE
-
 ipr: trust200902
-keyword: Internet-Draft
-
+category: std
 stand_alone: yes
 pi: [toc, sortrefs, symrefs]
-
+area: Transport
+wg: MASQUE
+number:
+date:
+consensus:
+venue:
+  group: "MASQUE"
+  type: "Working Group"
+  mail: "masque@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/masque/"
+  github: "ietf-wg-masque/draft-ietf-masque-connect-udp"
+  latest: "https://ietf-wg-masque.github.io/draft-ietf-masque-connect-udp/draft-ietf-masque-connect-udp.html"
+keyword:
+  - quic
+  - http
+  - datagram
+  - udp
+  - proxy
+  - tunnels
+  - quic in quic
+  - turtles all the way down
+  - masque
+  - http-ng
 author:
- -
-    ins: "D. Schinazi"
-    name: "David Schinazi"
-    organization: "Google LLC"
-    street: "1600 Amphitheatre Parkway"
-    city: "Mountain View, California 94043"
-    country: "United States of America"
+  -
+    ins: D. Schinazi
+    name: David Schinazi
+    org: Google LLC
+    street: 1600 Amphitheatre Parkway
+    city: Mountain View
+    region: CA
+    code: 94043
+    country: United States of America
     email: dschinazi.ietf@gmail.com
 
 
@@ -343,16 +363,15 @@ UDP Proxying HTTP Datagram Payload {
 {: #dgram-format title="UDP Proxying HTTP Datagram Format"}
 
 Context ID:
-
 : A variable-length integer that contains the value of the Context ID. If an
 HTTP/3 datagram which carries an unknown Context ID is received, the receiver
 SHALL either drop that datagram silently or buffer it temporarily (on the order
 of a round trip) while awaiting the registration of the corresponding Context ID.
 
 Payload:
-
 : The payload of the datagram, whose semantics depend on value of the previous
 field. Note that this field can be empty.
+{: spacing="compact"}
 
 UDP packets are encoded using HTTP Datagrams with the Context ID set to zero.
 When the Context ID is set to zero, the Payload field contains the
@@ -452,20 +471,17 @@ Token Registry maintained at
 <[](https://www.iana.org/assignments/http-upgrade-tokens)>.
 
 Value:
-
 : connect-udp
 
 Description:
-
 : Proxying of UDP Payloads
 
 Expected Version Tokens:
-
 : None
 
 Reference:
-
 : This document
+{: spacing="compact"}
 
 
 ## Well-Known URI {#iana-uri}
@@ -475,25 +491,21 @@ Registry maintained at
 <[](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml)>.
 
 URI Suffix:
-
 : masque/udp
 
 Change Controller:
-
 : IETF
 
 Reference:
-
 : This document
 
 Status:
-
 : permanent (if this document is approved)
 
 Related Information:
-
 : Includes all resources identified with the path prefix
 "/.well-known/masque/udp/"	
+{: spacing="compact"}
 
 
 --- back
