@@ -466,8 +466,8 @@ ports so the TCP SYN-ACK does not offer much protection in real scenarios.
 
 ## HTTP Upgrade Token {#iana-upgrade}
 
-This document will request IANA to register "connect-udp" in the HTTP Upgrade
-Token Registry maintained at
+This document will request IANA to register "connect-udp" in the "HTTP Upgrade
+Tokens" registry maintained at
 <[](https://www.iana.org/assignments/http-upgrade-tokens)>.
 
 Value:
@@ -486,9 +486,9 @@ Reference:
 
 ## Well-Known URI {#iana-uri}
 
-This document will request IANA to register "masque/udp" in the Well-Known URIs
-Registry maintained at
-<[](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml)>.
+This document will request IANA to register "masque/udp" in the "Well-Known
+URIs" registry maintained at
+<[](https://www.iana.org/assignments/well-known-uris)>.
 
 URI Suffix:
 : masque/udp
