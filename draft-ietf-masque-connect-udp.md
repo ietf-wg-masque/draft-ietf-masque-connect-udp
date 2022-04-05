@@ -269,8 +269,10 @@ Upgrade: connect-udp
 
 ## HTTP Request over HTTP/2 and HTTP/3 {#req23}
 
-When using HTTP/2 {{H2}} or HTTP/3 {{H3}}, UDP proxying requests use HTTP
-pseudo-header fields with the following requirements:
+When using HTTP/2 {{H2}} or HTTP/3 {{H3}}, UDP proxying requests use Extended
+CONNECT. This requires that servers send an HTTP Setting as specified in
+{{EXT-CONNECT2}} and {{EXT-CONNECT3}}, and that requests use HTTP pseudo-header
+fields with the following requirements:
 
 * The ":method" pseudo-header field SHALL be "CONNECT".
 
@@ -522,7 +524,7 @@ Status:
 
 Related Information:
 : Includes all resources identified with the path prefix
-"/.well-known/masque/udp/"	
+"/.well-known/masque/udp/"
 {: spacing="compact"}
 
 
