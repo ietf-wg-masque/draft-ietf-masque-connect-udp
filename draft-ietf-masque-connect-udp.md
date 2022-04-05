@@ -42,6 +42,17 @@ author:
     country: United States of America
     email: dschinazi.ietf@gmail.com
 
+normative:
+  H1:
+    =: I-D.draft-ietf-httpbis-messaging
+    display: HTTP/1.1
+  H2:
+    =: I-D.draft-ietf-httpbis-http2bis
+    display: HTTP/2
+  H3:
+    =: I-D.draft-ietf-quic-http
+    display: HTTP/3
+
 
 --- abstract
 
@@ -194,8 +205,7 @@ When using HTTP/1.1, a UDP proxying request will meet the following requirements
 
 * the method SHALL be "GET".
 
-* the request-target SHALL use absolute-form (see {{Section 3.2.2 of
-  !H1=I-D.draft-ietf-httpbis-messaging}}).
+* the request-target SHALL use absolute-form (see {{Section 3.2.2 of H1}}).
 
 * the request SHALL include a single Host header containing the origin of the
   proxy.
@@ -248,9 +258,8 @@ Upgrade: connect-udp
 
 ## HTTP Request over HTTP/2 and HTTP/3 {#req23}
 
-When using HTTP/2 {{!H2=I-D.draft-ietf-httpbis-http2bis}} or HTTP/3
-{{!H3=I-D.ietf-quic-http}}, UDP proxying requests use HTTP pseudo-headers with
-the following requirements:
+When using HTTP/2 {{H2}} or HTTP/3 {{H3}}, UDP proxying requests use HTTP
+pseudo-headers with the following requirements:
 
 * The ":method" pseudo-header field SHALL be "CONNECT".
 
@@ -418,17 +427,17 @@ QUIC DATAGRAM frame.
 
 ## MTU Considerations
 
-When using HTTP/3 with the QUIC Datagram extension
-{{!DGRAM=I-D.ietf-quic-datagram}}, UDP payloads are transmitted in QUIC DATAGRAM
-frames. Since those cannot be fragmented, they can only carry payloads up to a
-given length determined by the QUIC connection configuration and the path MTU.
-If a proxy is using QUIC DATAGRAM frames and it receives a UDP payload from the
-target that will not fit inside a QUIC DATAGRAM frame, the proxy SHOULD NOT send
-the UDP payload in a DATAGRAM capsule, as that defeats the end-to-end
-unreliability characteristic that methods such as Datagram Packetization Layer
-Path MTU Discovery (DPLPMTUD) depend on {{?DPLPMTUD=RFC8899}}. In this scenario,
-the proxy SHOULD drop the UDP payload and send an ICMP "Packet Too Big" message
-to the target, see {{Section 3.2 of ICMP6}}.
+When using HTTP/3 with the QUIC Datagram extension {{!DGRAM=RFC9221}}, UDP
+payloads are transmitted in QUIC DATAGRAM frames. Since those cannot be
+fragmented, they can only carry payloads up to a given length determined by the
+QUIC connection configuration and the path MTU. If a proxy is using QUIC
+DATAGRAM frames and it receives a UDP payload from the target that will not fit
+inside a QUIC DATAGRAM frame, the proxy SHOULD NOT send the UDP payload in a
+DATAGRAM capsule, as that defeats the end-to-end unreliability characteristic
+that methods such as Datagram Packetization Layer Path MTU Discovery (DPLPMTUD)
+depend on {{?DPLPMTUD=RFC8899}}. In this scenario, the proxy SHOULD drop the UDP
+payload and send an ICMP "Packet Too Big" message to the target, see {{Section
+3.2 of ICMP6}}.
 
 
 ## Tunneling of ECN Marks
