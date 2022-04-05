@@ -71,10 +71,11 @@ proxying TCP {{!TCP=RFC0793}} over HTTP, this document defines a new mechanism
 to proxy UDP {{!UDP=RFC0768}}.
 
 UDP Proxying supports all versions of HTTP and uses HTTP Datagrams
-{{!HTTP-DGRAM=I-D.ietf-masque-h3-datagram}}. When using HTTP/2 or HTTP/3, UDP
-proxying uses HTTP Extended CONNECT as described in {{!EXT-CONNECT2=RFC8441}}
-and {{!EXT-CONNECT3=I-D.ietf-httpbis-h3-websockets}}. When using HTTP/1.x, UDP
-proxying uses HTTP Upgrade as defined in {{Section 7.8 of HTTP}}.
+{{!HTTP-DGRAM=I-D.ietf-masque-h3-datagram}}. When using HTTP/2 {{H2}} or HTTP/3
+{{H3}}, UDP proxying uses HTTP Extended CONNECT as described in
+{{!EXT-CONNECT2=RFC8441}} and {{!EXT-CONNECT3=I-D.ietf-httpbis-h3-websockets}}.
+When using HTTP/1.x {{H1}}, UDP proxying uses HTTP Upgrade as defined in
+{{Section 7.8 of HTTP}}.
 
 
 ## Conventions and Definitions {#conventions}
@@ -201,7 +202,8 @@ these requirements.
 
 ## HTTP Request over HTTP/1.1 {#req1}
 
-When using HTTP/1.1, a UDP proxying request will meet the following requirements:
+When using HTTP/1.1 {{H1}}, a UDP proxying request will meet the following
+requirements:
 
 * the method SHALL be "GET".
 
@@ -318,11 +320,9 @@ header. When sent by the client, it contains a list of draft numbers supported
 by the client (e.g., "connect-udp-version: 0, 2"). When sent by the proxy, it
 contains a single draft number selected by the proxy from the list provided by
 the client (e.g., "connect-udp-version: 2"). Sending this header is RECOMMENDED
-but not required. Its ABNF is:
-
-~~~ abnf
-connect-udp-version = sf-list
-~~~
+but not required. The "connect-udp-version" header field is a List Structured
+Field, see {{Section 3.1 of !STRUCT-FIELD=RFC8941}}. Each list member MUST be an
+Integer.
 
 
 # Context Identifiers {#context-id}
