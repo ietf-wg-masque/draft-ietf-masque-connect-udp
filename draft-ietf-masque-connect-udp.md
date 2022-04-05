@@ -402,12 +402,14 @@ the response to its UDP proxying request, noting however that those may not be
 processed by the proxy if it responds to the request with a failure, or if the
 datagrams are received by the proxy before the request.
 
-Endpoints MUST NOT send HTTP Datagrams with payloads longer than 65527 using
-Context ID zero. An endpoint that receives a DATAGRAM capsule using Context ID
-zero whose payload is longer than 65527 MUST abort the stream. If a proxy knows
-it can only send out UDP packets of a certain length due to its underlying link
-MTU, it SHOULD discard incoming DATAGRAM capsules using Context ID zero whose
-payload is longer than that limit without buffering the capsule contents.
+By virtue of the definition of the UDP header {{UDP}}, it is not possible to
+encode UDP payloads longer than 65527 bytes. Therefore, endpoints MUST NOT send
+HTTP Datagrams with a Payload field longer than 65527 using Context ID zero. An
+endpoint that receives a DATAGRAM capsule using Context ID zero whose Payload
+field is longer than 65527 MUST abort the stream. If a proxy knows it can only
+send out UDP packets of a certain length due to its underlying link MTU, it
+SHOULD discard incoming DATAGRAM capsules using Context ID zero whose Payload
+field is longer than that limit without buffering the capsule contents.
 
 
 # Performance Considerations {#performance}
