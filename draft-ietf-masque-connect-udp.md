@@ -153,8 +153,9 @@ using DNS names, IPv6 literals and IPv4 literals. Note that this URI Template
 expansion requires using pct-encoding, so for example if the target_host is
 "2001:db8::42", it will be encoded in the URI as "2001%3Adb8%3A%3A42".
 
-A payload within a UDP proxying request message has no defined semantics; a UDP
-proxying request with a non-empty payload is malformed.
+By virtue of the definition of the Capsule Protocol (see {{HTTP-DGRAM}}), UDP
+proxying requests do not carry any message content. Similarly, successful
+UDP proxying responses also do not carry any message content.
 
 Responses to UDP proxying requests are not cacheable.
 
