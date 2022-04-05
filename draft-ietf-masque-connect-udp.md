@@ -96,7 +96,7 @@ entire connection.
 
 # Configuration of Clients {#client-config}
 
-Clients are configured to use UDP Proxying over HTTP via an URI Template
+Clients are configured to use UDP Proxying over HTTP via a URI Template
 {{!TEMPLATE=RFC6570}} with the variables "target_host" and "target_port".
 Examples are shown below:
 
@@ -107,18 +107,18 @@ https://proxy.example.org:4443/masque{?target_host,target_port}
 ~~~
 {: #fig-template-examples title="URI Template Examples"}
 
-The URI template MUST be a level 3 template or lower. The URI template MUST be
+The URI Template MUST be a level 3 template or lower. The URI Template MUST be
 in absolute form, and MUST include non-empty scheme, authority and path
-components. The path component of the URI template MUST start with a slash "/".
+components. The path component of the URI Template MUST start with a slash "/".
 All template variables MUST be within the path component of the URI. The URI
 template MUST contain the two variables "target_host" and "target_port" and MAY
-contain other variables. The URI template MUST NOT contain any non-ASCII unicode
+contain other variables. The URI Template MUST NOT contain any non-ASCII unicode
 characters and MUST only contain ASCII characters in the range 0x21-0x7E
-inclusive (note that percent-encoding is allowed). The URI template MUST NOT use
+inclusive (note that percent-encoding is allowed). The URI Template MUST NOT use
 Reserved Expansion ("+" operator), Fragment Expansion ("#" operator), Label
 Expansion with Dot-Prefix, Path Segment Expansion with Slash-Prefix, nor
 Path-Style Parameter Expansion with Semicolon-Prefix. If any of the requirements
-above are not met by a URI template, the client MUST reject its configuration
+above are not met by a URI Template, the client MUST reject its configuration
 and fail the request without sending it to the proxy.
 
 Since the original HTTP CONNECT method allowed conveying the target host and
@@ -140,16 +140,16 @@ the Capsule Protocol as defined in {{HTTP-DGRAM}}.
 
 A "connect-udp" request requests that the recipient proxy establish a tunnel
 over a single HTTP stream to the destination target identified by the
-"target_host" and "target_port" variables of the URI template (see
+"target_host" and "target_port" variables of the URI Template (see
 {{client-config}}). If the request is successful, the proxy commits to
 converting received HTTP Datagrams into UDP packets and vice versa until the
 tunnel is closed. Tunnels are commonly used to create an end-to-end virtual
 connection, which can then be secured using QUIC {{!QUIC=RFC9000}} or another
 protocol running over UDP.
 
-When sending its UDP proxying request, the client SHALL perform URI template
+When sending its UDP proxying request, the client SHALL perform URI Template
 expansion to determine the path and query of its request. target_host supports
-using DNS names, IPv6 literals and IPv4 literals. Note that this URI template
+using DNS names, IPv6 literals and IPv4 literals. Note that this URI Template
 expansion requires using pct-encoding, so for example if the target_host is
 "2001:db8::42", it will be encoded in the URI as "2001%3Adb8%3A%3A42".
 
@@ -218,7 +218,7 @@ requirements:
 
 * the request SHALL include a single "Upgrade" header with value "connect-udp".
 
-For example, if the client is configured with URI template
+For example, if the client is configured with URI Template
 "https://proxy.example.org/.well-known/masque/udp/{target_host}/{target_port}/"
 and wishes to open a
 UDP proxying tunnel to target 192.0.2.42:443, it could send the following
@@ -272,13 +272,13 @@ pseudo-headers with the following requirements:
 * The ":authority" pseudo-header field SHALL contain the authority of the proxy.
 
 * The ":path" and ":scheme" pseudo-header fields SHALL NOT be empty. Their
-  values SHALL contain the scheme and path from the URI template after the URI
+  values SHALL contain the scheme and path from the URI Template after the URI
   template expansion process has been completed.
 
 A UDP proxying request that does not conform to these restrictions is
 malformed (see {{Section 8.1.1 of H2}}).
 
-For example, if the client is configured with URI template
+For example, if the client is configured with URI Template
 "https://proxy.example.org/{target_host}/{target_port}/" and wishes to open a
 UDP proxying tunnel to target 192.0.2.42:443, it could send the following
 request:
