@@ -362,8 +362,8 @@ semantics and format of a given context ID. This document does not define how
 registration occurs. Future extensions MAY use HTTP header fields or capsules to
 register contexts. Depending on the method being used, it is possible for
 datagrams to be received with Context IDs which have not yet been registered,
-for instance due to reordering of the datagram and the registration packets
-during transmission.
+for instance due to reordering of the packet containing the datagram and the
+packet containing the registration message during transmission.
 
 
 # HTTP Datagram Payload Format {#format}
