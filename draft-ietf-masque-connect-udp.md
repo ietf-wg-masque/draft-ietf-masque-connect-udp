@@ -58,7 +58,8 @@ normative:
 
 This document describes how to proxy UDP over HTTP. Similar to how the CONNECT
 method allows proxying TCP over HTTP, this document defines a new mechanism to
-proxy UDP. It is built using HTTP Extended CONNECT.
+proxy UDP. When using HTTP/2 or HTTP/3, it uses Extended CONNECT; when using
+HTTP/1.1, it uses Upgrade.
 
 
 --- middle
