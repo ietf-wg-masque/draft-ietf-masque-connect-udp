@@ -471,7 +471,7 @@ and proxy in any way.
 
 There are significant risks in allowing arbitrary clients to establish a tunnel
 to arbitrary targets, as that could allow bad actors to send traffic and have
-it attributed to the proxy. Proxies that support UDP proxying SHOULD restrict
+it attributed to the proxy. Proxies that support UDP proxying ought to restrict
 its use to authenticated users.
 
 Because the CONNECT method creates a TCP connection to the target, the target
