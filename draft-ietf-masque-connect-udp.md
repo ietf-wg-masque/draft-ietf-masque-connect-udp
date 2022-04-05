@@ -481,6 +481,8 @@ this property, so a UDP proxy could send more data to an unwilling target than
 a CONNECT proxy. However, in practice denial of service attacks target open TCP
 ports so the TCP SYN-ACK does not offer much protection in real scenarios.
 
+The security considerations described in {{HTTP-DGRAM}} also apply here.
+
 
 # IANA Considerations {#iana}
 
