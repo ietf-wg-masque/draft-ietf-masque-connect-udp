@@ -138,14 +138,14 @@ facilitate interoperability with such clients.
 This document defines the "connect-udp" HTTP Upgrade Token. "connect-udp" uses
 the Capsule Protocol as defined in {{HTTP-DGRAM}}.
 
-A "connect-udp" request requests that the recipient proxy establish a tunnel
-over a single HTTP stream to the destination target identified by the
-"target_host" and "target_port" variables of the URI Template (see
-{{client-config}}). If the request is successful, the proxy commits to
-converting received HTTP Datagrams into UDP packets and vice versa until the
-tunnel is closed. Tunnels are commonly used to create an end-to-end virtual
-connection, which can then be secured using QUIC {{!QUIC=RFC9000}} or another
-protocol running over UDP.
+Clients issue requests containing a "connect-udp" upgrade token to initiate a
+UDP tunnel associated with a single HTTP stream. The target of the tunnel is
+indicated by the client to the proxy via the "target_host" and "target_port"
+variables of the URI Template (see {{client-config}}). If the request is
+successful, the proxy commits to converting received HTTP Datagrams into UDP
+packets and vice versa until the tunnel is closed. Tunnels are commonly used to
+create an end-to-end virtual connection, which can then be secured using QUIC
+{{!QUIC=RFC9000}} or another protocol running over UDP.
 
 When sending its UDP proxying request, the client SHALL perform URI Template
 expansion to determine the path and query of its request. target_host supports
