@@ -172,7 +172,7 @@ way of knowing whether the destination is reachable. Therefore it needs to
 respond to the request without waiting for a packet from the target. However,
 if the target_host is a DNS name, the proxy MUST perform DNS resolution before
 replying to the HTTP request. If DNS resolution fails, the proxy MUST fail the
-request and SHOULD send details using the Proxy-Status header
+request and SHOULD send details using the Proxy-Status header field
 {{?PROXY-STATUS=I-D.ietf-httpbis-proxy-status}}.
 
 Proxies can use connected UDP sockets if their operating system supports them,
@@ -212,12 +212,14 @@ requirements:
 
 * the request-target SHALL use absolute-form (see {{Section 3.2.2 of H1}}).
 
-* the request SHALL include a single Host header containing the origin of the
-  proxy.
+* the request SHALL include a single Host header field containing the origin of
+  the proxy.
 
-* the request SHALL include a single "Connection" header with value "Upgrade".
+* the request SHALL include a single "Connection" header field with value
+  "Upgrade".
 
-* the request SHALL include a single "Upgrade" header with value "connect-udp".
+* the request SHALL include a single "Upgrade" header field with value
+  "connect-udp".
 
 For example, if the client is configured with URI Template
 "https://proxy.example.org/.well-known/masque/udp/{target_host}/{target_port}/"
@@ -241,9 +243,11 @@ requirements:
 
 * the HTTP status code on the response SHALL be 101 (Switching Protocols).
 
-* the reponse SHALL include a single "Connection" header with value "Upgrade".
+* the reponse SHALL include a single "Connection" header field with value
+  "Upgrade".
 
-* the response SHALL include a single "Upgrade" header with value "connect-udp".
+* the response SHALL include a single "Upgrade" header field with value
+  "connect-udp".
 
 * the response SHALL NOT include any Transfer-Encoding or Content-Length header
   fields.
@@ -264,7 +268,7 @@ Upgrade: connect-udp
 ## HTTP Request over HTTP/2 and HTTP/3 {#req23}
 
 When using HTTP/2 {{H2}} or HTTP/3 {{H3}}, UDP proxying requests use HTTP
-pseudo-headers with the following requirements:
+pseudo-header fields with the following requirements:
 
 * The ":method" pseudo-header field SHALL be "CONNECT".
 
@@ -319,13 +323,13 @@ HEADERS
 
 In order to allow implementations to support multiple draft versions of this
 specification during its development, we introduce the "connect-udp-version"
-header. When sent by the client, it contains a list of draft numbers supported
-by the client (e.g., "connect-udp-version: 0, 2"). When sent by the proxy, it
-contains a single draft number selected by the proxy from the list provided by
-the client (e.g., "connect-udp-version: 2"). Sending this header is RECOMMENDED
-but not required. The "connect-udp-version" header field is a List Structured
-Field, see {{Section 3.1 of !STRUCT-FIELD=RFC8941}}. Each list member MUST be an
-Integer.
+header field. When sent by the client, it contains a list of draft numbers
+supported by the client (e.g., "connect-udp-version: 0, 2"). When sent by the
+proxy, it contains a single draft number selected by the proxy from the list
+provided by the client (e.g., "connect-udp-version: 2"). Sending this header
+field is RECOMMENDED but not required. The "connect-udp-version" header field is
+a List Structured Field, see {{Section 3.1 of !STRUCT-FIELD=RFC8941}}. Each list
+member MUST be an Integer.
 
 
 # Context Identifiers {#context-id}
@@ -351,7 +355,7 @@ namespaces to avoid requiring synchronization.
 
 Registration is the action by which an endpoint informs its peer of the
 semantics and format of a given context ID. This document does not define how
-registration occurs. Future extensions MAY use HTTP headers or capsules to
+registration occurs. Future extensions MAY use HTTP header fields or capsules to
 register contexts. Depending on the method being used, it is possible for
 datagrams to be received with Context IDs which have not yet been registered,
 for instance due to reordering of the datagram and the registration packets
