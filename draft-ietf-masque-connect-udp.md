@@ -83,10 +83,11 @@ When using HTTP/1.x {{H1}}, UDP proxying uses HTTP Upgrade as defined in
 
 {::boilerplate bcp14-tagged}
 
-In this document, we use the term "proxy" to refer to the HTTP server that opens
-the UDP socket and responds to the UDP proxying request. If there are HTTP
-intermediaries (as defined in {{Section 3.7 of HTTP}}) between the client and
-the proxy, those are referred to as "intermediaries" in this document.
+In this document, we use the term "proxy" to refer to the HTTP server that acts
+upon the client's UDP proxying request to open a UDP socket to a target server,
+and generates the response to this request. If there are HTTP intermediaries (as
+defined in {{Section 3.7 of HTTP}}) between the client and the proxy, those are
+referred to as "intermediaries" in this document.
 
 Note that, when the HTTP version in use does not support multiplexing streams
 (such as HTTP/1.1), any reference to "stream" in this document represents the
