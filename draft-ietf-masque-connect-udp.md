@@ -216,7 +216,8 @@ requirements:
   the proxy.
 
 * the request SHALL include a single "Connection" header field with value
-  "Upgrade".
+  "Upgrade" (note that this requirement is case-insensitive as per {{Section
+  7.6.1 of HTTP}}).
 
 * the request SHALL include a single "Upgrade" header field with value
   "connect-udp".
@@ -230,7 +231,7 @@ request:
 ~~~
 GET https://proxy.example.org/.well-known/masque/udp/192.0.2.42/443/ HTTP/1.1
 Host: proxy.example.org
-Connection: upgrade
+Connection: Upgrade
 Upgrade: connect-udp
 ~~~
 {: #fig-req-h1 title="Example HTTP Request over HTTP/1.1"}
@@ -244,7 +245,8 @@ requirements:
 * the HTTP status code on the response SHALL be 101 (Switching Protocols).
 
 * the reponse SHALL include a single "Connection" header field with value
-  "Upgrade".
+  "Upgrade" (note that this requirement is case-insensitive as per {{Section
+  7.6.1 of HTTP}}).
 
 * the response SHALL include a single "Upgrade" header field with value
   "connect-udp".
@@ -259,7 +261,7 @@ For example, the proxy could respond with:
 
 ~~~
 HTTP/1.1 101 Switching Protocols
-Connection: upgrade
+Connection: Upgrade
 Upgrade: connect-udp
 ~~~
 {: #fig-resp-h1 title="Example HTTP Response over HTTP/1.1"}
