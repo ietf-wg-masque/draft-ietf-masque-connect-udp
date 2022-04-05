@@ -351,11 +351,11 @@ as variable-length integers, see {{Section 16 of QUIC}}. The context ID value of
 non-zero even-numbered context IDs are client-allocated, and odd-numbered
 context IDs are proxy-allocated. The context ID namespace is tied to a given
 HTTP request: it is possible for a context ID with the same numeric value to be
-simultaneously assigned different semantics in distinct requests, potentially
-with different semantics. Context IDs MUST NOT be re-allocated within a given
-HTTP namespace but MAY be allocated in any order. Once allocated, any context ID
-can be used by both client and proxy - only allocation carries separate
-namespaces to avoid requiring synchronization.
+simultaneously allocated in distinct requests, potentially with different
+semantics. Context IDs MUST NOT be re-allocated within a given HTTP namespace
+but MAY be allocated in any order. Once allocated, any context ID can be used by
+both client and proxy - only allocation carries separate namespaces to avoid
+requiring synchronization.
 
 Registration is the action by which an endpoint informs its peer of the
 semantics and format of a given context ID. This document does not define how
