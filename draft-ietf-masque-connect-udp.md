@@ -119,17 +119,6 @@ Path-Style Parameter Expansion with Semicolon-Prefix. If any of the requirements
 above are not met by a URI template, the client MUST reject its configuration
 and fail the request without sending it to the proxy.
 
-Since the original HTTP CONNECT method allowed conveying the target host and
-port but not the scheme, proxy authority, path, nor query, there exist proxy
-configuration interfaces that only allow the user to configure the proxy host
-and the proxy port. Client implementations of this specification that are
-constrained by such limitations MUST use the default template which is defined
-as:
-"https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/"
-where $PROXY_HOST and $PROXY_PORT are the configured host and port of the
-proxy respectively. Proxy deployments SHOULD use the default template to
-facilitate interoperability with such clients.
-
 
 # HTTP Exchanges
 
