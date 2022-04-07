@@ -365,9 +365,12 @@ context IDs are proxy-allocated. The context ID namespace is tied to a given
 HTTP request: it is possible for a context ID with the same numeric value to be
 simultaneously allocated in distinct requests, potentially with different
 semantics. Context IDs MUST NOT be re-allocated within a given HTTP namespace
-but MAY be allocated in any order. Once allocated, any context ID can be used by
-both client and proxy - only allocation carries separate namespaces to avoid
-requiring synchronization.
+but MAY be allocated in any order. The context ID allocation restrictions to the
+use of even-numbered and odd-numbered context IDs exist in order to avoid the
+need for synchronisation between endpoints. However, once a context ID has been
+allocated, those restrictions do not apply to the use of the context ID: it can
+be used by any client or proxy, independent of which endpoint initially
+allocated it.
 
 Registration is the action by which an endpoint informs its peer of the
 semantics and format of a given context ID. This document does not define how
