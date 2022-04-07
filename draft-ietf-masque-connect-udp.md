@@ -383,8 +383,8 @@ packet containing the registration message during transmission.
 
 # HTTP Datagram Payload Format {#format}
 
-When associated with UDP proxying request streams, the HTTP Datagram Payload
-field of HTTP Datagrams (see {{HTTP-DGRAM}}) has the format defined in
+When HTTP Datagrams (see {{HTTP-DGRAM}}) are associated with UDP proxying
+request streams, the HTTP Datagram Payload field has the format defined in
 {{dgram-format}}. Note that when HTTP Datagrams are encoded using QUIC DATAGRAM
 frames, the Context ID field defined below directly follows the Quarter Stream
 ID field which is at the start of the QUIC DATAGRAM frame payload:
