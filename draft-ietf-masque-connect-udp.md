@@ -412,11 +412,11 @@ UDP packets are encoded using HTTP Datagrams with the Context ID set to zero.
 When the Context ID is set to zero, the Payload field contains the
 unmodified payload of a UDP packet (referred to as "data octets" in {{UDP}}).
 
-Clients MAY optimistically start sending proxied UDP packets before receiving
-the response to its UDP proxying request. However, implementors should note that
-such proxied packets may not be processed by the proxy if it responds to the
-request with a failure, or if the proxied packets are received by the proxy
-before the request.
+Clients MAY optimistically start sending UDP packets in HTTP Datagrams before
+receiving the response to its UDP proxying request. However, implementors should
+note that such proxied packets may not be processed by the proxy if it responds
+to the request with a failure, or if the proxied packets are received by the
+proxy before the request.
 
 By virtue of the definition of the UDP header {{UDP}}, it is not possible to
 encode UDP payloads longer than 65527 bytes. Therefore, endpoints MUST NOT send
