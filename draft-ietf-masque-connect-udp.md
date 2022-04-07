@@ -502,7 +502,7 @@ a proxy could potentially limit the number of UDP packets it is willing to
 forward until it has observed a response from the target, that is unlikely to
 provide any protection against denial of service attacks because such attacks
 target open UDP ports where the protocol running over UDP would respond, and
-that would be interpreted as willingness to accept UDP buy the proxy.
+that would be interpreted as willingness to accept UDP by the proxy.
 
 UDP sockets for UDP proxying have a different lifetime than TCP sockets for
 CONNECT, therefore implementors would be well served to follow the advice in
