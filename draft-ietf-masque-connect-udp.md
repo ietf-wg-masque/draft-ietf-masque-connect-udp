@@ -172,7 +172,7 @@ UDP proxying responses also do not carry any message content.
 Responses to UDP proxying requests are not cacheable.
 
 
-## Proxy Handling
+## Proxy Handling {#handling}
 
 Upon receiving a UDP proxying request, the recipient proxy extracts the
 "target_host" and "target_port" variables from the URI it has reconstructed
@@ -494,10 +494,20 @@ its use to authenticated users.
 
 Because the CONNECT method creates a TCP connection to the target, the target
 has to indicate its willingness to accept TCP connections by responding with a
-TCP SYN-ACK before the proxy can send it application data. UDP doesn't have
-this property, so a UDP proxy could send more data to an unwilling target than
-a CONNECT proxy. However, in practice denial of service attacks target open TCP
-ports so the TCP SYN-ACK does not offer much protection in real scenarios.
+TCP SYN-ACK before the proxy can send it application data. UDP doesn't have this
+property, so a UDP proxy could send more data to an unwilling target than a
+CONNECT proxy. However, in practice denial of service attacks target open TCP
+ports so the TCP SYN-ACK does not offer much protection in real scenarios. While
+a proxy could potentially limit the number of UDP packets it is willing to
+forward until it has observed a response from the target, that is unlikely to
+provide any protection against denial of service attacks because such attacks
+target open UDP ports where the protocol running over UDP would respond, and
+that would be interpreted as willingness to accept UDP by the proxy.
+
+UDP sockets for UDP proxying have a different lifetime than TCP sockets for
+CONNECT, therefore implementors would be well served to follow the advice in
+{{handling}} if they base their UDP proxying implementation on a preexisting
+implementation of CONNECT.
 
 The security considerations described in {{HTTP-DGRAM}} also apply here.
 
