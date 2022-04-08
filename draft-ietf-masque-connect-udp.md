@@ -137,13 +137,17 @@ Since the original HTTP CONNECT method allowed conveying the target host and
 port but not the scheme, proxy authority, path, nor query, there exist proxy
 configuration interfaces that only allow the user to configure the proxy host
 and the proxy port. Client implementations of this specification that are
-constrained by such limitations MUST use the default template which is defined
-as:
+constrained by such limitations MAY attempt to access UDP Proxying capabilities
+using the default template, which is defined as:
 "https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/"
 where $PROXY_HOST and $PROXY_PORT are the configured host and port of the
-proxy respectively. Proxy deployments SHOULD use the default template to
-facilitate interoperability with such clients.
+proxy respectively. Proxy deployments SHOULD offer service at this location if
+they need to interoperate with such clients.
 
+Clients MAY interpret HTTP 400, 404, or 405 response codes as indications
+that the URI template is not correct.  Servers MUST NOT return these
+response codes if the request is well-formed and the URI matches a supported
+template.
 
 # HTTP Exchanges
 
