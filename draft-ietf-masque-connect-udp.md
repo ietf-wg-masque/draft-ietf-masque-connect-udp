@@ -123,7 +123,7 @@ Since the original HTTP CONNECT method allowed conveying the target host and
 port but not the scheme, proxy authority, path, nor query, there exist proxy
 configuration interfaces that only allow the user to configure the proxy host
 and the proxy port. Client implementations of this specification that are
-constrained by such limitations MAY attempt to access CONNECT-UDP capabilities
+constrained by such limitations MAY attempt to access UDP Proxying capabilities
 using the default template, which is defined as:
 "https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/"
 where $PROXY_HOST and $PROXY_PORT are the configured host and port of the
