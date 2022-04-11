@@ -152,7 +152,8 @@ template.
 # HTTP Exchanges
 
 This document defines the "connect-udp" HTTP Upgrade Token. "connect-udp" uses
-the Capsule Protocol as defined in {{HTTP-DGRAM}}.
+the Capsule Protocol as defined in {{Section 3.2 of HTTP-DGRAM}}. The format of
+HTTP Datagrams is defined in {{format}}.
 
 Clients issue requests containing a "connect-udp" upgrade token to initiate a
 UDP tunnel associated with a single HTTP stream. Tunnels are commonly used to
