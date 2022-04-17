@@ -95,10 +95,10 @@ Note that, when the HTTP version in use does not support multiplexing streams
 entire connection.
 
 
-# Configuration of Clients {#client-config}
+# Client Configuration {#client-config}
 
-Clients are configured to use UDP Proxying over HTTP via a URI Template
-{{!TEMPLATE=RFC6570}} with the variables "target_host" and "target_port".
+HTTP clients are configured to use a UDP proxy with a URI Template
+{{!TEMPLATE=RFC6570}} that has the variables "target_host" and "target_port".
 Examples are shown below:
 
 ~~~
