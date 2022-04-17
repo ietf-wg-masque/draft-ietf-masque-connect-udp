@@ -238,9 +238,9 @@ requirements:
 * the request SHALL include a single Host header field containing the origin of
   the UDP proxy.
 
-* the request SHALL include a single "Connection" header field with value
-  "Upgrade" (note that this requirement is case-insensitive as per {{Section
-  7.6.1 of HTTP}}).
+* the request SHALL include a "Connection" header field with value "Upgrade"
+  (note that this requirement is case-insensitive as per {{Section 7.6.1 of
+  HTTP}}).
 
 * the request SHALL include a single "Upgrade" header field with value
   "connect-udp".
