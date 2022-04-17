@@ -222,7 +222,7 @@ possible, to prevent fragmentation on the path. Future extensions MAY remove
 these requirements.
 
 
-## HTTP Request over HTTP/1.1 {#req1}
+## HTTP/1.1 Request {#req1}
 
 When using HTTP/1.1 {{H1}}, a UDP proxying request will meet the following
 requirements:
@@ -256,7 +256,7 @@ Upgrade: connect-udp
 {: #fig-req-h1 title="Example HTTP Request over HTTP/1.1"}
 
 
-## HTTP Response over HTTP/1.1 {#resp1}
+## HTTP/1.1 Response {#resp1}
 
 The proxy SHALL indicate a successful response by replying with the following
 requirements:
@@ -286,7 +286,7 @@ Upgrade: connect-udp
 {: #fig-resp-h1 title="Example HTTP Response over HTTP/1.1"}
 
 
-## HTTP Request over HTTP/2 and HTTP/3 {#req23}
+## HTTP/2 and HTTP/3 Request {#req23}
 
 When using HTTP/2 {{H2}} or HTTP/3 {{H3}}, UDP proxying requests use Extended
 CONNECT. This requires that servers send an HTTP Setting as specified in
@@ -322,7 +322,7 @@ HEADERS
 {: #fig-req-h2 title="Example HTTP Request over HTTP/2"}
 
 
-## HTTP Response over HTTP/2 and HTTP/3 {#resp23}
+## HTTP/2 and HTTP/3 Response {#resp23}
 
 The proxy SHALL indicate a successful response by replying with any 2xx
 (Successful) HTTP status code, without any Transfer-Encoding or Content-Length
