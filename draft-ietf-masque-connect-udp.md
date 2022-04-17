@@ -242,8 +242,7 @@ requirements:
   (note that this requirement is case-insensitive as per {{Section 7.6.1 of
   HTTP}}).
 
-* the request SHALL include a single "Upgrade" header field with value
-  "connect-udp".
+* the request SHALL include an "Upgrade" header field with value "connect-udp".
 
 For example, if the client is configured with URI Template
 "https://proxy.example.org/.well-known/masque/udp/{target_host}/{target_port}/"
