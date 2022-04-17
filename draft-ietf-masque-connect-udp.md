@@ -227,8 +227,6 @@ requirements:
 
 * the method SHALL be "GET".
 
-* the request-target SHALL use absolute-form (see {{Section 3.2.2 of H1}}).
-
 * the request SHALL include a single Host header field containing the origin of
   the UDP proxy.
 
