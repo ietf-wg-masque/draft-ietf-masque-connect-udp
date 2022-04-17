@@ -189,7 +189,7 @@ respond to the request without waiting for a packet from the target. However, if
 the target_host is a DNS name, the UDP proxy MUST perform DNS resolution before
 replying to the HTTP request. If errors occur during this process (for example,
 a DNS resolution failure), the UDP proxy MUST fail the request and SHOULD send
-details using an appropriate Proxy-Status header field
+details using an appropriate "Proxy-Status" header field
 {{!PROXY-STATUS=I-D.ietf-httpbis-proxy-status}}.
 
 UDP proxies can use connected UDP sockets if their operating system supports
@@ -227,8 +227,8 @@ requirements:
 
 * the method SHALL be "GET".
 
-* the request SHALL include a single Host header field containing the origin of
-  the UDP proxy.
+* the request SHALL include a single "Host" header field containing the origin
+  of the UDP proxy.
 
 * the request SHALL include a "Connection" header field with value "Upgrade"
   (note that this requirement is case-insensitive as per {{Section 7.6.1 of
@@ -268,8 +268,8 @@ following requirements:
 * the response SHALL include a single "Upgrade" header field with value
   "connect-udp".
 
-* the response SHALL NOT include any Transfer-Encoding or Content-Length header
-  fields.
+* the response SHALL NOT include any "Transfer-Encoding" or "Content-Length"
+  header fields.
 
 If any of these requirements are not met, the client MUST treat this proxying
 attempt as failed and abort the connection.
@@ -324,8 +324,8 @@ HEADERS
 ## HTTP/2 and HTTP/3 Responses {#resp23}
 
 The UDP proxy SHALL indicate a successful response by replying with any 2xx
-(Successful) HTTP status code, without any Transfer-Encoding or Content-Length
-header fields.
+(Successful) HTTP status code, without any "Transfer-Encoding" or
+"Content-Length" header fields.
 
 If any of these requirements are not met, the client MUST treat this proxying
 attempt as failed and abort the request.
