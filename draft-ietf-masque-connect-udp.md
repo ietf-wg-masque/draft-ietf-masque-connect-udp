@@ -190,7 +190,7 @@ respond to the request without waiting for a packet from the target. However,
 if the target_host is a DNS name, the UDP proxy MUST perform DNS resolution
 before replying to the HTTP request. If errors occur during this process (for
 example, a DNS resolution failure), the UDP proxy MUST fail the request and
-SHOULD send details using the Proxy-Status header field
+SHOULD send details using an appropriate Proxy-Status header field
 {{!PROXY-STATUS=I-D.ietf-httpbis-proxy-status}}.
 
 UDP proxies can use connected UDP sockets if their operating system supports
