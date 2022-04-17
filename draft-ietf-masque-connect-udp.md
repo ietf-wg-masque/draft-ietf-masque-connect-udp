@@ -259,6 +259,9 @@ Upgrade: connect-udp
 ~~~
 {: #fig-req-h1 title="Example HTTP/1.1 Request"}
 
+In HTTP/1.1, this protocol uses the GET method to mimic the design of the
+WebSocket Protocol {{?WEBSOCKET=RFC6455}}.
+
 
 ## HTTP/1.1 Response {#resp1}
 
