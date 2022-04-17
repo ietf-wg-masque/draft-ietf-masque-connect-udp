@@ -68,10 +68,11 @@ is a proven way to enable communication. While HTTP provides the CONNECT method
 {{!TCP=RFC0793}} tunnel to a proxy, it lacks a method for doing so for UDP
 {{!UDP=RFC0768}} traffic.
 
-This document describes a protocol for tunnelling UDP to a proxy over HTTP.
-Unlike CONNECT, the proxy itself is identified with an absolute URL containing
-the traffic's destination. Clients generate those URLs using a URI Template
-{{!TEMPLATE=RFC6570}}, per {{client-config}}.
+This document describes a protocol for tunnelling UDP to a server acting as a
+UDP-specific proxy over HTTP. Unlike CONNECT, the UDP proxy itself is
+identified with an absolute URL containing the traffic's destination. Clients
+generate those URLs using a URI Template {{!TEMPLATE=RFC6570}}, per
+{{client-config}}.
 
 This protocol supports all versions of HTTP by using HTTP Datagrams
 {{!HTTP-DGRAM=I-D.ietf-masque-h3-datagram}}. When using HTTP/2 {{H2}} or HTTP/3
@@ -84,11 +85,11 @@ and {{!EXT-CONNECT3=I-D.ietf-httpbis-h3-websockets}}. When using HTTP/1.x
 
 {::boilerplate bcp14-tagged}
 
-In this document, we use the term "proxy" to refer to the HTTP server that acts
-upon the client's UDP tunnelling request to open a UDP socket to a target
+In this document, we use the term "UDP proxy" to refer to the HTTP server that
+acts upon the client's UDP tunnelling request to open a UDP socket to a target
 server, and generates the response to this request. If there are HTTP
 intermediaries (as defined in {{Section 3.7 of HTTP}}) between the client and
-the proxy, those are referred to as "intermediaries" in this document.
+the UDP proxy, those are referred to as "intermediaries" in this document.
 
 Note that, when the HTTP version in use does not support multiplexing streams
 (such as HTTP/1.1), any reference to "stream" in this document represents the
@@ -132,38 +133,36 @@ The following requirements apply to the URI Template:
   Semicolon-Prefix.
 
 If any of the requirements above are not met by a URI Template, the client MUST
-reject its configuration and fail the request without sending it to the proxy.
+reject its configuration and fail the request without sending it to the UDP proxy.
 
 Since the original HTTP CONNECT method allowed conveying the target host and
-port but not the scheme, proxy authority, path, nor query, there exist proxy
-configuration interfaces that only allow the user to configure the proxy host
-and the proxy port. Client implementations of this specification that are
-constrained by such limitations MAY attempt to access UDP Proxying capabilities
+port but not the scheme, UDP proxy authority, path, nor query, there exist
+proxy configuration interfaces that only allow the user to configure the proxy
+host and the proxy port. Client implementations of this specification that are
+constrained by such limitations MAY attempt to access UDP proxying capabilities
 using the default template, which is defined as:
-"https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/"
-where $PROXY_HOST and $PROXY_PORT are the configured host and port of the
-proxy respectively. Proxy deployments SHOULD offer service at this location if
-they need to interoperate with such clients.
+"https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/" where $PROXY_HOST and $PROXY_PORT are the configured host and port of
+the UDP proxy respectively. UDP proxy deployments SHOULD offer service at this
+location if they need to interoperate with such clients.
 
 Clients MAY interpret HTTP 400, 404, or 405 response codes as indications
 that the URI template is not correct.  Servers MUST NOT return these
 response codes if the request is well-formed and the URI matches a supported
 template.
 
-# HTTP Exchanges
+# Tunnelling UDP over HTTP
 
-This document defines the "connect-udp" HTTP Upgrade Token. "connect-udp" uses
-the Capsule Protocol as defined in {{Section 3.2 of HTTP-DGRAM}}. The format of
-HTTP Datagrams is defined in {{format}}.
+To allow negotiation of a tunnel for UDP over HTTP, this document defines the
+"connect-udp" HTTP Upgrade Token. The resulting UDP tunnels use the Capsule
+Protocol (see {{Section 3.2 of HTTP-DGRAM}}) with HTTP Datagram in the format
+defined in {{format}}.
 
-Clients issue requests containing a "connect-udp" upgrade token to initiate a
-UDP tunnel associated with a single HTTP stream. Tunnels are commonly used to
-create an end-to-end virtual connection, which can then be secured using QUIC
-{{!QUIC=RFC9000}} or another protocol running over UDP. The target of the tunnel
-is indicated by the client to the proxy via the "target_host" and "target_port"
-variables of the URI Template (see {{client-config}}). If the request is
-successful, the proxy commits to converting received HTTP Datagrams into UDP
-packets and vice versa until the tunnel is closed.
+To initiate a UDP tunnel associated with a single HTTP stream, Clients issue a
+request containing the "connect-udp" upgrade token. The target of the tunnel is
+indicated by the client to the UDP proxy via the "target_host" and
+"target_port" variables of the URI Template (see {{client-config}}). If the
+request is successful, the UDP proxy commits to converting received HTTP
+Datagrams into UDP packets and vice versa until the tunnel is closed.
 
 When sending its UDP proxying request, the client SHALL perform URI Template
 expansion to determine the path and query of its request. target_host supports
@@ -178,48 +177,48 @@ UDP proxying responses also do not carry any message content.
 Responses to UDP proxying requests are not cacheable.
 
 
-## Proxy Handling {#handling}
+## UDP Proxying {#handling}
 
-Upon receiving a UDP proxying request, the recipient proxy extracts the
+Upon receiving a request, the recipient UDP proxy extracts the
 "target_host" and "target_port" variables from the URI it has reconstructed
 from the request headers, and establishes a tunnel by directly opening a UDP
 socket to the requested target.
 
-Unlike TCP, UDP is connection-less. The proxy that opens the UDP socket has no
-way of knowing whether the destination is reachable. Therefore it needs to
-respond to the request without waiting for a packet from the target. However, if
-the target_host is a DNS name, the proxy MUST perform DNS resolution before
-replying to the HTTP request. If errors occur during this process (for example,
-a DNS resolution failure), the proxy MUST fail the request and SHOULD send
-details using the Proxy-Status header field
+Unlike TCP, UDP is connection-less. The UDP proxy that opens the UDP socket has
+no way of knowing whether the destination is reachable. Therefore it needs to
+respond to the request without waiting for a packet from the target. However,
+if the target_host is a DNS name, the UDP proxy MUST perform DNS resolution
+before replying to the HTTP request. If errors occur during this process (for
+example, a DNS resolution failure), the UDP proxy MUST fail the request and
+SHOULD send details using the Proxy-Status header field
 {{!PROXY-STATUS=I-D.ietf-httpbis-proxy-status}}.
 
-Proxies can use connected UDP sockets if their operating system supports them,
-as that allows the proxy to rely on the kernel to only send it UDP packets that
-match the correct 5-tuple. If the proxy uses a non-connected socket, it MUST
-validate the IP source address and UDP source port on received packets to
-ensure they match the client's request. Packets that do not match MUST be
-discarded by the proxy.
+UDP proxies can use connected UDP sockets if their operating system supports
+them, as that allows the UDP proxy to rely on the kernel to only send it UDP
+packets that match the correct 5-tuple. If the UDP proxy uses a non-connected
+socket, it MUST validate the IP source address and UDP source port on received
+packets to ensure they match the client's request. Packets that do not match
+MUST be discarded by the UDP proxy.
 
-The lifetime of the socket is tied to the request stream. The proxy MUST keep
-the socket open while the request stream is open. If a proxy is notified by its
-operating system that its socket is no longer usable (for example, this can
-happen when an ICMP "Destination Unreachable" message is received, see {{Section
-3.1 of ?ICMP6=RFC4443}}), it MUST close the request stream. Proxies MAY choose
-to close sockets due to a period of inactivity, but they MUST close the request
-stream when closing the socket. Proxies that close sockets after a period of
-inactivity SHOULD NOT use a period lower than two minutes, see {{Section 4.3 of
-?BEHAVE=RFC4787}}.
+The lifetime of the socket is tied to the request stream. The UDP proxy MUST
+keep the socket open while the request stream is open. If a UDP proxy is
+notified by its operating system that its socket is no longer usable (for
+example, this can happen when an ICMP "Destination Unreachable" message is
+received, see {{Section 3.1 of ?ICMP6=RFC4443}}), it MUST close the request
+stream. UDP proxies MAY choose to close sockets due to a period of inactivity,
+but they MUST close the request stream when closing the socket. UDP proxies
+that close sockets after a period of inactivity SHOULD NOT use a period lower
+than two minutes, see {{Section 4.3 of ?BEHAVE=RFC4787}}.
 
 A successful response (as defined in {{resp1}} and {{resp23}}) indicates that
-the proxy has opened a socket to the requested target and is willing to proxy
-UDP payloads. Any response other than a successful response indicates that the
-request has failed, and the client MUST therefore abort the request.
+the UDP proxy has opened a socket to the requested target and is willing to
+proxy UDP payloads. Any response other than a successful response indicates
+that the request has failed, and the client MUST therefore abort the request.
 
-Proxies MUST NOT introduce fragmentation at the IP layer when forwarding HTTP
-Datagrams onto a UDP socket. In IPv4, the Don't Fragment (DF) bit MUST be set if
-possible, to prevent fragmentation on the path. Future extensions MAY remove
-these requirements.
+UDP proxies MUST NOT introduce fragmentation at the IP layer when forwarding
+HTTP Datagrams onto a UDP socket. In IPv4, the Don't Fragment (DF) bit MUST be
+set if possible, to prevent fragmentation on the path. Future extensions MAY
+remove these requirements.
 
 
 ## HTTP/1.1 Request {#req1}
@@ -232,7 +231,7 @@ requirements:
 * the request-target SHALL use absolute-form (see {{Section 3.2.2 of H1}}).
 
 * the request SHALL include a single Host header field containing the origin of
-  the proxy.
+  the UDP proxy.
 
 * the request SHALL include a single "Connection" header field with value
   "Upgrade" (note that this requirement is case-insensitive as per {{Section
@@ -258,8 +257,8 @@ Upgrade: connect-udp
 
 ## HTTP/1.1 Response {#resp1}
 
-The proxy SHALL indicate a successful response by replying with the following
-requirements:
+The UDP proxy SHALL indicate a successful response by replying with the
+following requirements:
 
 * the HTTP status code on the response SHALL be 101 (Switching Protocols).
 
@@ -276,7 +275,7 @@ requirements:
 If any of these requirements are not met, the client MUST treat this proxying
 attempt as failed and abort the connection.
 
-For example, the proxy could respond with:
+For example, the UDP proxy could respond with:
 
 ~~~
 HTTP/1.1 101 Switching Protocols
@@ -297,7 +296,8 @@ fields with the following requirements:
 
 * The ":protocol" pseudo-header field SHALL be "connect-udp".
 
-* The ":authority" pseudo-header field SHALL contain the authority of the proxy.
+* The ":authority" pseudo-header field SHALL contain the authority of the UDP
+  proxy.
 
 * The ":path" and ":scheme" pseudo-header fields SHALL NOT be empty. Their
   values SHALL contain the scheme and path from the URI Template after the URI
@@ -324,14 +324,14 @@ HEADERS
 
 ## HTTP/2 and HTTP/3 Response {#resp23}
 
-The proxy SHALL indicate a successful response by replying with any 2xx
+The UDP proxy SHALL indicate a successful response by replying with any 2xx
 (Successful) HTTP status code, without any Transfer-Encoding or Content-Length
 header fields.
 
 If any of these requirements are not met, the client MUST treat this proxying
 attempt as failed and abort the request.
 
-For example, the proxy could respond with:
+For example, the UDP proxy could respond with:
 
 ~~~
 HEADERS
@@ -348,11 +348,11 @@ In order to allow implementations to support multiple draft versions of this
 specification during its development, we introduce the "connect-udp-version"
 header field. When sent by the client, it contains a list of draft numbers
 supported by the client (e.g., "connect-udp-version: 0, 2"). When sent by the
-proxy, it contains a single draft number selected by the proxy from the list
-provided by the client (e.g., "connect-udp-version: 2"). Sending this header
-field is RECOMMENDED but not required. The "connect-udp-version" header field is
-a List Structured Field, see {{Section 3.1 of !STRUCT-FIELD=RFC8941}}. Each list
-member MUST be an Integer.
+UDP proxy, it contains a single draft number selected by the UDP proxy from the
+list provided by the client (e.g., "connect-udp-version: 2"). Sending this
+header field is RECOMMENDED but not required. The "connect-udp-version" header
+field is a List Structured Field, see {{Section 3.1 of !STRUCT-FIELD=RFC8941}}.
+Each list member MUST be an Integer.
 
 
 # Context Identifiers {#context-id}
@@ -376,7 +376,7 @@ but MAY be allocated in any order. The context ID allocation restrictions to the
 use of even-numbered and odd-numbered context IDs exist in order to avoid the
 need for synchronisation between endpoints. However, once a context ID has been
 allocated, those restrictions do not apply to the use of the context ID: it can
-be used by any client or proxy, independent of which endpoint initially
+be used by any client or UDP proxy, independent of which endpoint initially
 allocated it.
 
 Registration is the action by which an endpoint informs its peer of the
@@ -421,24 +421,24 @@ When the Context ID is set to zero, the Payload field contains the
 unmodified payload of a UDP packet (referred to as "data octets" in {{UDP}}).
 
 Clients MAY optimistically start sending UDP packets in HTTP Datagrams before
-receiving the response to its UDP proxying request. However, implementors should
-note that such proxied packets may not be processed by the proxy if it responds
-to the request with a failure, or if the proxied packets are received by the
-proxy before the request.
+receiving the response to its UDP proxying request. However, implementors
+should note that such proxied packets may not be processed by the UDP proxy if
+it responds to the request with a failure, or if the proxied packets are
+received by the UDP proxy before the request.
 
 By virtue of the definition of the UDP header {{UDP}}, it is not possible to
 encode UDP payloads longer than 65527 bytes. Therefore, endpoints MUST NOT send
 HTTP Datagrams with a Payload field longer than 65527 using Context ID zero. An
 endpoint that receives a DATAGRAM capsule using Context ID zero whose Payload
-field is longer than 65527 MUST abort the stream. If a proxy knows it can only
-send out UDP packets of a certain length due to its underlying link MTU, it
-SHOULD discard incoming DATAGRAM capsules using Context ID zero whose Payload
-field is longer than that limit without buffering the capsule contents.
+field is longer than 65527 MUST abort the stream. If a UDP proxy knows it can
+only send out UDP packets of a certain length due to its underlying link MTU,
+it SHOULD discard incoming DATAGRAM capsules using Context ID zero whose
+Payload field is longer than that limit without buffering the capsule contents.
 
 
 # Performance Considerations {#performance}
 
-Proxies SHOULD strive to avoid increasing burstiness of UDP traffic: they
+UDP proxies SHOULD strive to avoid increasing burstiness of UDP traffic: they
 SHOULD NOT queue packets in order to increase batching.
 
 When the protocol running over UDP that is being proxied uses congestion
@@ -448,11 +448,11 @@ HTTP connection MUST NOT disable congestion control unless it has an
 out-of-band way of knowing with absolute certainty that the inner traffic is
 congestion-controlled.
 
-If a client or proxy with a connection containing a UDP proxying request stream
-disables congestion control, it MUST NOT signal ECN support on that connection.
-That is, it MUST mark all IP headers with the Not-ECT codepoint. It MAY
-continue to report ECN feedback via ACK_ECN frames, as the peer may not have
-disabled congestion control.
+If a client or UDP proxy with a connection containing a UDP proxying request
+stream disables congestion control, it MUST NOT signal ECN support on that
+connection. That is, it MUST mark all IP headers with the Not-ECT codepoint. It
+MAY continue to report ECN feedback via ACK_ECN frames, as the peer may not
+have disabled congestion control.
 
 When the protocol running over UDP that is being proxied uses loss recovery
 (e.g., {{QUIC}}), and the underlying HTTP connection runs over TCP, the proxied
@@ -467,14 +467,14 @@ QUIC DATAGRAM frame.
 When using HTTP/3 with the QUIC Datagram extension {{!DGRAM=RFC9221}}, UDP
 payloads are transmitted in QUIC DATAGRAM frames. Since those cannot be
 fragmented, they can only carry payloads up to a given length determined by the
-QUIC connection configuration and the path MTU. If a proxy is using QUIC
+QUIC connection configuration and the path MTU. If a UDP proxy is using QUIC
 DATAGRAM frames and it receives a UDP payload from the target that will not fit
-inside a QUIC DATAGRAM frame, the proxy SHOULD NOT send the UDP payload in a
-DATAGRAM capsule, as that defeats the end-to-end unreliability characteristic
+inside a QUIC DATAGRAM frame, the UDP proxy SHOULD NOT send the UDP payload in
+a DATAGRAM capsule, as that defeats the end-to-end unreliability characteristic
 that methods such as Datagram Packetization Layer Path MTU Discovery (DPLPMTUD)
-depend on {{?DPLPMTUD=RFC8899}}. In this scenario, the proxy SHOULD drop the UDP
-payload and send an ICMP "Packet Too Big" message to the target, see {{Section
-3.2 of ICMP6}}.
+depend on {{?DPLPMTUD=RFC8899}}. In this scenario, the UDP proxy SHOULD drop
+the UDP payload and send an ICMP "Packet Too Big" message to the target, see
+{{Section 3.2 of ICMP6}}.
 
 
 ## Tunneling of ECN Marks
@@ -484,33 +484,35 @@ UDP proxying does not create an IP-in-IP tunnel, so the guidance in
 headers does not apply. There is no inner IP header in UDP proxying tunnels.
 
 Note that UDP proxying clients do not have the ability in this specification to
-control the ECN codepoints on UDP packets the proxy sends to the target, nor can
-proxies communicate the markings of each UDP packet from target to proxy.
+control the ECN codepoints on UDP packets the UDP proxy sends to the target,
+nor can UDP proxies communicate the markings of each UDP packet from target to
+UDP proxy.
 
 A UDP proxy MUST ignore ECN bits in the IP header of UDP packets received from
 the target, and MUST set the ECN bits to Not-ECT on UDP packets it sends to the
 target. These do not relate to the ECN markings of packets sent between client
-and proxy in any way.
+and UDP proxy in any way.
 
 
 # Security Considerations {#security}
 
 There are significant risks in allowing arbitrary clients to establish a tunnel
 to arbitrary targets, as that could allow bad actors to send traffic and have
-it attributed to the proxy. Proxies that support UDP proxying ought to restrict
-its use to authenticated users.
+it attributed to the UDP proxy. Servers that support UDP proxying ought to
+restrict its use to authenticated users.
 
 Because the CONNECT method creates a TCP connection to the target, the target
 has to indicate its willingness to accept TCP connections by responding with a
-TCP SYN-ACK before the proxy can send it application data. UDP doesn't have this
-property, so a UDP proxy could send more data to an unwilling target than a
-CONNECT proxy. However, in practice denial of service attacks target open TCP
-ports so the TCP SYN-ACK does not offer much protection in real scenarios. While
-a proxy could potentially limit the number of UDP packets it is willing to
-forward until it has observed a response from the target, that is unlikely to
-provide any protection against denial of service attacks because such attacks
-target open UDP ports where the protocol running over UDP would respond, and
-that would be interpreted as willingness to accept UDP by the proxy.
+TCP SYN-ACK before the UDP proxy can send it application data. UDP doesn't have
+this property, so a UDP proxy could send more data to an unwilling target than
+a CONNECT proxy. However, in practice denial of service attacks target open TCP
+ports so the TCP SYN-ACK does not offer much protection in real scenarios.
+While a proxy could potentially limit the number of UDP packets it is willing
+to forward until it has observed a response from the target, that is unlikely
+to provide any protection against denial of service attacks because such
+attacks target open UDP ports where the protocol running over UDP would
+respond, and that would be interpreted as willingness to accept UDP by the
+proxy.
 
 UDP sockets for UDP proxying have a different lifetime than TCP sockets for
 CONNECT, therefore implementors would be well served to follow the advice in
