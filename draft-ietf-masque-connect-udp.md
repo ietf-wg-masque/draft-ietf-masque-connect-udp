@@ -175,8 +175,6 @@ By virtue of the definition of the Capsule Protocol (see {{HTTP-DGRAM}}), UDP
 proxying requests do not carry any message content. Similarly, successful
 UDP proxying responses also do not carry any message content.
 
-Responses to UDP proxying requests are not cacheable.
-
 
 ## UDP Proxy Handling {#handling}
 
