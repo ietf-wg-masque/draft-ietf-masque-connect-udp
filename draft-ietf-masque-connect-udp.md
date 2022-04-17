@@ -1,6 +1,5 @@
 ---
-title: UDP Proxying Support for HTTP
-abbrev: HTTP UDP CONNECT
+title: Proxying UDP in HTTP
 docname: draft-ietf-masque-connect-udp-latest
 submissiontype: IETF
 ipr: trust200902
@@ -56,27 +55,29 @@ normative:
 
 --- abstract
 
-This document describes how to proxy UDP over HTTP. Similar to how the CONNECT
-method allows proxying TCP over HTTP, this document defines a new mechanism to
-proxy UDP. When using HTTP/2 or HTTP/3, it uses Extended CONNECT; when using
-HTTP/1.1, it uses Upgrade.
-
+This document defines a protocol that allows HTTP clients to create a tunnel
+for UDP communications through a HTTP server that acts as a proxy.
 
 --- middle
 
 # Introduction {#introduction}
 
-This document describes how to proxy UDP over HTTP. Similar to how the CONNECT
-method (see {{Section 9.3.6 of !HTTP=I-D.ietf-httpbis-semantics}}) allows
-proxying TCP {{!TCP=RFC0793}} over HTTP, this document defines a new mechanism
-to proxy UDP {{!UDP=RFC0768}}.
+When end-to-end connectivity is not possible, using a trusted server as a proxy
+is a proven way to enable communication. While HTTP provides the CONNECT method
+(see {{Section 9.3.6 of !HTTP=I-D.ietf-httpbis-semantics}}) for creating a TCP
+{{!TCP=RFC0793}} tunnel to a proxy, it lacks a method for doing so for UDP
+{{!UDP=RFC0768}} traffic.
 
-UDP Proxying supports all versions of HTTP and uses HTTP Datagrams
+This document describes a protocol for tunnelling UDP to a proxy over HTTP.
+Unlike CONNECT, the proxy itself is identified with an absolute URL containing
+the traffic's destination. Clients generate those URLs using a URI Template
+{{!TEMPLATE=RFC6570}}, per {{client-config}}.
+
+This protocol supports all versions of HTTP by using HTTP Datagrams
 {{!HTTP-DGRAM=I-D.ietf-masque-h3-datagram}}. When using HTTP/2 {{H2}} or HTTP/3
-{{H3}}, UDP proxying uses HTTP Extended CONNECT as described in
-{{!EXT-CONNECT2=RFC8441}} and {{!EXT-CONNECT3=I-D.ietf-httpbis-h3-websockets}}.
-When using HTTP/1.x {{H1}}, UDP proxying uses HTTP Upgrade as defined in
-{{Section 7.8 of HTTP}}.
+{{H3}}, it uses HTTP Extended CONNECT as described in {{!EXT-CONNECT2=RFC8441}}
+and {{!EXT-CONNECT3=I-D.ietf-httpbis-h3-websockets}}. When using HTTP/1.x
+{{H1}}, it uses HTTP Upgrade as defined in {{Section 7.8 of HTTP}}.
 
 
 ## Conventions and Definitions {#conventions}
@@ -84,10 +85,10 @@ When using HTTP/1.x {{H1}}, UDP proxying uses HTTP Upgrade as defined in
 {::boilerplate bcp14-tagged}
 
 In this document, we use the term "proxy" to refer to the HTTP server that acts
-upon the client's UDP proxying request to open a UDP socket to a target server,
-and generates the response to this request. If there are HTTP intermediaries (as
-defined in {{Section 3.7 of HTTP}}) between the client and the proxy, those are
-referred to as "intermediaries" in this document.
+upon the client's UDP tunnelling request to open a UDP socket to a target
+server, and generates the response to this request. If there are HTTP
+intermediaries (as defined in {{Section 3.7 of HTTP}}) between the client and
+the proxy, those are referred to as "intermediaries" in this document.
 
 Note that, when the HTTP version in use does not support multiplexing streams
 (such as HTTP/1.1), any reference to "stream" in this document represents the
