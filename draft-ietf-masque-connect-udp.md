@@ -150,10 +150,6 @@ where $PROXY_HOST and $PROXY_PORT are the configured host and port of the UDP
 proxy respectively. UDP proxy deployments SHOULD offer service at this location
 if they need to interoperate with such clients.
 
-Clients MAY interpret HTTP 400, 404, or 405 response codes as indications
-that the URI template is not correct.  Servers MUST NOT return these
-response codes if the request is well-formed and the URI matches a supported
-template.
 
 # Tunnelling UDP over HTTP
 
