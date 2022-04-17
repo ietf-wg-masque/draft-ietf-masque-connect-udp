@@ -121,7 +121,7 @@ The following requirements apply to the URI Template:
 
 * The path component of the URI Template MUST start with a slash "/".
 
-* All template variables MUST be within the path component of the URI.
+* All template variables MUST be within the path or query components of the URI.
 
 * The URI template MUST contain the two variables "target_host" and
   "target_port" and MAY contain other variables.
