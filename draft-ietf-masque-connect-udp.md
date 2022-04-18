@@ -406,6 +406,7 @@ UDP Proxying HTTP Datagram Payload {
 {: #dgram-format title="UDP Proxying HTTP Datagram Format"}
 
 Context ID:
+
 : A variable-length integer (see {{Section 16 of QUIC}}) that contains the value
 of the Context ID. If an HTTP/3 datagram which carries an unknown Context ID is
 received, the receiver SHALL either drop that datagram silently or buffer it
@@ -413,6 +414,7 @@ temporarily (on the order of a round trip) while awaiting the registration of
 the corresponding Context ID.
 
 Payload:
+
 : The payload of the datagram, whose semantics depend on value of the previous
 field. Note that this field can be empty.
 {: spacing="compact"}
@@ -532,15 +534,19 @@ Tokens" registry maintained at
 <[](https://www.iana.org/assignments/http-upgrade-tokens)>.
 
 Value:
+
 : connect-udp
 
 Description:
+
 : Proxying of UDP Payloads
 
 Expected Version Tokens:
+
 : None
 
 Reference:
+
 : This document
 {: spacing="compact"}
 
@@ -552,18 +558,23 @@ URIs" registry maintained at
 <[](https://www.iana.org/assignments/well-known-uris)>.
 
 URI Suffix:
+
 : masque/udp
 
 Change Controller:
+
 : IETF
 
 Reference:
+
 : This document
 
 Status:
+
 : permanent (if this document is approved)
 
 Related Information:
+
 : Includes all resources identified with the path prefix
 "/.well-known/masque/udp/"
 {: spacing="compact"}
