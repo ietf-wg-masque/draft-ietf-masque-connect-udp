@@ -135,9 +135,11 @@ The following requirements apply to the URI Template:
   Expansion with Slash-Prefix, nor Path-Style Parameter Expansion with
   Semicolon-Prefix.
 
-If any of the requirements above are not met by a URI Template, the client MUST
-reject its configuration and fail the request without sending it to the UDP
-proxy.
+If the client detects that any of the requirements above are not met by a URI
+Template, the client MUST reject its configuration and fail the request without
+sending it to the UDP proxy. While clients SHOULD validate the requirements
+above, some clients MAY use a general-purpose URI Template implementation that
+lacks this specific validation.
 
 Since the original HTTP CONNECT method allowed conveying the target host and
 port but not the scheme, proxy authority, path, nor query, there exist proxy
