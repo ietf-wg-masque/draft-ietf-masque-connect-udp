@@ -40,7 +40,6 @@ author:
     code: 94043
     country: United States of America
     email: dschinazi.ietf@gmail.com
-
 normative:
   H1:
     =: I-D.draft-ietf-httpbis-messaging
