@@ -179,17 +179,18 @@ UDP proxying responses also do not carry any message content.
 
 ## UDP Proxy Handling {#handling}
 
-Upon receiving a UDP proxying request, the recipient can either act as a UDP
-proxy and establish a tunnel (see below), or act as an intermediary and forward
-the request to another HTTP server. Note that such intermediaries may need to
-reencode the request if they forward it using a version of HTTP that is
-different from the one used to receive it, as the request encoding differs by
-version (see below).
+Upon receiving a UDP proxying request:
 
-When acting as a UDP proxy, the recipient of the UDP proxying request extracts
-the "target_host" and "target_port" variables from the URI it has reconstructed
-from the request headers, and establishes a tunnel by directly opening a UDP
-socket to the requested target.
+ * if the recipient is configured to use another HTTP proxy, it will act as an
+   intermediary: it forwards the request to another HTTP server. Note that such
+   intermediaries may need to reencode the request if they forward it using a
+   version of HTTP that is different from the one used to receive it, as the
+   request encoding differs by version (see below).
+
+* otherwise, the recipient will act as a UDP proxy: it extracts the
+  "target_host" and "target_port" variables from the URI it has reconstructed
+  from the request headers, and establishes a tunnel by directly opening a UDP
+  socket to the requested target.
 
 Unlike TCP, UDP is connection-less. The UDP proxy that opens the UDP socket has
 no way of knowing whether the destination is reachable. Therefore it needs to
