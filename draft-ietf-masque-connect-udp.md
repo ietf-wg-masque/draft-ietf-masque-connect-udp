@@ -1,16 +1,14 @@
 ---
 title: Proxying UDP in HTTP
 docname: draft-ietf-masque-connect-udp-latest
+v: 3
 submissiontype: IETF
-ipr: trust200902
 category: std
-stand_alone: yes
-pi: [toc, sortrefs, symrefs]
 area: Transport
 wg: MASQUE
 number:
 date:
-consensus:
+consensus: true
 venue:
   group: "MASQUE"
   type: "Working Group"
