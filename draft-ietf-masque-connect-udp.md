@@ -194,10 +194,11 @@ Unlike TCP, UDP is connection-less. The UDP proxy that opens the UDP socket has
 no way of knowing whether the destination is reachable. Therefore it needs to
 respond to the request without waiting for a packet from the target. However, if
 the target_host is a DNS name, the UDP proxy MUST perform DNS resolution before
-replying to the HTTP request. If errors occur during this process (for example,
-a DNS resolution failure), the UDP proxy MUST fail the request and SHOULD send
-details using an appropriate "Proxy-Status" header field
-{{!PROXY-STATUS=I-D.ietf-httpbis-proxy-status}}.
+replying to the HTTP request. If errors occur during this process, the UDP proxy
+MUST fail the request and SHOULD send details using an appropriate
+"Proxy-Status" header field {{!PROXY-STATUS=I-D.ietf-httpbis-proxy-status}} (for
+example, if DNS resolution returns an error, the proxy can use the dns_error
+Proxy Error Type from {{Section 2.3.2 of PROXY-STATUS}}).
 
 UDP proxies can use connected UDP sockets if their operating system supports
 them, as that allows the UDP proxy to rely on the kernel to only send it UDP
