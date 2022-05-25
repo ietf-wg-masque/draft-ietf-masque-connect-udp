@@ -458,10 +458,11 @@ out-of-band way of knowing with absolute certainty that the inner traffic is
 congestion-controlled.
 
 If a client or UDP proxy with a connection containing a UDP proxying request
-stream disables congestion control, it MUST NOT signal ECN support on that
-connection. That is, it MUST mark all IP headers with the Not-ECT codepoint. It
-MAY continue to report ECN feedback via ACK_ECN frames, as the peer may not have
-disabled congestion control.
+stream disables congestion control, it MUST NOT signal Explicit Congestion
+Notification (ECN) {{!RFC3168}} support on that connection. That is, it MUST
+mark all IP headers with the Not-ECT codepoint. It MAY continue to report ECN
+feedback via ACK_ECN frames, as the peer may not have disabled congestion
+control.
 
 When the protocol running over UDP that is being proxied uses loss recovery
 (e.g., {{QUIC}}), and the underlying HTTP connection runs over TCP, the proxied
