@@ -459,7 +459,7 @@ congestion-controlled.
 
 If a client or UDP proxy with a connection containing a UDP proxying request
 stream disables congestion control, it MUST NOT signal Explicit Congestion
-Notification (ECN) {{!RFC3168}} support on that connection. That is, it MUST
+Notification (ECN) {{!ECN=RFC3168}} support on that connection. That is, it MUST
 mark all IP headers with the Not-ECT codepoint. It MAY continue to report ECN
 feedback via QUIC ACK_ECN frames or the TCP "ECE" bit, as the peer may not have
 disabled congestion control.
