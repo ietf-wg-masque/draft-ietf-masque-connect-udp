@@ -139,11 +139,11 @@ above, some clients MAY use a general-purpose URI Template implementation that
 lacks this specific validation.
 
 Since the original HTTP CONNECT method allowed conveying the target host and
-port but not the scheme, proxy authority, path, nor query, there exist proxy
-configuration interfaces that only allow the user to configure the proxy host
-and the proxy port. Client implementations of this specification that are
-constrained by such limitations MAY attempt to access UDP proxying capabilities
-using the default template, which is defined as:
+port but not the scheme, proxy authority, path, nor query, there exist clients
+with proxy configuration interfaces that only allow the user to configure the
+proxy host and the proxy port. Client implementations of this specification that
+are constrained by such limitations MAY attempt to access UDP proxying
+capabilities using the default template, which is defined as:
 "https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/"
 where $PROXY_HOST and $PROXY_PORT are the configured host and port of the UDP
 proxy respectively. UDP proxy deployments SHOULD offer service at this location
