@@ -417,7 +417,8 @@ Context ID:
 of the Context ID. If an HTTP/3 datagram which carries an unknown Context ID is
 received, the receiver SHALL either drop that datagram silently or buffer it
 temporarily (on the order of a round trip) while awaiting the registration of
-the corresponding Context ID.
+the corresponding Context ID. Additionally, receivers that buffer such datagrams
+SHOULD limit the amount they are willing to buffer to avoid memory exhaustion.
 
 Payload:
 
@@ -429,16 +430,6 @@ UDP packets are encoded using HTTP Datagrams with the Context ID set to zero.
 When the Context ID is set to zero, the Payload field contains the
 unmodified payload of a UDP packet (referred to as "data octets" in {{UDP}}).
 
-Clients MAY optimistically start sending UDP packets in HTTP Datagrams before
-receiving the response to its UDP proxying request. However, implementors should
-note that such proxied packets may not be processed by the UDP proxy if it
-responds to the request with a failure, or if the proxied packets are received
-by the UDP proxy before the request. If a UDP proxy receives such a proxied
-packet before it has received the corresponding request, it SHALL either drop
-that HTTP Datagram silently or buffer it temporarily (on the order of a round
-trip). Additionally, UDP proxies that buffer such packets SHOULD limit the
-amount they are willing to buffer to avoid memory exhaustion.
-
 By virtue of the definition of the UDP header {{UDP}}, it is not possible to
 encode UDP payloads longer than 65527 bytes. Therefore, endpoints MUST NOT send
 HTTP Datagrams with a Payload field longer than 65527 using Context ID zero. An
@@ -447,6 +438,18 @@ field is longer than 65527 MUST abort the stream. If a UDP proxy knows it can
 only send out UDP packets of a certain length due to its underlying link MTU, it
 SHOULD discard incoming DATAGRAM capsules using Context ID zero whose Payload
 field is longer than that limit without buffering the capsule contents.
+
+If a UDP proxy receives an HTTP Datagram before it has received the
+corresponding request, it SHALL either drop that HTTP Datagram silently or
+buffer it temporarily (on the order of a round trip). Additionally, UDP proxies
+that buffer HTTP Datagrams SHOULD limit the amount they are willing to buffer to
+avoid memory exhaustion.
+
+A clients MAY optimistically start sending UDP packets in HTTP Datagrams before
+receiving the response to its UDP proxying request. However, implementors should
+note that such proxied packets may not be processed by the UDP proxy if it
+responds to the request with a failure, or if the proxied packets are received
+by the UDP proxy before the request.
 
 
 # Performance Considerations {#performance}
