@@ -54,7 +54,7 @@ normative:
 
 This document describes how to proxy UDP in HTTP, similar to how the HTTP
 CONNECT method allows proxying TCP in HTTP. More specifically, this document
-defines a protocol that allows HTTP clients to create a tunnel for UDP
+defines a protocol that allows an HTTP client to create a tunnel for UDP
 communications through an HTTP server that acts as a proxy.
 
 
@@ -64,7 +64,8 @@ communications through an HTTP server that acts as a proxy.
 
 While HTTP provides the CONNECT method (see {{Section 9.3.6 of
 !HTTP=I-D.ietf-httpbis-semantics}}) for creating a TCP {{!TCP=RFC0793}} tunnel
-to a proxy, it lacks a method for doing so for UDP {{!UDP=RFC0768}} traffic.
+to a proxy, prior to this specification it lacked a method for doing so for UDP
+{{!UDP=RFC0768}} traffic.
 
 This document describes a protocol for tunnelling UDP to a server acting as a
 UDP-specific proxy over HTTP. UDP tunnels are commonly used to create an
@@ -74,7 +75,7 @@ proxy itself is identified with an absolute URL containing the traffic's
 destination. Clients generate those URLs using a URI Template
 {{!TEMPLATE=RFC6570}}, as described in {{client-config}}.
 
-This protocol supports all versions of HTTP by using HTTP Datagrams
+This protocol supports all existing versions of HTTP by using HTTP Datagrams
 {{!HTTP-DGRAM=I-D.ietf-masque-h3-datagram}}. When using HTTP/2 {{H2}} or HTTP/3
 {{H3}}, it uses HTTP Extended CONNECT as described in {{!EXT-CONNECT2=RFC8441}}
 and {{!EXT-CONNECT3=I-D.ietf-httpbis-h3-websockets}}. When using HTTP/1.x
@@ -157,7 +158,7 @@ To allow negotiation of a tunnel for UDP over HTTP, this document defines the
 Protocol (see {{Section 3.2 of HTTP-DGRAM}}) with HTTP Datagram in the format
 defined in {{format}}.
 
-To initiate a UDP tunnel associated with a single HTTP stream, clients issue a
+To initiate a UDP tunnel associated with a single HTTP stream, a client issues a
 request containing the "connect-udp" upgrade token. The target of the tunnel is
 indicated by the client to the UDP proxy via the "target_host" and "target_port"
 variables of the URI Template, see {{client-config}}. If the request is
@@ -364,12 +365,12 @@ Each list member MUST be an Integer.
 
 # Context Identifiers {#context-id}
 
-This protocol allows future extensions to exchange HTTP Datagrams which carry
-different semantics from UDP payloads. Some of these extensions can augment UDP
-payloads with additional data, while others can exchange data that is completely
-separate from UDP payloads. In order to accomplish this, all HTTP Datagrams
-associated with UDP Proxying request streams start with a context ID, see
-{{format}}.
+The mechanism for proxying UDP in HTTP defined in this document allows future
+extensions to exchange HTTP Datagrams which carry different semantics from UDP
+payloads. Some of these extensions can augment UDP payloads with additional
+data, while others can exchange data that is completely separate from UDP
+payloads. In order to accomplish this, all HTTP Datagrams associated with UDP
+Proxying request streams start with a context ID, see {{format}}.
 
 Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). Context IDs are encoded
 as variable-length integers, see {{Section 16 of QUIC}}. The context ID value of
