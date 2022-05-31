@@ -433,7 +433,11 @@ Clients MAY optimistically start sending UDP packets in HTTP Datagrams before
 receiving the response to its UDP proxying request. However, implementors should
 note that such proxied packets may not be processed by the UDP proxy if it
 responds to the request with a failure, or if the proxied packets are received
-by the UDP proxy before the request.
+by the UDP proxy before the request. If a UDP proxy receives such a proxied
+packet before it has received the corresponding request, it SHALL either drop
+that HTTP Datagram silently or buffer it temporarily (on the order of a round
+trip). Additionally, UDP proxies that buffer such packets SHOULD limit the
+amount they are willing to buffer to avoid memory exhaustion.
 
 By virtue of the definition of the UDP header {{UDP}}, it is not possible to
 encode UDP payloads longer than 65527 bytes. Therefore, endpoints MUST NOT send
