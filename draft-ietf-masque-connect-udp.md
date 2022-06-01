@@ -133,11 +133,11 @@ The following requirements apply to the URI Template:
   Expansion with Slash-Prefix, nor Path-Style Parameter Expansion with
   Semicolon-Prefix.
 
-If the client detects that any of the requirements above are not met by a URI
+Clients SHOULD validate the requirements above; however, clients MAY use a
+general-purpose URI Template implementation that lacks this specific validation.
+If a client detects that any of the requirements above are not met by a URI
 Template, the client MUST reject its configuration and fail the request without
-sending it to the UDP proxy. While clients SHOULD validate the requirements
-above, some clients MAY use a general-purpose URI Template implementation that
-lacks this specific validation.
+sending it to the UDP proxy.
 
 Since the original HTTP CONNECT method allowed conveying the target host and
 port but not the scheme, proxy authority, path, nor query, there exist clients
@@ -460,8 +460,11 @@ by the UDP proxy before the request and the UDP proxy chooses to not buffer them
 
 # Performance Considerations {#performance}
 
-UDP proxies SHOULD strive to avoid increasing burstiness of UDP traffic: they
-SHOULD NOT queue packets in order to increase batching.
+Bursty traffic can often lead to temporally correlated packet losses, which in
+turn can lead to suboptimal responses from congestion controllers in protocols
+running over UDP. To avoid this, UDP proxies SHOULD strive to avoid increasing
+burstiness of UDP traffic: they SHOULD NOT queue packets in order to increase
+batching.
 
 When the protocol running over UDP that is being proxied uses congestion
 control (e.g., {{QUIC}}), the proxied traffic will incur at least two nested
