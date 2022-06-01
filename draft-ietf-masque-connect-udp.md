@@ -417,8 +417,7 @@ Context ID:
 of the Context ID. If an HTTP/3 datagram which carries an unknown Context ID is
 received, the receiver SHALL either drop that datagram silently or buffer it
 temporarily (on the order of a round trip) while awaiting the registration of
-the corresponding Context ID. Additionally, receivers that buffer such datagrams
-SHOULD limit the amount they are willing to buffer to avoid memory exhaustion.
+the corresponding Context ID.
 
 Payload:
 
@@ -441,15 +440,21 @@ field is longer than that limit without buffering the capsule contents.
 
 If a UDP proxy receives an HTTP Datagram before it has received the
 corresponding request, it SHALL either drop that HTTP Datagram silently or
-buffer it temporarily (on the order of a round trip). Additionally, UDP proxies
-that buffer HTTP Datagrams SHOULD limit the amount they are willing to buffer to
-avoid memory exhaustion.
+buffer it temporarily (on the order of a round trip) while awaiting the
+corresponding request.
 
-A clients MAY optimistically start sending UDP packets in HTTP Datagrams before
+Note that buffering datagrams (either because the request was not yet received,
+or because the Context ID is not yet known) consumes resources. Receivers that
+buffer datagrams SHOULD apply buffering limits in order to reduce the risk of
+resource exhaustion occuring. For example, receivers can limit the total number
+of buffered datagrams, or the cumulative size of buffered datagrams, on a
+per-stream, per-context, or per-connection basis.
+
+A client MAY optimistically start sending UDP packets in HTTP Datagrams before
 receiving the response to its UDP proxying request. However, implementors should
 note that such proxied packets may not be processed by the UDP proxy if it
 responds to the request with a failure, or if the proxied packets are received
-by the UDP proxy before the request.
+by the UDP proxy before the request and the UDP proxy chooses to not buffer them.
 
 
 # Performance Considerations {#performance}
