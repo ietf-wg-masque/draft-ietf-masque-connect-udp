@@ -598,7 +598,8 @@ Status:
 
 Related Information:
 
-: Includes all resources identified with the path prefix "/.well-known/masque/"
+: Includes all resources identified with the path prefix
+"/.well-known/masque/udp/"
 {: spacing="compact"}
 
 
