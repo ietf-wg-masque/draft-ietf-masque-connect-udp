@@ -576,13 +576,13 @@ Reference:
 
 ## Well-Known URI {#iana-uri}
 
-This document will request IANA to register "masque/udp" in the "Well-Known
+This document will request IANA to register "masque" in the "Well-Known
 URIs" registry maintained at
 <[](https://www.iana.org/assignments/well-known-uris)>.
 
 URI Suffix:
 
-: masque/udp
+: masque
 
 Change Controller:
 
