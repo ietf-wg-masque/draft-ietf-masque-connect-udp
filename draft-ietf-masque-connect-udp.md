@@ -40,13 +40,13 @@ author:
     email: dschinazi.ietf@gmail.com
 normative:
   H1:
-    =: I-D.draft-ietf-httpbis-messaging
+    =: RFC9112
     display: HTTP/1.1
   H2:
-    =: I-D.draft-ietf-httpbis-http2bis
+    =: RFC9113
     display: HTTP/2
   H3:
-    =: I-D.draft-ietf-quic-http
+    =: RFC9114
     display: HTTP/3
 
 
@@ -62,10 +62,9 @@ communications through an HTTP server that acts as a proxy.
 
 # Introduction {#introduction}
 
-While HTTP provides the CONNECT method (see {{Section 9.3.6 of
-!HTTP=I-D.ietf-httpbis-semantics}}) for creating a TCP {{!TCP=RFC0793}} tunnel
-to a proxy, prior to this specification it lacked a method for doing so for UDP
-{{!UDP=RFC0768}} traffic.
+While HTTP provides the CONNECT method (see {{Section 9.3.6 of !HTTP=RFC9110}})
+for creating a TCP {{!TCP=RFC0793}} tunnel to a proxy, prior to this
+specification it lacked a method for doing so for UDP {{!UDP=RFC0768}} traffic.
 
 This document describes a protocol for tunnelling UDP to a server acting as a
 UDP-specific proxy over HTTP. UDP tunnels are commonly used to create an
