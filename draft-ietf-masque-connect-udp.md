@@ -527,7 +527,7 @@ attributed to the UDP proxy. HTTP servers that support UDP proxying ought to
 restrict its use to authenticated users.
 
 UDP proxies have similar properties to TCP proxies when it comes to facilitating
-denial of service attacks, even though TCP offers better protection in theory.
+denial of service attacks. In theory, the stateful nature of TCP provides better protection that stateless UDP. However, in practice there are negligible differences when considering proxying.
 Because the CONNECT method creates a TCP connection to the target, the target
 has to indicate its willingness to accept TCP connections by responding with a
 TCP SYN-ACK before the CONNECT proxy can send it application data. UDP doesn't
