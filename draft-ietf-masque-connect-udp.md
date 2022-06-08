@@ -526,6 +526,8 @@ to arbitrary targets, as that could allow bad actors to send traffic and have it
 attributed to the UDP proxy. HTTP servers that support UDP proxying ought to
 restrict its use to authenticated users.
 
+UDP proxies have similar properties to TCP proxies when it comes to facilitating
+denial of service attacks, even though TCP offers better protection in theory.
 Because the CONNECT method creates a TCP connection to the target, the target
 has to indicate its willingness to accept TCP connections by responding with a
 TCP SYN-ACK before the CONNECT proxy can send it application data. UDP doesn't
@@ -538,11 +540,6 @@ unlikely to provide any protection against denial of service attacks because
 such attacks target open UDP ports where the protocol running over UDP would
 respond, and that would be interpreted as willingness to accept UDP by the UDP
 proxy.
-
-UDP sockets for UDP proxying have a different lifetime than TCP sockets for
-CONNECT, therefore implementors would be well served to follow the advice in
-{{handling}} if they base their UDP proxying implementation on a preexisting
-implementation of CONNECT.
 
 The security considerations described in {{HTTP-DGRAM}} also apply here.
 
