@@ -77,8 +77,8 @@ destination. Clients generate those URLs using a URI Template
 This protocol supports all existing versions of HTTP by using HTTP Datagrams
 {{!HTTP-DGRAM=I-D.ietf-masque-h3-datagram}}. When using HTTP/2 {{H2}} or HTTP/3
 {{H3}}, it uses HTTP Extended CONNECT as described in {{!EXT-CONNECT2=RFC8441}}
-and {{!EXT-CONNECT3=I-D.ietf-httpbis-h3-websockets}}. When using HTTP/1.x
-{{H1}}, it uses HTTP Upgrade as defined in {{Section 7.8 of HTTP}}.
+and {{!EXT-CONNECT3=RFC9220}}. When using HTTP/1.x {{H1}}, it uses HTTP Upgrade
+as defined in {{Section 7.8 of HTTP}}.
 
 
 ## Conventions and Definitions {#conventions}
@@ -196,9 +196,9 @@ respond to the request without waiting for a packet from the target. However, if
 the target_host is a DNS name, the UDP proxy MUST perform DNS resolution before
 replying to the HTTP request. If errors occur during this process, the UDP proxy
 MUST fail the request and SHOULD send details using an appropriate
-"Proxy-Status" header field {{!PROXY-STATUS=I-D.ietf-httpbis-proxy-status}} (for
-example, if DNS resolution returns an error, the proxy can use the dns_error
-Proxy Error Type from {{Section 2.3.2 of PROXY-STATUS}}).
+"Proxy-Status" header field {{!PROXY-STATUS=RFC9209}} (for example, if DNS
+resolution returns an error, the proxy can use the dns_error Proxy Error Type
+from {{Section 2.3.2 of PROXY-STATUS}}).
 
 UDP proxies can use connected UDP sockets if their operating system supports
 them, as that allows the UDP proxy to rely on the kernel to only send it UDP
