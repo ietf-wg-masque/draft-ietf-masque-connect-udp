@@ -311,7 +311,7 @@ fields with the following requirements:
   template expansion process has been completed.
 
 A UDP proxying request that does not conform to these restrictions is
-malformed (see {{Section 8.1.1 of H2}}).
+malformed (see {{Section 8.1.1 of H2}} and {{Section 4.1.2 of H3}}).
 
 For example, if the client is configured with URI Template
 "https://proxy.example.org/{target_host}/{target_port}/" and wishes to open a
