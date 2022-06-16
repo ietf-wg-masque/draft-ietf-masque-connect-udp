@@ -125,7 +125,7 @@ The following requirements apply to the URI Template:
 
 * The URI Template MUST NOT contain any non-ASCII unicode characters and MUST
   only contain ASCII characters in the range 0x21-0x7E inclusive (note that
-  percent-encoding is allowed).
+  percent-encoding is allowed; see {{Section 2.1 of ?URI=RFC3986}}).
 
 * The URI Template MUST NOT use Reserved Expansion ("+" operator), Fragment
   Expansion ("#" operator), Label Expansion with Dot-Prefix, Path Segment
@@ -168,7 +168,7 @@ When sending its UDP proxying request, the client SHALL perform URI Template
 expansion to determine the path and query of its request. target_host supports
 using DNS names, IPv6 literals and IPv4 literals. Note that IPv6 scoped
 addressing zone identifiers are not supported. Also note that this URI Template
-expansion requires using pct-encoding, so for example if the target_host is
+expansion requires using percent-encoding, so for example if the target_host is
 "2001:db8::42", it will be encoded in the URI as "2001%3Adb8%3A%3A42".
 
 By virtue of the definition of the Capsule Protocol (see {{HTTP-DGRAM}}), UDP
