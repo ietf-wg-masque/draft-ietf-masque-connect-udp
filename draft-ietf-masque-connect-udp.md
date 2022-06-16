@@ -244,6 +244,10 @@ requirements:
 
 * the request SHALL include an "Upgrade" header field with value "connect-udp".
 
+A UDP proxying request that does not conform to these restrictions is malformed.
+The recipient of such a malformed request MUST respond with an error, and SHOULD
+use the 400 (Bad Request) status code.
+
 For example, if the client is configured with URI Template
 "https://proxy.example.org/.well-known/masque/udp/{target_host}/{target_port}/"
 and wishes to open a
