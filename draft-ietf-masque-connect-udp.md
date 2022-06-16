@@ -611,11 +611,18 @@ Related Information:
 
 This document is a product of the MASQUE Working Group, and the author thanks
 all MASQUE enthusiasts for their contibutions. This proposal was inspired
-directly or indirectly by prior work from many people. In particular, the author
-would like to thank Eric Rescorla for suggesting to use an HTTP method to proxy
-UDP. The author is indebted to Mark Nottingham and Lucas Pardue for the many
-improvements they contributed to this document. The extensibility design in this
-document came out of the HTTP Datagrams Design Team, whose members were Alan
-Frindell, Alex Chernyakhovsky, Ben Schwartz, Eric Rescorla, Lucas Pardue, Marcus
-Ihlar, Martin Thomson, Mike Bishop, Tommy Pauly, Victor Vasiliev, and the author
-of this document.
+directly or indirectly by prior work from many people, in particular
+[HELIUM](https://www.ietf.org/archive/id/draft-schwartz-httpbis-helium-00.txt)
+by Ben Schwartz,
+[HiNT](https://www.ietf.org/archive/id/draft-pardue-httpbis-http-network-tunnelling-00.txt)
+by Lucas Pardue, and the original
+[MASQUE Protocol](https://www.ietf.org/archive/id/draft-schinazi-masque-00.txt)
+by the author of this document.
+
+The author would like to thank Eric Rescorla for suggesting to use an HTTP
+method to proxy UDP. The author is indebted to Mark Nottingham and Lucas Pardue
+for the many improvements they contributed to this document. The extensibility
+design in this document came out of the HTTP Datagrams Design Team, whose
+members were Alan Frindell, Alex Chernyakhovsky, Ben Schwartz, Eric Rescorla,
+Lucas Pardue, Marcus Ihlar, Martin Thomson, Mike Bishop, Tommy Pauly, Victor
+Vasiliev, and the author of this document.
