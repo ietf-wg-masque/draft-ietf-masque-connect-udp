@@ -542,14 +542,19 @@ to arbitrary targets, as that could allow bad actors to send traffic and have it
 attributed to the UDP proxy. HTTP servers that support UDP proxying ought to
 restrict its use to authenticated users.
 
-There exist software deployments that perform access control checks based on the
-source IP address of incoming requests. For example, some software allows
-unauthenticated configuration changes if they originated from 127.0.0.1. Such
-software could be running on the same host as the UDP proxy, or in the same
-broadcast domain. This could lead to unauthorized access by UDP proxying clients
-unless the UDP proxy disallows UDP proxying requests to vulnerable targets, such
-as localhost names and addresses, link-local addresses, the UDP proxy's own
-addresses, multicast and broadcast addresses.
+There exist software and network deployments that perform access control checks
+based on the source IP address of incoming requests. For example, some software
+allows unauthenticated configuration changes if they originated from 127.0.0.1.
+Such software could be running on the same host as the UDP proxy, or in the same
+broadcast domain. Proxied UDP traffic would then be received with a source IP
+address belonging to the UDP proxy. If this source address is used for access
+control, UDP proxying clients could use the UDP proxy to escalate their access
+privileges beyond those they might otherwise have. This could lead to
+unauthorized access by UDP proxying clients unless the UDP proxy disallows UDP
+proxying requests to vulnerable targets, such as localhost names and addresses,
+link-local addresses, the UDP proxy's own addresses, multicast and broadcast
+addresses. UDP proxies can use the destination_ip_prohibited Proxy Error Type
+from {{Section 2.3.5 of PROXY-STATUS}} when rejecting such requests.
 
 UDP proxies share many similarities to TCP CONNECT proxies when considering them
 as infrastructure for abuse to enable denial of service attacks. Both can
