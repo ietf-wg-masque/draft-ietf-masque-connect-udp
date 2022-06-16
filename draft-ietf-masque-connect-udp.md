@@ -408,8 +408,9 @@ packet containing the registration message during transmission.
 When HTTP Datagrams (see {{HTTP-DGRAM}}) are associated with UDP proxying
 request streams, the HTTP Datagram Payload field has the format defined in
 {{dgram-format}}. Note that when HTTP Datagrams are encoded using QUIC DATAGRAM
-frames, the Context ID field defined below directly follows the Quarter Stream
-ID field which is at the start of the QUIC DATAGRAM frame payload:
+frames {{!DGRAM=RFC9221}}, the Context ID field defined below directly follows
+the Quarter Stream ID field which is at the start of the QUIC DATAGRAM frame
+payload:
 
 ~~~
 UDP Proxying HTTP Datagram Payload {
@@ -497,14 +498,14 @@ QUIC DATAGRAM frame.
 
 ## MTU Considerations
 
-When using HTTP/3 with the QUIC Datagram extension {{!DGRAM=RFC9221}}, UDP
-payloads are transmitted in QUIC DATAGRAM frames. Since those cannot be
-fragmented, they can only carry payloads up to a given length determined by the
-QUIC connection configuration and the path MTU. If a UDP proxy is using QUIC
-DATAGRAM frames and it receives a UDP payload from the target that will not fit
-inside a QUIC DATAGRAM frame, the UDP proxy SHOULD NOT send the UDP payload in a
-DATAGRAM capsule, as that defeats the end-to-end unreliability characteristic
-that methods such as Datagram Packetization Layer Path MTU Discovery (DPLPMTUD)
+When using HTTP/3 with the QUIC Datagram extension {{DGRAM}}, UDP payloads are
+transmitted in QUIC DATAGRAM frames. Since those cannot be fragmented, they can
+only carry payloads up to a given length determined by the QUIC connection
+configuration and the path MTU. If a UDP proxy is using QUIC DATAGRAM frames and
+it receives a UDP payload from the target that will not fit inside a QUIC
+DATAGRAM frame, the UDP proxy SHOULD NOT send the UDP payload in a DATAGRAM
+capsule, as that defeats the end-to-end unreliability characteristic that
+methods such as Datagram Packetization Layer Path MTU Discovery (DPLPMTUD)
 depend on {{?DPLPMTUD=RFC8899}}. In this scenario, the UDP proxy SHOULD drop the
 UDP payload and send an ICMP "Packet Too Big" message to the target, see
 {{Section 3.2 of ICMP6}}.
