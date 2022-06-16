@@ -192,7 +192,7 @@ Upon receiving a UDP proxying request:
   socket to the requested target.
 
 Unlike TCP, UDP is connection-less. The UDP proxy that opens the UDP socket has
-no way of knowing whether the destination is reachable. Therefore it needs to
+no way of knowing whether the destination is reachable. Therefore, it needs to
 respond to the request without waiting for a packet from the target. However, if
 the target_host is a DNS name, the UDP proxy MUST perform DNS resolution before
 replying to the HTTP request. If errors occur during this process, the UDP proxy
@@ -623,7 +623,7 @@ by Lucas Pardue, and the original
 [MASQUE Protocol](https://www.ietf.org/archive/id/draft-schinazi-masque-00.txt)
 by the author of this document.
 
-The author would like to thank Eric Rescorla for suggesting to use an HTTP
+The author would like to thank Eric Rescorla for suggesting the use of an HTTP
 method to proxy UDP. The author is indebted to Mark Nottingham and Lucas Pardue
 for the many improvements they contributed to this document. The extensibility
 design in this document came out of the HTTP Datagrams Design Team, whose
