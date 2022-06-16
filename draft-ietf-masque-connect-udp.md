@@ -277,15 +277,15 @@ following requirements:
 
 * the HTTP status code on the response SHALL be 101 (Switching Protocols).
 
-* the reponse SHALL include a single "Connection" header field with value
-  "Upgrade" (note that this requirement is case-insensitive as per {{Section
-  7.6.1 of HTTP}}).
+* the reponse SHALL include a "Connection" header field with value "Upgrade"
+  (note that this requirement is case-insensitive as per {{Section 7.6.1 of
+  HTTP}}).
 
 * the response SHALL include a single "Upgrade" header field with value
   "connect-udp".
 
-* the response SHALL NOT include any "Transfer-Encoding" or "Content-Length"
-  header fields.
+* the response SHALL meet the requirements of HTTP responses that start the
+  Capsule Protocol; see {{Section 3.2 of HTTP-DGRAM}}.
 
 If any of these requirements are not met, the client MUST treat this proxying
 attempt as failed and abort the connection.
@@ -339,9 +339,13 @@ HEADERS
 
 ## HTTP/2 and HTTP/3 Responses {#resp23}
 
-The UDP proxy SHALL indicate a successful response by replying with any 2xx
-(Successful) HTTP status code, without any "Transfer-Encoding" or
-"Content-Length" header fields.
+The UDP proxy SHALL indicate a successful response by replying with the
+following requirements:
+
+* the HTTP status code on the response SHALL be in the 2xx (Successful) range.
+
+* the response SHALL meet the requirements of HTTP responses that start the
+  Capsule Protocol; see {{Section 3.2 of HTTP-DGRAM}}.
 
 If any of these requirements are not met, the client MUST treat this proxying
 attempt as failed and abort the request.
