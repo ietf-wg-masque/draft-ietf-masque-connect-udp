@@ -135,7 +135,7 @@ The following requirements apply to the URI Template:
 Clients SHOULD validate the requirements above; however, clients MAY use a
 general-purpose URI Template implementation that lacks this specific validation.
 If a client detects that any of the requirements above are not met by a URI
-Template, the client MUST reject its configuration and fail the request without
+Template, the client MUST reject its configuration and abort the request without
 sending it to the UDP proxy.
 
 Since the original HTTP CONNECT method allowed conveying the target host and
@@ -196,7 +196,7 @@ no way of knowing whether the destination is reachable. Therefore, it needs to
 respond to the request without waiting for a packet from the target. However, if
 the target_host is a DNS name, the UDP proxy MUST perform DNS resolution before
 replying to the HTTP request. If errors occur during this process, the UDP proxy
-MUST fail the request and SHOULD send details using an appropriate
+MUST reject the request and SHOULD send details using an appropriate
 "Proxy-Status" header field {{!PROXY-STATUS=RFC9209}} (for example, if DNS
 resolution returns an error, the proxy can use the dns_error Proxy Error Type
 from {{Section 2.3.2 of PROXY-STATUS}}).
