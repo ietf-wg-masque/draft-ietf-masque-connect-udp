@@ -428,7 +428,7 @@ UDP Proxying HTTP Datagram Payload {
 Context ID:
 
 : A variable-length integer (see {{Section 16 of QUIC}}) that contains the value
-of the Context ID. If an HTTP/3 datagram which carries an unknown Context ID is
+of the Context ID. If an HTTP/3 Datagram which carries an unknown Context ID is
 received, the receiver SHALL either drop that datagram silently or buffer it
 temporarily (on the order of a round trip) while awaiting the registration of
 the corresponding Context ID.
