@@ -366,7 +366,8 @@ supported by the client (e.g., "connect-udp-version: 0, 2"). When sent by the
 UDP proxy, it contains a single draft number selected by the UDP proxy from the
 list provided by the client (e.g., "connect-udp-version: 2"). Sending this
 header field is RECOMMENDED but not required. The "connect-udp-version" header
-field is a List Structured Field, see {{Section 3.1 of !STRUCT-FIELD=RFC8941}}.
+field is a
+[List Structured Field](https://www.rfc-editor.org/rfc/rfc8941#section-3.1).
 Each list member MUST be an Integer.
 
 
