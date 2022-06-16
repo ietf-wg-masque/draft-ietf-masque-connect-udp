@@ -228,6 +228,9 @@ HTTP Datagrams onto a UDP socket. In IPv4, the Don't Fragment (DF) bit MUST be
 set if possible, to prevent fragmentation on the path. Future extensions MAY
 remove these requirements.
 
+Implementers of UDP proxies will benefit from reading the guidance in
+{{?UDP-USAGE=RFC8085}}.
+
 
 ## HTTP/1.1 Request {#req1}
 
