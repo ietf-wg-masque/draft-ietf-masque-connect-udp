@@ -538,21 +538,23 @@ to arbitrary targets, as that could allow bad actors to send traffic and have it
 attributed to the UDP proxy. HTTP servers that support UDP proxying ought to
 restrict its use to authenticated users.
 
-UDP proxies have similar properties to TCP proxies when it comes to facilitating
-denial of service attacks. In theory the stateful nature of TCP provides better
-protection than stateless UDP but in practice this provides negligible benefits
-when considering proxying. Because the CONNECT method creates a TCP connection
-to the target, the target has to indicate its willingness to accept TCP
-connections by responding with a TCP SYN-ACK before the CONNECT proxy can send
-it application data. UDP doesn't have this property, so a UDP proxy could send
-more data to an unwilling target than a CONNECT proxy. However, in practice
-denial of service attacks target open TCP ports so the TCP SYN-ACK does not
-offer much protection in real scenarios. While a UDP proxy could potentially
-limit the number of UDP packets it is willing to forward until it has observed a
-response from the target, that is unlikely to provide any protection against
-denial of service attacks because such attacks target open UDP ports where the
-protocol running over UDP would respond, and that would be interpreted as
-willingness to accept UDP by the UDP proxy.
+UDP proxies share many similarities to TCP CONNECT proxies when considering them
+as infrastructure for abuse to enable denial of service attacks. Both can
+obfuscate the attacker's source address from the attack target. In the case of a
+stateless volumetric attack (e.g., a TCP SYN flood or a UDP flood), both types
+of proxies pass the traffic to the target host. With stateful volumetric attacks
+(e.g., HTTP flooding) being sent over a TCP CONNECT proxy, the proxy will only
+send data if the target has indicated its willingness to accept data by
+responding with a TCP SYN-ACK. Once the path to the target is flooded, the TCP
+CONNECT proxy will no longer receive replies from the target and will stop
+sending data. Since UDP does not establish shared state between the UDP proxy
+and the target, the UDP proxy could continue sending data to the target in such
+a situation. While a UDP proxy could potentially limit the number of UDP packets
+it is willing to forward until it has observed a response from the target, that
+provides limited protection against denial of service attacks when attacks
+target open UDP ports where the protocol running over UDP would respond, and
+that would be interpreted as willingness to accept UDP by the UDP proxy. Such
+a packet limit could also cause issues for valid traffic.
 
 The security considerations described in {{HTTP-DGRAM}} also apply here.
 
