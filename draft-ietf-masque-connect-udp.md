@@ -166,7 +166,8 @@ packets and vice versa until the tunnel is closed.
 
 When sending its UDP proxying request, the client SHALL perform URI Template
 expansion to determine the path and query of its request. target_host supports
-using DNS names, IPv6 literals and IPv4 literals. Note that this URI Template
+using DNS names, IPv6 literals and IPv4 literals. Note that IPv6 scoped
+addressing zone identifiers are not supported. Also note that this URI Template
 expansion requires using pct-encoding, so for example if the target_host is
 "2001:db8::42", it will be encoded in the URI as "2001%3Adb8%3A%3A42".
 
