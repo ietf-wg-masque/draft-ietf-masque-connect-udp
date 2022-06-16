@@ -441,11 +441,13 @@ unmodified payload of a UDP packet (referred to as "data octets" in {{UDP}}).
 By virtue of the definition of the UDP header {{UDP}}, it is not possible to
 encode UDP payloads longer than 65527 bytes. Therefore, endpoints MUST NOT send
 HTTP Datagrams with a Payload field longer than 65527 using Context ID zero. An
-endpoint that receives a DATAGRAM capsule using Context ID zero whose Payload
-field is longer than 65527 MUST abort the stream. If a UDP proxy knows it can
-only send out UDP packets of a certain length due to its underlying link MTU, it
-SHOULD discard incoming DATAGRAM capsules using Context ID zero whose Payload
-field is longer than that limit without buffering the capsule contents.
+endpoint that receives an HTTP Datagram using Context ID zero whose Payload
+field is longer than 65527 MUST abort the corresponding stream. If a UDP proxy
+knows it can only send out UDP packets of a certain length due to its underlying
+link MTU, it has no choice but to discard incoming HTTP Datagrams using Context
+ID zero whose Payload field is longer than that limit. If the discarded HTTP
+Datagram was transported by a DATAGRAM capsule, the receiver SHOULD discard that
+capsule without buffering the capsule contents.
 
 If a UDP proxy receives an HTTP Datagram before it has received the
 corresponding request, it SHALL either drop that HTTP Datagram silently or
