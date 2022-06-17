@@ -154,7 +154,7 @@ if they need to interoperate with such clients.
 
 To allow negotiation of a tunnel for UDP over HTTP, this document defines the
 "connect-udp" HTTP Upgrade Token. The resulting UDP tunnels use the Capsule
-Protocol (see {{Section 3.2 of HTTP-DGRAM}}) with HTTP Datagram in the format
+Protocol (see {{Section 3.2 of HTTP-DGRAM}}) with HTTP Datagrams in the format
 defined in {{format}}.
 
 To initiate a UDP tunnel associated with a single HTTP stream, a client issues a
