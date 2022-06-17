@@ -419,7 +419,7 @@ proxying request streams, the HTTP Datagram Payload field has the format defined
 in {{dgram-format}}. Note that when HTTP Datagrams are encoded using QUIC
 DATAGRAM frames {{!DGRAM=RFC9221}}, the Context ID field defined below directly
 follows the Quarter Stream ID field which is at the start of the QUIC DATAGRAM
-frame payload:
+frame payload (see {{Section 2.1 of HTTP-DGRAM}}).
 
 ~~~
 UDP Proxying HTTP Datagram Payload {
