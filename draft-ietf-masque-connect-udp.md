@@ -262,6 +262,7 @@ GET https://example.org/.well-known/masque/udp/192.0.2.6/443/ HTTP/1.1
 Host: example.org
 Connection: Upgrade
 Upgrade: connect-udp
+Capsule-Protocol: ?1
 ~~~
 {: #fig-req-h1 title="Example HTTP/1.1 Request"}
 
@@ -295,6 +296,7 @@ For example, the UDP proxy could respond with:
 HTTP/1.1 101 Switching Protocols
 Connection: Upgrade
 Upgrade: connect-udp
+Capsule-Protocol: ?1
 ~~~
 {: #fig-resp-h1 title="Example HTTP/1.1 Response"}
 
@@ -332,6 +334,7 @@ HEADERS
 :scheme = https
 :path = /.well-known/masque/udp/192.0.2.6/443/
 :authority = example.org
+capsule-protocol = ?1
 ~~~
 {: #fig-req-h2 title="Example HTTP/2 Request"}
 
@@ -354,6 +357,7 @@ For example, the UDP proxy could respond with:
 ~~~
 HEADERS
 :status = 200
+capsule-protocol = ?1
 ~~~
 {: #fig-resp-h2 title="Example HTTP/2 Response"}
 
