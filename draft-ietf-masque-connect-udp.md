@@ -171,9 +171,10 @@ addressing zone identifiers are not supported. Also note that this URI Template
 expansion requires using percent-encoding, so for example if the target_host is
 "2001:db8::42", it will be encoded in the URI as "2001%3Adb8%3A%3A42".
 
-By virtue of the definition of the Capsule Protocol (see {{HTTP-DGRAM}}), UDP
-proxying requests do not carry any message content. Similarly, successful
-UDP proxying responses also do not carry any message content.
+By virtue of the definition of the Capsule Protocol (see {{Section 3.2 of
+HTTP-DGRAM}}), UDP proxying requests do not carry any message content.
+Similarly, successful UDP proxying responses also do not carry any message
+content.
 
 
 ## UDP Proxy Handling {#handling}
@@ -413,12 +414,12 @@ packet containing the registration message during transmission.
 
 # HTTP Datagram Payload Format {#format}
 
-When HTTP Datagrams (see {{HTTP-DGRAM}}) are associated with UDP proxying
-request streams, the HTTP Datagram Payload field has the format defined in
-{{dgram-format}}. Note that when HTTP Datagrams are encoded using QUIC DATAGRAM
-frames {{!DGRAM=RFC9221}}, the Context ID field defined below directly follows
-the Quarter Stream ID field which is at the start of the QUIC DATAGRAM frame
-payload:
+When HTTP Datagrams (see {{Section 2 of HTTP-DGRAM}}) are associated with UDP
+proxying request streams, the HTTP Datagram Payload field has the format defined
+in {{dgram-format}}. Note that when HTTP Datagrams are encoded using QUIC
+DATAGRAM frames {{!DGRAM=RFC9221}}, the Context ID field defined below directly
+follows the Quarter Stream ID field which is at the start of the QUIC DATAGRAM
+frame payload:
 
 ~~~
 UDP Proxying HTTP Datagram Payload {
@@ -577,8 +578,8 @@ target open UDP ports where the protocol running over UDP would respond, and
 that would be interpreted as willingness to accept UDP by the UDP proxy. Such
 a packet limit could also cause issues for valid traffic.
 
-The security considerations described in {{HTTP-DGRAM}} also apply here. Since
-it is possible to tunnel IP packets over UDP, the guidance in
+The security considerations described in {{Section 4 of HTTP-DGRAM}} also apply
+here. Since it is possible to tunnel IP packets over UDP, the guidance in
 {{?TUNNEL-SECURITY=RFC6169}} can apply.
 
 
