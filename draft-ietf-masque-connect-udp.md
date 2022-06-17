@@ -381,7 +381,7 @@ Each list member MUST be an Integer.
 # Context Identifiers {#context-id}
 
 The mechanism for proxying UDP in HTTP defined in this document allows future
-extensions to exchange HTTP Datagrams which carry different semantics from UDP
+extensions to exchange HTTP Datagrams that carry different semantics from UDP
 payloads. Some of these extensions can augment UDP payloads with additional
 data, while others can exchange data that is completely separate from UDP
 payloads. In order to accomplish this, all HTTP Datagrams associated with UDP
