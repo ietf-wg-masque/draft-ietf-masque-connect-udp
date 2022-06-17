@@ -102,7 +102,7 @@ HTTP clients are configured to use a UDP proxy with a URI Template
 {{!TEMPLATE=RFC6570}} that has the variables "target_host" and "target_port".
 Examples are shown below:
 
-~~~
+~~~ ascii-art
 https://example.org/.well-known/masque/udp/{target_host}/{target_port}/
 https://proxy.example.org:4443/masque?h={target_host}&p={target_port}
 https://proxy.example.org:4443/masque{?target_host,target_port}
@@ -258,7 +258,7 @@ For example, if the client is configured with URI Template
 wishes to open a UDP proxying tunnel to target 192.0.2.6:443, it could send the
 following request:
 
-~~~
+~~~ http-message
 GET https://example.org/.well-known/masque/udp/192.0.2.6/443/ HTTP/1.1
 Host: example.org
 Connection: Upgrade
@@ -293,7 +293,7 @@ attempt as failed and abort the connection.
 
 For example, the UDP proxy could respond with:
 
-~~~
+~~~ http-message
 HTTP/1.1 101 Switching Protocols
 Connection: Upgrade
 Upgrade: connect-udp
@@ -328,7 +328,7 @@ For example, if the client is configured with URI Template
 wishes to open a UDP proxying tunnel to target 192.0.2.6:443, it could send the
 following request:
 
-~~~
+~~~ http-message
 HEADERS
 :method = CONNECT
 :protocol = connect-udp
@@ -355,7 +355,7 @@ attempt as failed and abort the request.
 
 For example, the UDP proxy could respond with:
 
-~~~
+~~~ http-message
 HEADERS
 :status = 200
 capsule-protocol = ?1
@@ -421,7 +421,7 @@ DATAGRAM frames {{!DGRAM=RFC9221}}, the Context ID field defined below directly
 follows the Quarter Stream ID field which is at the start of the QUIC DATAGRAM
 frame payload (see {{Section 2.1 of HTTP-DGRAM}}).
 
-~~~
+~~~ ascii-art
 UDP Proxying HTTP Datagram Payload {
   Context ID (i),
   Payload (..),
