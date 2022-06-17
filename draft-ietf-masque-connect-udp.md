@@ -554,10 +554,10 @@ address belonging to the UDP proxy. If this source address is used for access
 control, UDP proxying clients could use the UDP proxy to escalate their access
 privileges beyond those they might otherwise have. This could lead to
 unauthorized access by UDP proxying clients unless the UDP proxy disallows UDP
-proxying requests to vulnerable targets, such as localhost names and addresses,
-link-local addresses, the UDP proxy's own addresses, multicast and broadcast
-addresses. UDP proxies can use the destination_ip_prohibited Proxy Error Type
-from {{Section 2.3.5 of PROXY-STATUS}} when rejecting such requests.
+proxying requests to vulnerable targets, such as the UDP proxy's own addresses
+and localhost, link-local, multicast, and broadcast addresses. UDP proxies can
+use the destination_ip_prohibited Proxy Error Type from {{Section 2.3.5 of
+PROXY-STATUS}} when rejecting such requests.
 
 UDP proxies share many similarities to TCP CONNECT proxies when considering them
 as infrastructure for abuse to enable denial of service attacks. Both can
