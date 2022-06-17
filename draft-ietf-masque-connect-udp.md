@@ -485,12 +485,11 @@ running over UDP. To avoid this, UDP proxies SHOULD strive to avoid increasing
 burstiness of UDP traffic: they SHOULD NOT queue packets in order to increase
 batching.
 
-When the protocol running over UDP that is being proxied uses congestion
-control (e.g., {{QUIC}}), the proxied traffic will incur at least two nested
-congestion controllers. This can reduce performance but the underlying
-HTTP connection MUST NOT disable congestion control unless it has an
-out-of-band way of knowing with absolute certainty that the inner traffic is
-congestion-controlled.
+When the protocol running over UDP that is being proxied uses congestion control
+(e.g., {{QUIC}}), the proxied traffic will incur at least two nested congestion
+controllers. The underlying HTTP connection MUST NOT disable congestion control
+unless it has an out-of-band way of knowing with absolute certainty that the
+inner traffic is congestion-controlled.
 
 If a client or UDP proxy with a connection containing a UDP proxying request
 stream disables congestion control, it MUST NOT signal Explicit Congestion
