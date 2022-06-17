@@ -103,7 +103,7 @@ HTTP clients are configured to use a UDP proxy with a URI Template
 Examples are shown below:
 
 ~~~
-https://masque.example.org/.well-known/masque/udp/{target_host}/{target_port}/
+https://example.org/.well-known/masque/udp/{target_host}/{target_port}/
 https://proxy.example.org:4443/masque?h={target_host}&p={target_port}
 https://proxy.example.org:4443/masque{?target_host,target_port}
 ~~~
@@ -253,14 +253,13 @@ The recipient of such a malformed request MUST respond with an error, and SHOULD
 use the 400 (Bad Request) status code.
 
 For example, if the client is configured with URI Template
-"https://proxy.example.org/.well-known/masque/udp/{target_host}/{target_port}/"
-and wishes to open a
-UDP proxying tunnel to target 192.0.2.42:443, it could send the following
-request:
+"https://example.org/.well-known/masque/udp/{target_host}/{target_port}/" and
+wishes to open a UDP proxying tunnel to target 192.0.2.6:443, it could send the
+following request:
 
 ~~~
-GET https://proxy.example.org/.well-known/masque/udp/192.0.2.42/443/ HTTP/1.1
-Host: proxy.example.org
+GET https://example.org/.well-known/masque/udp/192.0.2.6/443/ HTTP/1.1
+Host: example.org
 Connection: Upgrade
 Upgrade: connect-udp
 ~~~
@@ -322,17 +321,17 @@ A UDP proxying request that does not conform to these restrictions is
 malformed (see {{Section 8.1.1 of H2}} and {{Section 4.1.2 of H3}}).
 
 For example, if the client is configured with URI Template
-"https://proxy.example.org/{target_host}/{target_port}/" and wishes to open a
-UDP proxying tunnel to target 192.0.2.42:443, it could send the following
-request:
+"https://example.org/.well-known/masque/udp/{target_host}/{target_port}/" and
+wishes to open a UDP proxying tunnel to target 192.0.2.6:443, it could send the
+following request:
 
 ~~~
 HEADERS
 :method = CONNECT
 :protocol = connect-udp
 :scheme = https
-:path = /.well-known/masque/udp/192.0.2.42/443/
-:authority = proxy.example.org
+:path = /.well-known/masque/udp/192.0.2.6/443/
+:authority = example.org
 ~~~
 {: #fig-req-h2 title="Example HTTP/2 Request"}
 
