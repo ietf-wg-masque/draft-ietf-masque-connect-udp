@@ -471,7 +471,7 @@ of buffered datagrams, or the cumulative size of buffered datagrams, on a
 per-stream, per-context, or per-connection basis.
 
 A client MAY optimistically start sending UDP packets in HTTP Datagrams before
-receiving the response to its UDP proxying request. However, implementors should
+receiving the response to its UDP proxying request. However, implementers should
 note that such proxied packets may not be processed by the UDP proxy if it
 responds to the request with a failure, or if the proxied packets are received
 by the UDP proxy before the request and the UDP proxy chooses to not buffer them.
