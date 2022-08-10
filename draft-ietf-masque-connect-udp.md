@@ -138,12 +138,12 @@ If a client detects that any of the requirements above are not met by a URI
 Template, the client MUST reject its configuration and abort the request without
 sending it to the UDP proxy.
 
-Since the original HTTP CONNECT method allowed conveying the target host and
-port but not the scheme, proxy authority, path, nor query, there exist clients
+The original HTTP CONNECT method allowed for the conveyance of the target host
+and port, but not the scheme, proxy authority, path, or query. Thus, clients
 with proxy configuration interfaces that only allow the user to configure the
-proxy host and the proxy port. Client implementations of this specification that
-are constrained by such limitations MAY attempt to access UDP proxying
-capabilities using the default template, which is defined as
+proxy host and the proxy port exist. Client implementations of this
+specification that are constrained by such limitations MAY attempt to access UDP
+proxying capabilities using the default template, which is defined as
 "https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/",
 where $PROXY_HOST and $PROXY_PORT are the configured host and port of the UDP
 proxy, respectively. UDP proxy deployments SHOULD offer service at this location
