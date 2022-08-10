@@ -160,16 +160,33 @@ defined in {{format}}.
 To initiate a UDP tunnel associated with a single HTTP stream, a client issues a
 request containing the "connect-udp" upgrade token. The target of the tunnel is
 indicated by the client to the UDP proxy via the "target_host" and "target_port"
-variables of the URI Template; see {{client-config}}. If the request is
-successful, the UDP proxy commits to converting received HTTP Datagrams into UDP
-packets, and vice versa, until the tunnel is closed.
+variables of the URI Template; see {{client-config}}.
+
+"target_host" supports using DNS names, IPv6 literals and IPv4 literals. Note
+that IPv6 scoped addressing zone identifiers are not supported. Using the terms
+IPv6address, IPv4address, reg-name, and port from {{URI}}, the "target_host" and
+"target_port" variables MUST adhere to the format in {{target-format}}, with the
+following additional requirements:
+
+* both the "target_host" and "target_port" variables MUST NOT be empty.
+
+* if "target_host" contains an IPv6 literal, the colons (":") MUST be
+  percent-encoded. For example, if the target host is "2001:db8::42", it will be
+  encoded in the URI as "2001%3Adb8%3A%3A42".
+
+* "target_port" MUST represent an integer between 1 and 65535 inclusive.
+
+~~~ ascii-art
+target_host = IPv6address / IPv4address / reg-name
+target_port = port
+~~~
+{: #target-format title="URI Template Variable Format"}
 
 When sending its UDP proxying request, the client SHALL perform URI Template
-expansion to determine the path and query of its request. "target_host" supports
-using DNS names, IPv6 literals and IPv4 literals. Note that IPv6 scoped
-addressing zone identifiers are not supported. This URI Template expansion
-requires using percent-encoding. For example, if the "target_host" is
-"2001:db8::42", it will be encoded in the URI as "2001%3Adb8%3A%3A42".
+expansion to determine the path and query of its request.
+
+If the request is successful, the UDP proxy commits to converting received HTTP
+Datagrams into UDP packets, and vice versa, until the tunnel is closed.
 
 By virtue of the definition of the Capsule Protocol (see {{Section 3.2 of
 HTTP-DGRAM}}), UDP proxying requests do not carry any message content.
@@ -189,8 +206,8 @@ Upon receiving a UDP proxying request:
 
 * otherwise, the recipient will act as a UDP proxy. It extracts the
   "target_host" and "target_port" variables from the URI it has reconstructed
-  from the request headers and establishes a tunnel by directly opening a UDP
-  socket to the requested target.
+  from the request headers, decodes their percent-encoding, and establishes a
+  tunnel by directly opening a UDP socket to the requested target.
 
 Unlike TCP, UDP is connectionless. The UDP proxy that opens the UDP socket has
 no way of knowing whether the destination is reachable. Therefore, it needs to
