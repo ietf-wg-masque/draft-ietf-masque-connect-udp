@@ -6,8 +6,8 @@ submissiontype: IETF
 category: std
 area: Transport
 wg: MASQUE
-number:
-date:
+number: 9298
+date: 2022-08
 consensus: true
 venue:
   group: "MASQUE"
