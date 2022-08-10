@@ -69,9 +69,9 @@ doing so for UDP {{!UDP=RFC0768}} traffic prior to this specification.
 This document describes a protocol for tunneling UDP to a server acting as a
 UDP-specific proxy over HTTP. UDP tunnels are commonly used to create an
 end-to-end virtual connection, which can then be secured using QUIC
-{{!QUIC=RFC9000}} or another protocol running over UDP. Unlike CONNECT, the UDP
-proxy itself is identified with an absolute URL containing the traffic's
-destination. Clients generate those URLs using a URI Template
+{{!QUIC=RFC9000}} or another protocol running over UDP. Unlike the HTTP CONNECT
+method, the UDP proxy itself is identified with an absolute URL containing the
+traffic's destination. Clients generate those URLs using a URI Template
 {{!TEMPLATE=RFC6570}}, as described in {{client-config}}.
 
 This protocol supports all existing versions of HTTP by using HTTP Datagrams
@@ -153,7 +153,7 @@ if they need to interoperate with such clients.
 # Tunneling UDP over HTTP
 
 To allow negotiation of a tunnel for UDP over HTTP, this document defines the
-"connect-udp" HTTP Upgrade Token. The resulting UDP tunnels use the Capsule
+"connect-udp" HTTP upgrade token. The resulting UDP tunnels use the Capsule
 Protocol (see {{Section 3.2 of HTTP-DGRAM}}) with HTTP Datagrams in the format
 defined in {{format}}.
 
@@ -198,7 +198,7 @@ respond to the request without waiting for a packet from the target. However, if
 the "target_host" is a DNS name, the UDP proxy MUST perform DNS resolution
 before replying to the HTTP request. If errors occur during this process, the
 UDP proxy MUST reject the request and SHOULD send details using an appropriate
-"Proxy-Status" header field {{!PROXY-STATUS=RFC9209}}. For example, if DNS
+Proxy-Status header field {{!PROXY-STATUS=RFC9209}}. For example, if DNS
 resolution returns an error, the proxy can use the dns_error Proxy Error Type
 from {{Section 2.3.2 of PROXY-STATUS}}.
 
@@ -212,8 +212,8 @@ MUST be discarded by the UDP proxy.
 The lifetime of the socket is tied to the request stream. The UDP proxy MUST
 keep the socket open while the request stream is open. If a UDP proxy is
 notified by its operating system that its socket is no longer usable, it MUST
-close the request stream. For example, this can happen when an ICMP "Destination
-Unreachable" message is received; see {{Section 3.1 of ?ICMP6=RFC4443}}. UDP
+close the request stream. For example, this can happen when an ICMP Destination
+Unreachable message is received; see {{Section 3.1 of ?ICMP6=RFC4443}}. UDP
 proxies MAY choose to close sockets due to a period of inactivity, but they MUST
 close the request stream when closing the socket. UDP proxies that close sockets
 after a period of inactivity SHOULD NOT use a period lower than two minutes; see
@@ -240,14 +240,14 @@ requirements:
 
 * the method SHALL be "GET".
 
-* the request SHALL include a single "Host" header field containing the origin
+* the request SHALL include a single Host header field containing the origin
   of the UDP proxy.
 
-* the request SHALL include a "Connection" header field with value "Upgrade"
+* the request SHALL include a Connection header field with value "Upgrade"
   (note that this requirement is case-insensitive as per {{Section 7.6.1 of
   HTTP}}).
 
-* the request SHALL include an "Upgrade" header field with value "connect-udp".
+* the request SHALL include an Upgrade header field with value "connect-udp".
 
 A UDP proxying request that does not conform to these restrictions is malformed.
 The recipient of such a malformed request MUST respond with an error and SHOULD
@@ -278,11 +278,11 @@ following requirements:
 
 * the HTTP status code on the response SHALL be 101 (Switching Protocols).
 
-* the response SHALL include a "Connection" header field with value "Upgrade"
+* the response SHALL include a Connection header field with value "Upgrade"
   (note that this requirement is case-insensitive as per {{Section 7.6.1 of
   HTTP}}).
 
-* the response SHALL include a single "Upgrade" header field with value
+* the response SHALL include a single Upgrade header field with value
   "connect-udp".
 
 * the response SHALL meet the requirements of HTTP responses that start the
@@ -304,19 +304,19 @@ Capsule-Protocol: ?1
 
 ## HTTP/2 and HTTP/3 Requests {#req23}
 
-When using HTTP/2 {{H2}} or HTTP/3 {{H3}}, UDP proxying requests use Extended
-CONNECT. This requires that servers send an HTTP Setting as specified in
-{{EXT-CONNECT2}} and {{EXT-CONNECT3}} and that requests use HTTP pseudo-header
-fields with the following requirements:
+When using HTTP/2 {{H2}} or HTTP/3 {{H3}}, UDP proxying requests use HTTP
+Extended CONNECT. This requires that servers send an HTTP Setting as specified
+in {{EXT-CONNECT2}} and {{EXT-CONNECT3}} and that requests use HTTP
+pseudo-header fields with the following requirements:
 
-* The ":method" pseudo-header field SHALL be "CONNECT".
+* The :method pseudo-header field SHALL be "CONNECT".
 
-* The ":protocol" pseudo-header field SHALL be "connect-udp".
+* The :protocol pseudo-header field SHALL be "connect-udp".
 
-* The ":authority" pseudo-header field SHALL contain the authority of the UDP
+* The :authority pseudo-header field SHALL contain the authority of the UDP
   proxy.
 
-* The ":path" and ":scheme" pseudo-header fields SHALL NOT be empty. Their
+* The :path and :scheme pseudo-header fields SHALL NOT be empty. Their
   values SHALL contain the scheme and path from the URI Template after the URI
   Template expansion process has been completed.
 
@@ -370,27 +370,27 @@ extensions to exchange HTTP Datagrams that carry different semantics from UDP
 payloads. Some of these extensions can augment UDP payloads with additional
 data, while others can exchange data that is completely separate from UDP
 payloads. In order to accomplish this, all HTTP Datagrams associated with UDP
-Proxying request streams start with a context ID; see {{format}}.
+Proxying request streams start with a Context ID field; see {{format}}.
 
 Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). Context IDs are encoded
-as variable-length integers; see {{Section 16 of QUIC}}. The context ID value of
+as variable-length integers; see {{Section 16 of QUIC}}. The Context ID value of
 0 is reserved for UDP payloads, while non-zero values are dynamically allocated.
-Non-zero even-numbered context IDs are client-allocated, and odd-numbered
-context IDs are proxy-allocated. The context ID namespace is tied to a given
-HTTP request; it is possible for a context ID with the same numeric value to be
+Non-zero even-numbered Context IDs are client-allocated, and odd-numbered
+Context IDs are proxy-allocated. The Context ID namespace is tied to a given
+HTTP request; it is possible for a Context ID with the same numeric value to be
 simultaneously allocated in distinct requests, potentially with different
 semantics. Context IDs MUST NOT be re-allocated within a given HTTP namespace
-but MAY be allocated in any order. The context ID allocation restrictions to the
-use of even-numbered and odd-numbered context IDs exist in order to avoid the
-need for synchronization between endpoints. However, once a context ID has been
-allocated, those restrictions do not apply to the use of the context ID; it can
+but MAY be allocated in any order. The Context ID allocation restrictions to the
+use of even-numbered and odd-numbered Context IDs exist in order to avoid the
+need for synchronization between endpoints. However, once a Context ID has been
+allocated, those restrictions do not apply to the use of the Context ID; it can
 be used by any client or UDP proxy, independent of which endpoint initially
 allocated it.
 
 Registration is the action by which an endpoint informs its peer of the
-semantics and format of a given context ID. This document does not define how
+semantics and format of a given Context ID. This document does not define how
 registration occurs. Future extensions MAY use HTTP header fields or capsules to
-register contexts. Depending on the method being used, it is possible for
+register Context IDs. Depending on the method being used, it is possible for
 datagrams to be received with Context IDs that have not yet been registered. For
 instance, this can be due to reordering of the packet containing the datagram
 and the packet containing the registration message during transmission.
@@ -427,9 +427,9 @@ Payload:
 previous field. Note that this field can be empty.
 {: spacing="compact"}
 
-UDP packets are encoded using HTTP Datagrams with the Context ID set to zero.
-When the Context ID is set to zero, the Payload field contains the
-unmodified payload of a UDP packet (referred to as "data octets" in {{UDP}}).
+UDP packets are encoded using HTTP Datagrams with the Context ID field set to
+zero. When the Context ID field is set to zero, the Payload field contains the
+unmodified payload of a UDP packet (referred to as data octets in {{UDP}}).
 
 By virtue of the definition of the UDP header {{UDP}}, it is not possible to
 encode UDP payloads longer than 65527 bytes. Therefore, endpoints MUST NOT send
@@ -479,7 +479,7 @@ If a client or UDP proxy with a connection containing a UDP Proxying request
 stream disables congestion control, it MUST NOT signal Explicit Congestion
 Notification (ECN) {{!ECN=RFC3168}} support on that connection. That is, it MUST
 mark all IP headers with the Not-ECT codepoint. It MAY continue to report ECN
-feedback via QUIC ACK_ECN frames or the TCP "ECE" bit, as the peer may not have
+feedback via QUIC ACK_ECN frames or the TCP ECE bit, as the peer may not have
 disabled congestion control.
 
 When the protocol running over UDP that is being proxied uses loss recovery
@@ -501,8 +501,8 @@ QUIC DATAGRAM frame, the UDP proxy SHOULD NOT send the UDP payload in a DATAGRAM
 capsule, as that defeats the end-to-end unreliability characteristic that
 methods such as Datagram Packetization Layer PMTU Discovery (DPLPMTUD) depend on
 {{?DPLPMTUD=RFC8899}}. In this scenario, the UDP proxy SHOULD drop the UDP
-payload and send an ICMP "Packet Too Big" message to the target; see {{Section
-3.2 of ICMP6}}.
+payload and send an ICMP Packet Too Big message to the target; see {{Section 3.2
+of ICMP6}}.
 
 
 ## Tunneling of ECN Marks
