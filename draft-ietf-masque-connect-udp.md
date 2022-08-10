@@ -401,9 +401,9 @@ and the packet containing the registration message during transmission.
 When HTTP Datagrams (see {{Section 2 of HTTP-DGRAM}}) are associated with UDP
 Proxying request streams, the HTTP Datagram Payload field has the format defined
 in {{dgram-format}}. Note that when HTTP Datagrams are encoded using QUIC
-DATAGRAM frames {{!DGRAM=RFC9221}}, the Context ID field defined below directly
-follows the Quarter Stream ID field, which is at the start of the QUIC DATAGRAM
-frame payload; see {{Section 2.1 of HTTP-DGRAM}}.
+DATAGRAM frames {{!QUIC-DGRAM=RFC9221}}, the Context ID field defined below
+directly follows the Quarter Stream ID field, which is at the start of the QUIC
+DATAGRAM frame payload; see {{Section 2.1 of HTTP-DGRAM}}.
 
 ~~~ ascii-art
 UDP Proxying HTTP Datagram Payload {
@@ -492,9 +492,9 @@ QUIC DATAGRAM frame.
 
 ## MTU Considerations
 
-When using HTTP/3 with the QUIC Datagram extension {{DGRAM}}, UDP payloads are
-transmitted in QUIC DATAGRAM frames. Since those cannot be fragmented, they can
-only carry payloads up to a given length determined by the QUIC connection
+When using HTTP/3 with the QUIC Datagram extension {{QUIC-DGRAM}}, UDP payloads
+are transmitted in QUIC DATAGRAM frames. Since those cannot be fragmented, they
+can only carry payloads up to a given length determined by the QUIC connection
 configuration and the Path MTU (PMTU). If a UDP proxy is using QUIC DATAGRAM
 frames and it receives a UDP payload from the target that will not fit inside a
 QUIC DATAGRAM frame, the UDP proxy SHOULD NOT send the UDP payload in a DATAGRAM
@@ -629,8 +629,8 @@ all MASQUE enthusiasts for their contibutions. This proposal was inspired
 directly or indirectly by prior work from many people, in particular
 {{?HELIUM=I-D.schwartz-httpbis-helium-00}} by Ben Schwartz,
 {{?HiNT=I-D.pardue-httpbis-http-network-tunnelling-00}} by Lucas Pardue, and the
-original MASQUE Protocol {{?MASQUE-ORI=I-D.schinazi-masque-00}} by the author of
-this document.
+original MASQUE Protocol {{?MASQUE-ORIGINAL=I-D.schinazi-masque-00}} by the
+author of this document.
 
 The author would like to thank Eric Rescorla for suggesting the use of an HTTP
 method to proxy UDP. The author is indebted to Mark Nottingham and Lucas Pardue
