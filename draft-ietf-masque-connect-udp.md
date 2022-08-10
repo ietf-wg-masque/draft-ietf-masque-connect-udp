@@ -408,7 +408,7 @@ DATAGRAM frame payload; see {{Section 2.1 of HTTP-DGRAM}}.
 ~~~ ascii-art
 UDP Proxying HTTP Datagram Payload {
   Context ID (i),
-  Payload (..),
+  UDP Proxying Payload (..),
 }
 ~~~
 {: #dgram-format title="UDP Proxying HTTP Datagram Format"}
@@ -421,26 +421,28 @@ received, the receiver SHALL either drop that datagram silently or buffer it
 temporarily (on the order of a round trip) while awaiting the registration of
 the corresponding Context ID.
 
-Payload:
+UDP Proxying Payload:
 
 : The payload of the datagram, whose semantics depend on the value of the
 previous field. Note that this field can be empty.
 {: spacing="compact"}
 
 UDP packets are encoded using HTTP Datagrams with the Context ID field set to
-zero. When the Context ID field is set to zero, the Payload field contains the
-unmodified payload of a UDP packet (referred to as data octets in {{UDP}}).
+zero. When the Context ID field is set to zero, the UDP Proxying Payload field
+contains the unmodified payload of a UDP packet (referred to as data octets in
+{{UDP}}).
 
 By virtue of the definition of the UDP header {{UDP}}, it is not possible to
 encode UDP payloads longer than 65527 bytes. Therefore, endpoints MUST NOT send
-HTTP Datagrams with a Payload field longer than 65527 using Context ID zero. An
-endpoint that receives an HTTP Datagram using Context ID zero whose Payload
-field is longer than 65527 MUST abort the corresponding stream. If a UDP proxy
-knows it can only send out UDP packets of a certain length due to its underlying
-link MTU, it has no choice but to discard incoming HTTP Datagrams using Context
-ID zero whose Payload field is longer than that limit. If the discarded HTTP
-Datagram was transported by a DATAGRAM capsule, the receiver SHOULD discard that
-capsule without buffering the capsule contents.
+HTTP Datagrams with a UDP Proxying Payload field longer than 65527 using Context
+ID zero. An endpoint that receives an HTTP Datagram using Context ID zero whose
+UDP Proxying Payload field is longer than 65527 MUST abort the corresponding
+stream. If a UDP proxy knows it can only send out UDP packets of a certain
+length due to its underlying link MTU, it has no choice but to discard incoming
+HTTP Datagrams using Context ID zero whose UDP Proxying Payload field is longer
+than that limit. If the discarded HTTP Datagram was transported by a DATAGRAM
+capsule, the receiver SHOULD discard that capsule without buffering the capsule
+contents.
 
 If a UDP proxy receives an HTTP Datagram before it has received the
 corresponding request, it SHALL either drop that HTTP Datagram silently or
