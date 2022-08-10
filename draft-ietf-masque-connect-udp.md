@@ -168,7 +168,7 @@ When sending its UDP proxying request, the client SHALL perform URI Template
 expansion to determine the path and query of its request. "target_host" supports
 using DNS names, IPv6 literals and IPv4 literals. Note that IPv6 scoped
 addressing zone identifiers are not supported. This URI Template expansion
-requires using percent-encoding. For example, if the target_host is
+requires using percent-encoding. For example, if the "target_host" is
 "2001:db8::42", it will be encoded in the URI as "2001%3Adb8%3A%3A42".
 
 By virtue of the definition of the Capsule Protocol (see {{Section 3.2 of
@@ -192,7 +192,7 @@ Upon receiving a UDP proxying request:
   from the request headers and establishes a tunnel by directly opening a UDP
   socket to the requested target.
 
-Unlike TCP, UDP is connection-less. The UDP proxy that opens the UDP socket has
+Unlike TCP, UDP is connectionless. The UDP proxy that opens the UDP socket has
 no way of knowing whether the destination is reachable. Therefore, it needs to
 respond to the request without waiting for a packet from the target. However, if
 the "target_host" is a DNS name, the UDP proxy MUST perform DNS resolution
@@ -219,10 +219,10 @@ close the request stream when closing the socket. UDP proxies that close sockets
 after a period of inactivity SHOULD NOT use a period lower than two minutes; see
 {{Section 4.3 of ?BEHAVE=RFC4787}}.
 
-A successful response (as defined in {{resp1}} and {{resp23}}) indicates that
-the UDP proxy has opened a socket to the requested target and is willing to
-proxy UDP payloads. Any response other than a successful response indicates that
-the request has failed; thus, the client MUST therefore abort the request.
+A successful response (as defined in Sections {{<resp1}} and {{<resp23}})
+indicates that the UDP proxy has opened a socket to the requested target and is
+willing to proxy UDP payloads. Any response other than a successful response
+indicates that the request has failed; thus, the client MUST abort the request.
 
 UDP proxies MUST NOT introduce fragmentation at the IP layer when forwarding
 HTTP Datagrams onto a UDP socket; overly large datagrams are silently dropped.
