@@ -125,7 +125,7 @@ The following requirements apply to the URI Template:
 
 * The URI Template MUST NOT contain any non-ASCII Unicode characters and MUST
   only contain ASCII characters in the range 0x21-0x7E inclusive (note that
-  percent-encoding is allowed; see {{Section 2.1 of ?URI=RFC3986}}).
+  percent-encoding is allowed; see {{Section 2.1 of !URI=RFC3986}}).
 
 * The URI Template MUST NOT use Reserved Expansion ("+" operator), Fragment
   Expansion ("#" operator), Label Expansion with Dot-Prefix, Path Segment
@@ -165,8 +165,8 @@ variables of the URI Template; see {{client-config}}.
 "target_host" supports using DNS names, IPv6 literals and IPv4 literals. Note
 that IPv6 scoped addressing zone identifiers are not supported. Using the terms
 IPv6address, IPv4address, reg-name, and port from {{URI}}, the "target_host" and
-"target_port" variables MUST adhere to the format in {{target-format}}, with the
-following additional requirements:
+"target_port" variables MUST adhere to the format in {{target-format}}, using
+notation from {{!ABNF=RFC2234}}. Additionally:
 
 * both the "target_host" and "target_port" variables MUST NOT be empty.
 
@@ -417,10 +417,11 @@ and the packet containing the registration message during transmission.
 
 When HTTP Datagrams (see {{Section 2 of HTTP-DGRAM}}) are associated with UDP
 Proxying request streams, the HTTP Datagram Payload field has the format defined
-in {{dgram-format}}. Note that when HTTP Datagrams are encoded using QUIC
-DATAGRAM frames {{!QUIC-DGRAM=RFC9221}}, the Context ID field defined below
-directly follows the Quarter Stream ID field, which is at the start of the QUIC
-DATAGRAM frame payload; see {{Section 2.1 of HTTP-DGRAM}}.
+in {{dgram-format}}, using notation from {{Section 1.3 of QUIC}}. Note that when
+HTTP Datagrams are encoded using QUIC DATAGRAM frames {{!QUIC-DGRAM=RFC9221}},
+the Context ID field defined below directly follows the Quarter Stream ID field,
+which is at the start of the QUIC DATAGRAM frame payload; see {{Section 2.1 of
+HTTP-DGRAM}}.
 
 ~~~ ascii-art
 UDP Proxying HTTP Datagram Payload {
