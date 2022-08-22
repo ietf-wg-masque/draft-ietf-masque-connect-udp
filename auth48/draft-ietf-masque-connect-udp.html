@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="en" class="RFC">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>RFC 9298: Proxying UDP in HTTP</title>
+<meta content="David Schinazi" name="author">
+<meta content="
+       This document describes how to proxy UDP in HTTP, similar to how the HTTP
+CONNECT method allows proxying TCP in HTTP. More specifically, this document
+defines a protocol that allows an HTTP client to create a tunnel for UDP
+communications through an HTTP server that acts as a proxy. 
+    " name="description">
+<meta content="xml2rfc 3.14.0" name="generator">
+<meta content="quic" name="keyword">
+<meta content="http" name="keyword">
+<meta content="datagram" name="keyword">
+<meta content="udp" name="keyword">
+<meta content="proxy" name="keyword">
+<meta content="tunnels" name="keyword">
+<meta content="quic in quic" name="keyword">
+<meta content="turtles all the way down" name="keyword">
+<meta content="masque" name="keyword">
+<meta content="http-ng" name="keyword">
+<meta content="9298" name="rfc.number">
+<!-- Generator version information:
+  xml2rfc 3.14.0
+    Python 3.10.5
+    appdirs 1.4.4
+    ConfigArgParse 1.5.3
+    google-i18n-address 2.5.2
+    html5lib 1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.2
+    kitchen 1.2.6
+    lxml 4.9.1
+    MarkupSafe 2.1.1
+    pycountry 22.3.5
+    PyYAML 6.0
+    requests 2.27.1
+    setuptools 59.4.0
+    six 1.16.0
+-->
+<link href="draft-ietf-masque-connect-udp.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+:is(ol, ul) :is(ol, ul) {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+  min-width: 20ch;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:first-child, .break:first-child + *) {
+  margin-top: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:last-child) {
+  margin-bottom: 0;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+dl .break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href].selfRef {
+  color: var(--text-color);
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    overflow-x: auto;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  min-width: var(--identifier-width);
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0;
+  margin-left: calc(1em + var(--identifier-width)) !important;
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dt:target::before {
+  content: "⇒";
+  width: 15px;
+  margin: 0 10px 0 -25px;
+}
+.references dd {
+  margin-left: 8em !important;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul :is(p, li) {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
+  }
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([stroke="fill"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+<link href="https://dx.doi.org/10.17487/rfc9298" rel="alternate">
+  <link href="urn:issn:2070-1721" rel="alternate">
+  <link href="https://datatracker.ietf.org/doc/draft-ietf-masque-connect-udp-latest" rel="prev">
+  </head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">RFC 9298</td>
+<td class="center">Proxying UDP in HTTP</td>
+<td class="right">August 2022</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Schinazi</td>
+<td class="center">Standards Track</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-stream">Stream:</dt>
+<dd class="stream">Internet Engineering Task Force (IETF)</dd>
+<dt class="label-rfc">RFC:</dt>
+<dd class="rfc"><a href="https://www.rfc-editor.org/rfc/rfc9298" class="eref">9298</a></dd>
+<dt class="label-category">Category:</dt>
+<dd class="category">Standards Track</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2022-08" class="published">August 2022</time>
+    </dd>
+<dt class="label-issn">ISSN:</dt>
+<dd class="issn">2070-1721</dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">D. Schinazi</div>
+<div class="org">Google LLC</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="rfcnum">RFC 9298</h1>
+<h1 id="title">Proxying UDP in HTTP</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document describes how to proxy UDP in HTTP, similar to how the HTTP
+CONNECT method allows proxying TCP in HTTP. More specifically, this document
+defines a protocol that allows an HTTP client to create a tunnel for UDP
+communications through an HTTP server that acts as a proxy.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+            This is an Internet Standards Track document.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+            This document is a product of the Internet Engineering Task Force
+            (IETF).  It represents the consensus of the IETF community.  It has
+            received public review and has been approved for publication by
+            the Internet Engineering Steering Group (IESG).  Further
+            information on Internet Standards is available in Section 2 of 
+            RFC 7841.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+            Information about the current status of this document, any
+            errata, and how to provide feedback on it may be obtained at
+            <span><a href="https://www.rfc-editor.org/info/rfc9298">https://www.rfc-editor.org/info/rfc9298</a></span>.<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2022 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-conventions-and-definitions" class="xref">Conventions and Definitions</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-client-configuration" class="xref">Client Configuration</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-tunneling-udp-over-http" class="xref">Tunneling UDP over HTTP</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-udp-proxy-handling" class="xref">UDP Proxy Handling</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-http-11-request" class="xref">HTTP/1.1 Request</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="xref">3.3</a>.  <a href="#name-http-11-response" class="xref">HTTP/1.1 Response</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="xref">3.4</a>.  <a href="#name-http-2-and-http-3-requests" class="xref">HTTP/2 and HTTP/3 Requests</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="xref">3.5</a>.  <a href="#name-http-2-and-http-3-responses" class="xref">HTTP/2 and HTTP/3 Responses</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-context-identifiers" class="xref">Context Identifiers</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-http-datagram-payload-forma" class="xref">HTTP Datagram Payload Format</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-performance-considerations" class="xref">Performance Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-mtu-considerations" class="xref">MTU Considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="xref">6.2</a>.  <a href="#name-tunneling-of-ecn-marks" class="xref">Tunneling of ECN Marks</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="xref">8.1</a>.  <a href="#name-http-upgrade-token" class="xref">HTTP Upgrade Token</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="xref">8.2</a>.  <a href="#name-well-known-uri" class="xref">Well-Known URI</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-references" class="xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="xref">9.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="xref">9.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">While HTTP provides the CONNECT method (see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-9.3.6" class="relref">Section 9.3.6</a> of [<a href="#HTTP" class="xref">HTTP</a>]</span>)
+for creating a TCP <span>[<a href="#TCP" class="xref">TCP</a>]</span> tunnel to a proxy, it lacked a method for
+doing so for UDP <span>[<a href="#UDP" class="xref">UDP</a>]</span> traffic prior to this specification.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">This document describes a protocol for tunneling UDP to a server acting as a
+UDP-specific proxy over HTTP. UDP tunnels are commonly used to create an
+end-to-end virtual connection, which can then be secured using QUIC
+<span>[<a href="#QUIC" class="xref">QUIC</a>]</span> or another protocol running over UDP. Unlike the HTTP CONNECT
+method, the UDP proxy itself is identified with an absolute URL containing the
+traffic's destination. Clients generate those URLs using a URI Template
+<span>[<a href="#TEMPLATE" class="xref">TEMPLATE</a>]</span>, as described in <a href="#client-config" class="xref">Section 2</a>.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">This protocol supports all existing versions of HTTP by using HTTP Datagrams
+<span>[<a href="#HTTP-DGRAM" class="xref">HTTP-DGRAM</a>]</span>. When using HTTP/2 <span>[<a href="#H2" class="xref">HTTP/2</a>]</span> or HTTP/3
+<span>[<a href="#H3" class="xref">HTTP/3</a>]</span>, it uses HTTP Extended CONNECT as described in <span>[<a href="#EXT-CONNECT2" class="xref">EXT-CONNECT2</a>]</span>
+and <span>[<a href="#EXT-CONNECT3" class="xref">EXT-CONNECT3</a>]</span>. When using HTTP/1.x <span>[<a href="#H1" class="xref">HTTP/1.1</a>]</span>, it uses HTTP Upgrade
+as defined in <span><a href="https://rfc-editor.org/rfc/rfc9110#section-7.8" class="relref">Section 7.8</a> of [<a href="#HTTP" class="xref">HTTP</a>]</span>.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<div id="conventions">
+<section id="section-1.1">
+        <h3 id="name-conventions-and-definitions">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+        </h3>
+<p id="section-1.1-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">In this document, we use the term "UDP proxy" to refer to the HTTP server that
+acts upon the client's UDP tunneling request to open a UDP socket to a target
+server and that generates the response to this request. If there are HTTP
+intermediaries (as defined in <span><a href="https://rfc-editor.org/rfc/rfc9110#section-3.7" class="relref">Section 3.7</a> of [<a href="#HTTP" class="xref">HTTP</a>]</span>) between the client and
+the UDP proxy, those are referred to as "intermediaries" in this document.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">Note that, when the HTTP version in use does not support multiplexing streams
+(such as HTTP/1.1), any reference to "stream" in this document represents the
+entire connection.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="client-config">
+<section id="section-2">
+      <h2 id="name-client-configuration">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-client-configuration" class="section-name selfRef">Client Configuration</a>
+      </h2>
+<p id="section-2-1">HTTP clients are configured to use a UDP proxy with a URI Template
+<span>[<a href="#TEMPLATE" class="xref">TEMPLATE</a>]</span> that has the variables "target_host" and "target_port".
+Examples are shown below:<a href="#section-2-1" class="pilcrow">¶</a></p>
+<span id="name-uri-template-examples"></span><div id="fig-template-examples">
+<figure id="figure-1">
+        <div class="alignLeft art-ascii-art art-text artwork" id="section-2-2.1">
+<pre>
+https://example.org/.well-known/masque/udp/{target_host}/{target_port}/
+https://proxy.example.org:4443/masque?h={target_host}&amp;p={target_port}
+https://proxy.example.org:4443/masque{?target_host,target_port}
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-uri-template-examples" class="selfRef">URI Template Examples</a>
+        </figcaption></figure>
+</div>
+<p id="section-2-3">The following requirements apply to the URI Template:<a href="#section-2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-4.1">The URI Template <span class="bcp14">MUST</span> be a level 3 template or lower.<a href="#section-2-4.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.2">The URI Template <span class="bcp14">MUST</span> be in absolute form and <span class="bcp14">MUST</span> include non-empty scheme,
+authority, and path components.<a href="#section-2-4.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.3">The path component of the URI Template <span class="bcp14">MUST</span> start with a slash ("/").<a href="#section-2-4.3" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.4">All template variables <span class="bcp14">MUST</span> be within the path or query components of the URI.<a href="#section-2-4.4" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.5">The URI Template <span class="bcp14">MUST</span> contain the two variables "target_host" and
+"target_port" and <span class="bcp14">MAY</span> contain other variables.<a href="#section-2-4.5" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.6">The URI Template <span class="bcp14">MUST NOT</span> contain any non-ASCII Unicode characters and <span class="bcp14">MUST</span>
+only contain ASCII characters in the range 0x21-0x7E inclusive (note that
+percent-encoding is allowed; see <span><a href="https://rfc-editor.org/rfc/rfc3986#section-2.1" class="relref">Section 2.1</a> of [<a href="#URI" class="xref">URI</a>]</span>).<a href="#section-2-4.6" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.7">The URI Template <span class="bcp14">MUST NOT</span> use Reserved Expansion ("+" operator), Fragment
+Expansion ("#" operator), Label Expansion with Dot-Prefix, Path Segment
+Expansion with Slash-Prefix, nor Path-Style Parameter Expansion with
+Semicolon-Prefix.<a href="#section-2-4.7" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-2-5">Clients <span class="bcp14">SHOULD</span> validate the requirements above; however, clients <span class="bcp14">MAY</span> use a
+general-purpose URI Template implementation that lacks this specific validation.
+If a client detects that any of the requirements above are not met by a URI
+Template, the client <span class="bcp14">MUST</span> reject its configuration and abort the request without
+sending it to the UDP proxy.<a href="#section-2-5" class="pilcrow">¶</a></p>
+<p id="section-2-6">The original HTTP CONNECT method allowed for the conveyance of the target host
+and port, but not the scheme, proxy authority, path, or query. Thus, clients
+with proxy configuration interfaces that only allow the user to configure the
+proxy host and the proxy port exist. Client implementations of this
+specification that are constrained by such limitations <span class="bcp14">MAY</span> attempt to access UDP
+proxying capabilities using the default template, which is defined as
+"https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/",
+where $PROXY_HOST and $PROXY_PORT are the configured host and port of the UDP
+proxy, respectively. UDP proxy deployments <span class="bcp14">SHOULD</span> offer service at this location
+if they need to interoperate with such clients.<a href="#section-2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="tunneling-udp-over-http">
+<section id="section-3">
+      <h2 id="name-tunneling-udp-over-http">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-tunneling-udp-over-http" class="section-name selfRef">Tunneling UDP over HTTP</a>
+      </h2>
+<p id="section-3-1">To allow negotiation of a tunnel for UDP over HTTP, this document defines the
+"connect-udp" HTTP upgrade token. The resulting UDP tunnels use the Capsule
+Protocol (see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11#section-3.2" class="relref">Section 3.2</a> of [<a href="#HTTP-DGRAM" class="xref">HTTP-DGRAM</a>]</span>) with HTTP Datagrams in the format
+defined in <a href="#format" class="xref">Section 5</a>.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">To initiate a UDP tunnel associated with a single HTTP stream, a client issues a
+request containing the "connect-udp" upgrade token. The target of the tunnel is
+indicated by the client to the UDP proxy via the "target_host" and "target_port"
+variables of the URI Template; see <a href="#client-config" class="xref">Section 2</a>.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">"target_host" supports using DNS names, IPv6 literals and IPv4 literals. Note
+that IPv6 scoped addressing zone identifiers are not supported. Using the terms
+IPv6address, IPv4address, reg-name, and port from <span>[<a href="#URI" class="xref">URI</a>]</span>, the "target_host" and
+"target_port" variables <span class="bcp14">MUST</span> adhere to the format in <a href="#target-format" class="xref">Figure 2</a>, using
+notation from <span>[<a href="#ABNF" class="xref">ABNF</a>]</span>. Additionally:<a href="#section-3-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-4.1">both the "target_host" and "target_port" variables <span class="bcp14">MUST NOT</span> be empty.<a href="#section-3-4.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-3-4.2">if "target_host" contains an IPv6 literal, the colons (":") <span class="bcp14">MUST</span> be
+percent-encoded. For example, if the target host is "2001:db8::42", it will be
+encoded in the URI as "2001%3Adb8%3A%3A42".<a href="#section-3-4.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-3-4.3">"target_port" <span class="bcp14">MUST</span> represent an integer between 1 and 65535 inclusive.<a href="#section-3-4.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<span id="name-uri-template-variable-forma"></span><div id="target-format">
+<figure id="figure-2">
+        <div class="alignLeft art-ascii-art art-text artwork" id="section-3-5.1">
+<pre>
+target_host = IPv6address / IPv4address / reg-name
+target_port = port
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-uri-template-variable-forma" class="selfRef">URI Template Variable Format</a>
+        </figcaption></figure>
+</div>
+<p id="section-3-6">When sending its UDP proxying request, the client <span class="bcp14">SHALL</span> perform URI Template
+expansion to determine the path and query of its request.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-7">If the request is successful, the UDP proxy commits to converting received HTTP
+Datagrams into UDP packets, and vice versa, until the tunnel is closed.<a href="#section-3-7" class="pilcrow">¶</a></p>
+<p id="section-3-8">By virtue of the definition of the Capsule Protocol (see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11#section-3.2" class="relref">Section 3.2</a> of [<a href="#HTTP-DGRAM" class="xref">HTTP-DGRAM</a>]</span>), UDP proxying requests do not carry any message content.
+Similarly, successful UDP proxying responses also do not carry any message
+content.<a href="#section-3-8" class="pilcrow">¶</a></p>
+<div id="handling">
+<section id="section-3.1">
+        <h3 id="name-udp-proxy-handling">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-udp-proxy-handling" class="section-name selfRef">UDP Proxy Handling</a>
+        </h3>
+<p id="section-3.1-1">Upon receiving a UDP proxying request:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.1-2.1">if the recipient is configured to use another HTTP proxy, it will act as an
+intermediary by forwarding the request to another HTTP server. Note that such
+intermediaries may need to re-encode the request if they forward it using a
+version of HTTP that is different from the one used to receive it, as the
+request encoding differs by version (see below).<a href="#section-3.1-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.2">otherwise, the recipient will act as a UDP proxy. It extracts the
+"target_host" and "target_port" variables from the URI it has reconstructed
+from the request headers, decodes their percent-encoding, and establishes a
+tunnel by directly opening a UDP socket to the requested target.<a href="#section-3.1-2.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-3.1-3">Unlike TCP, UDP is connectionless. The UDP proxy that opens the UDP socket has
+no way of knowing whether the destination is reachable. Therefore, it needs to
+respond to the request without waiting for a packet from the target. However, if
+the "target_host" is a DNS name, the UDP proxy <span class="bcp14">MUST</span> perform DNS resolution
+before replying to the HTTP request. If errors occur during this process, the
+UDP proxy <span class="bcp14">MUST</span> reject the request and <span class="bcp14">SHOULD</span> send details using an appropriate
+Proxy-Status header field <span>[<a href="#PROXY-STATUS" class="xref">PROXY-STATUS</a>]</span>. For example, if DNS
+resolution returns an error, the proxy can use the dns_error Proxy Error Type
+from <span><a href="https://rfc-editor.org/rfc/rfc9209#section-2.3.2" class="relref">Section 2.3.2</a> of [<a href="#PROXY-STATUS" class="xref">PROXY-STATUS</a>]</span>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">UDP proxies can use connected UDP sockets if their operating system supports
+them, as that allows the UDP proxy to rely on the kernel to only send it UDP
+packets that match the correct 5-tuple. If the UDP proxy uses a non-connected
+socket, it <span class="bcp14">MUST</span> validate the IP source address and UDP source port on received
+packets to ensure they match the client's request. Packets that do not match
+<span class="bcp14">MUST</span> be discarded by the UDP proxy.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.1-5">The lifetime of the socket is tied to the request stream. The UDP proxy <span class="bcp14">MUST</span>
+keep the socket open while the request stream is open. If a UDP proxy is
+notified by its operating system that its socket is no longer usable, it <span class="bcp14">MUST</span>
+close the request stream. For example, this can happen when an ICMP Destination
+Unreachable message is received; see <span><a href="https://rfc-editor.org/rfc/rfc4443#section-3.1" class="relref">Section 3.1</a> of [<a href="#ICMP6" class="xref">ICMP6</a>]</span>. UDP
+proxies <span class="bcp14">MAY</span> choose to close sockets due to a period of inactivity, but they <span class="bcp14">MUST</span>
+close the request stream when closing the socket. UDP proxies that close sockets
+after a period of inactivity <span class="bcp14">SHOULD NOT</span> use a period lower than two minutes; see
+<span><a href="https://rfc-editor.org/rfc/rfc4787#section-4.3" class="relref">Section 4.3</a> of [<a href="#BEHAVE" class="xref">BEHAVE</a>]</span>.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.1-6">A successful response (as defined in Sections <a href="#resp1" class="xref">3.3</a> and <a href="#resp23" class="xref">3.5</a>)
+indicates that the UDP proxy has opened a socket to the requested target and is
+willing to proxy UDP payloads. Any response other than a successful response
+indicates that the request has failed; thus, the client <span class="bcp14">MUST</span> abort the request.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.1-7">UDP proxies <span class="bcp14">MUST NOT</span> introduce fragmentation at the IP layer when forwarding
+HTTP Datagrams onto a UDP socket; overly large datagrams are silently dropped.
+In IPv4, the Don't Fragment (DF) bit <span class="bcp14">MUST</span> be set, if possible, to prevent
+fragmentation on the path. Future extensions <span class="bcp14">MAY</span> remove these requirements.<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+<p id="section-3.1-8">Implementers of UDP proxies will benefit from reading the guidance in
+<span>[<a href="#UDP-USAGE" class="xref">UDP-USAGE</a>]</span>.<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="req1">
+<section id="section-3.2">
+        <h3 id="name-http-11-request">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-http-11-request" class="section-name selfRef">HTTP/1.1 Request</a>
+        </h3>
+<p id="section-3.2-1">When using HTTP/1.1 <span>[<a href="#H1" class="xref">HTTP/1.1</a>]</span>, a UDP proxying request will meet the following
+requirements:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2-2.1">the method <span class="bcp14">SHALL</span> be "GET".<a href="#section-3.2-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.2-2.2">the request <span class="bcp14">SHALL</span> include a single Host header field containing the origin
+of the UDP proxy.<a href="#section-3.2-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.2-2.3">the request <span class="bcp14">SHALL</span> include a Connection header field with value "Upgrade"
+(note that this requirement is case-insensitive as per <span><a href="https://rfc-editor.org/rfc/rfc9110#section-7.6.1" class="relref">Section 7.6.1</a> of [<a href="#HTTP" class="xref">HTTP</a>]</span>).<a href="#section-3.2-2.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.2-2.4">the request <span class="bcp14">SHALL</span> include an Upgrade header field with value "connect-udp".<a href="#section-3.2-2.4" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-3.2-3">A UDP proxying request that does not conform to these restrictions is malformed.
+The recipient of such a malformed request <span class="bcp14">MUST</span> respond with an error and <span class="bcp14">SHOULD</span>
+use the 400 (Bad Request) status code.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">For example, if the client is configured with URI Template
+"https://example.org/.well-known/masque/udp/{target_host}/{target_port}/" and
+wishes to open a UDP proxying tunnel to target 192.0.2.6:443, it could send the
+following request:<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<span id="name-example-http-11-request"></span><div id="fig-req-h1">
+<figure id="figure-3">
+          <div id="section-3.2-5.1">
+<pre class="lang-http-message sourcecode">
+GET https://example.org/.well-known/masque/udp/192.0.2.6/443/ HTTP/1.1
+Host: example.org
+Connection: Upgrade
+Upgrade: connect-udp
+Capsule-Protocol: ?1
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-example-http-11-request" class="selfRef">Example HTTP/1.1 Request</a>
+          </figcaption></figure>
+</div>
+<p id="section-3.2-6">In HTTP/1.1, this protocol uses the GET method to mimic the design of the
+WebSocket Protocol <span>[<a href="#WEBSOCKET" class="xref">WEBSOCKET</a>]</span>.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="resp1">
+<section id="section-3.3">
+        <h3 id="name-http-11-response">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-http-11-response" class="section-name selfRef">HTTP/1.1 Response</a>
+        </h3>
+<p id="section-3.3-1">The UDP proxy <span class="bcp14">SHALL</span> indicate a successful response by replying with the
+following requirements:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-2.1">the HTTP status code on the response <span class="bcp14">SHALL</span> be 101 (Switching Protocols).<a href="#section-3.3-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.3-2.2">the response <span class="bcp14">SHALL</span> include a Connection header field with value "Upgrade"
+(note that this requirement is case-insensitive as per <span><a href="https://rfc-editor.org/rfc/rfc9110#section-7.6.1" class="relref">Section 7.6.1</a> of [<a href="#HTTP" class="xref">HTTP</a>]</span>).<a href="#section-3.3-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.3-2.3">the response <span class="bcp14">SHALL</span> include a single Upgrade header field with value
+"connect-udp".<a href="#section-3.3-2.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.3-2.4">the response <span class="bcp14">SHALL</span> meet the requirements of HTTP responses that start the
+Capsule Protocol; see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11#section-3.2" class="relref">Section 3.2</a> of [<a href="#HTTP-DGRAM" class="xref">HTTP-DGRAM</a>]</span>.<a href="#section-3.3-2.4" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-3.3-3">If any of these requirements are not met, the client <span class="bcp14">MUST</span> treat this proxying
+attempt as failed and abort the connection.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">For example, the UDP proxy could respond with:<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<span id="name-example-http-11-response"></span><div id="fig-resp-h1">
+<figure id="figure-4">
+          <div id="section-3.3-5.1">
+<pre class="lang-http-message sourcecode">
+HTTP/1.1 101 Switching Protocols
+Connection: Upgrade
+Upgrade: connect-udp
+Capsule-Protocol: ?1
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-example-http-11-response" class="selfRef">Example HTTP/1.1 Response</a>
+          </figcaption></figure>
+</div>
+</section>
+</div>
+<div id="req23">
+<section id="section-3.4">
+        <h3 id="name-http-2-and-http-3-requests">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-http-2-and-http-3-requests" class="section-name selfRef">HTTP/2 and HTTP/3 Requests</a>
+        </h3>
+<p id="section-3.4-1">When using HTTP/2 <span>[<a href="#H2" class="xref">HTTP/2</a>]</span> or HTTP/3 <span>[<a href="#H3" class="xref">HTTP/3</a>]</span>, UDP proxying requests use HTTP
+Extended CONNECT. This requires that servers send an HTTP Setting as specified
+in <span>[<a href="#EXT-CONNECT2" class="xref">EXT-CONNECT2</a>]</span> and <span>[<a href="#EXT-CONNECT3" class="xref">EXT-CONNECT3</a>]</span> and that requests use HTTP
+pseudo-header fields with the following requirements:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4-2.1">The :method pseudo-header field <span class="bcp14">SHALL</span> be "CONNECT".<a href="#section-3.4-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.4-2.2">The :protocol pseudo-header field <span class="bcp14">SHALL</span> be "connect-udp".<a href="#section-3.4-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.4-2.3">The :authority pseudo-header field <span class="bcp14">SHALL</span> contain the authority of the UDP
+proxy.<a href="#section-3.4-2.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.4-2.4">The :path and :scheme pseudo-header fields <span class="bcp14">SHALL NOT</span> be empty. Their
+values <span class="bcp14">SHALL</span> contain the scheme and path from the URI Template after the URI
+Template expansion process has been completed.<a href="#section-3.4-2.4" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-3.4-3">A UDP proxying request that does not conform to these restrictions is
+malformed (see <span><a href="https://rfc-editor.org/rfc/rfc9113#section-8.1.1" class="relref">Section 8.1.1</a> of [<a href="#H2" class="xref">HTTP/2</a>]</span> and <span><a href="https://rfc-editor.org/rfc/rfc9114#section-4.1.2" class="relref">Section 4.1.2</a> of [<a href="#H3" class="xref">HTTP/3</a>]</span>).<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-4">For example, if the client is configured with URI Template
+"https://example.org/.well-known/masque/udp/{target_host}/{target_port}/" and
+wishes to open a UDP proxying tunnel to target 192.0.2.6:443, it could send the
+following request:<a href="#section-3.4-4" class="pilcrow">¶</a></p>
+<span id="name-example-http-2-request"></span><div id="fig-req-h2">
+<figure id="figure-5">
+          <div id="section-3.4-5.1">
+<pre class="lang-http-message sourcecode">
+HEADERS
+:method = CONNECT
+:protocol = connect-udp
+:scheme = https
+:path = /.well-known/masque/udp/192.0.2.6/443/
+:authority = example.org
+capsule-protocol = ?1
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-example-http-2-request" class="selfRef">Example HTTP/2 Request</a>
+          </figcaption></figure>
+</div>
+</section>
+</div>
+<div id="resp23">
+<section id="section-3.5">
+        <h3 id="name-http-2-and-http-3-responses">
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-http-2-and-http-3-responses" class="section-name selfRef">HTTP/2 and HTTP/3 Responses</a>
+        </h3>
+<p id="section-3.5-1">The UDP proxy <span class="bcp14">SHALL</span> indicate a successful response by replying with the
+following requirements:<a href="#section-3.5-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5-2.1">the HTTP status code on the response <span class="bcp14">SHALL</span> be in the 2xx (Successful) range.<a href="#section-3.5-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.5-2.2">the response <span class="bcp14">SHALL</span> meet the requirements of HTTP responses that start the
+Capsule Protocol; see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11#section-3.2" class="relref">Section 3.2</a> of [<a href="#HTTP-DGRAM" class="xref">HTTP-DGRAM</a>]</span>.<a href="#section-3.5-2.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-3.5-3">If any of these requirements are not met, the client <span class="bcp14">MUST</span> treat this proxying
+attempt as failed and abort the request.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
+<p id="section-3.5-4">For example, the UDP proxy could respond with:<a href="#section-3.5-4" class="pilcrow">¶</a></p>
+<span id="name-example-http-2-response"></span><div id="fig-resp-h2">
+<figure id="figure-6">
+          <div id="section-3.5-5.1">
+<pre class="lang-http-message sourcecode">
+HEADERS
+:status = 200
+capsule-protocol = ?1
+</pre>
+</div>
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<a href="#name-example-http-2-response" class="selfRef">Example HTTP/2 Response</a>
+          </figcaption></figure>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="context-id">
+<section id="section-4">
+      <h2 id="name-context-identifiers">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-context-identifiers" class="section-name selfRef">Context Identifiers</a>
+      </h2>
+<p id="section-4-1">The mechanism for proxying UDP in HTTP defined in this document allows future
+extensions to exchange HTTP Datagrams that carry different semantics from UDP
+payloads. Some of these extensions can augment UDP payloads with additional
+data, while others can exchange data that is completely separate from UDP
+payloads. In order to accomplish this, all HTTP Datagrams associated with UDP
+Proxying request streams start with a Context ID field; see <a href="#format" class="xref">Section 5</a>.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Context IDs are 62-bit integers (0 to 2<sup>62</sup>-1). Context IDs are encoded
+as variable-length integers; see <span><a href="https://rfc-editor.org/rfc/rfc9000#section-16" class="relref">Section 16</a> of [<a href="#QUIC" class="xref">QUIC</a>]</span>. The Context ID value of
+0 is reserved for UDP payloads, while non-zero values are dynamically allocated.
+Non-zero even-numbered Context IDs are client-allocated, and odd-numbered
+Context IDs are proxy-allocated. The Context ID namespace is tied to a given
+HTTP request; it is possible for a Context ID with the same numeric value to be
+simultaneously allocated in distinct requests, potentially with different
+semantics. Context IDs <span class="bcp14">MUST NOT</span> be re-allocated within a given HTTP namespace
+but <span class="bcp14">MAY</span> be allocated in any order. The Context ID allocation restrictions to the
+use of even-numbered and odd-numbered Context IDs exist in order to avoid the
+need for synchronization between endpoints. However, once a Context ID has been
+allocated, those restrictions do not apply to the use of the Context ID; it can
+be used by any client or UDP proxy, independent of which endpoint initially
+allocated it.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">Registration is the action by which an endpoint informs its peer of the
+semantics and format of a given Context ID. This document does not define how
+registration occurs. Future extensions <span class="bcp14">MAY</span> use HTTP header fields or capsules to
+register Context IDs. Depending on the method being used, it is possible for
+datagrams to be received with Context IDs that have not yet been registered. For
+instance, this can be due to reordering of the packet containing the datagram
+and the packet containing the registration message during transmission.<a href="#section-4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="format">
+<section id="section-5">
+      <h2 id="name-http-datagram-payload-forma">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-http-datagram-payload-forma" class="section-name selfRef">HTTP Datagram Payload Format</a>
+      </h2>
+<p id="section-5-1">When HTTP Datagrams (see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11#section-2" class="relref">Section 2</a> of [<a href="#HTTP-DGRAM" class="xref">HTTP-DGRAM</a>]</span>) are associated with UDP
+Proxying request streams, the HTTP Datagram Payload field has the format defined
+in <a href="#dgram-format" class="xref">Figure 7</a>, using notation from <span><a href="https://rfc-editor.org/rfc/rfc9000#section-1.3" class="relref">Section 1.3</a> of [<a href="#QUIC" class="xref">QUIC</a>]</span>. Note that when
+HTTP Datagrams are encoded using QUIC DATAGRAM frames <span>[<a href="#QUIC-DGRAM" class="xref">QUIC-DGRAM</a>]</span>,
+the Context ID field defined below directly follows the Quarter Stream ID field,
+which is at the start of the QUIC DATAGRAM frame payload; see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11#section-2.1" class="relref">Section 2.1</a> of [<a href="#HTTP-DGRAM" class="xref">HTTP-DGRAM</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<span id="name-udp-proxying-http-datagram-"></span><div id="dgram-format">
+<figure id="figure-7">
+        <div class="alignLeft art-ascii-art art-text artwork" id="section-5-2.1">
+<pre>
+UDP Proxying HTTP Datagram Payload {
+  Context ID (i),
+  UDP Proxying Payload (..),
+}
+</pre>
+</div>
+<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
+<a href="#name-udp-proxying-http-datagram-" class="selfRef">UDP Proxying HTTP Datagram Format</a>
+        </figcaption></figure>
+</div>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-5-3">
+        <dt id="section-5-3.1">Context ID:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-3.2">
+          <p id="section-5-3.2.1">A variable-length integer (see <span><a href="https://rfc-editor.org/rfc/rfc9000#section-16" class="relref">Section 16</a> of [<a href="#QUIC" class="xref">QUIC</a>]</span>) that contains the value
+of the Context ID. If an HTTP/3 Datagram that carries an unknown Context ID is
+received, the receiver <span class="bcp14">SHALL</span> either drop that datagram silently or buffer it
+temporarily (on the order of a round trip) while awaiting the registration of
+the corresponding Context ID.<a href="#section-5-3.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-3.3">UDP Proxying Payload:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-3.4">
+          <p id="section-5-3.4.1">The payload of the datagram, whose semantics depend on the value of the
+previous field. Note that this field can be empty.<a href="#section-5-3.4.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<p id="section-5-4">UDP packets are encoded using HTTP Datagrams with the Context ID field set to
+zero. When the Context ID field is set to zero, the UDP Proxying Payload field
+contains the unmodified payload of a UDP packet (referred to as data octets in
+<span>[<a href="#UDP" class="xref">UDP</a>]</span>).<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">By virtue of the definition of the UDP header <span>[<a href="#UDP" class="xref">UDP</a>]</span>, it is not possible to
+encode UDP payloads longer than 65527 bytes. Therefore, endpoints <span class="bcp14">MUST NOT</span> send
+HTTP Datagrams with a UDP Proxying Payload field longer than 65527 using Context
+ID zero. An endpoint that receives an HTTP Datagram using Context ID zero whose
+UDP Proxying Payload field is longer than 65527 <span class="bcp14">MUST</span> abort the corresponding
+stream. If a UDP proxy knows it can only send out UDP packets of a certain
+length due to its underlying link MTU, it has no choice but to discard incoming
+HTTP Datagrams using Context ID zero whose UDP Proxying Payload field is longer
+than that limit. If the discarded HTTP Datagram was transported by a DATAGRAM
+capsule, the receiver <span class="bcp14">SHOULD</span> discard that capsule without buffering the capsule
+contents.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">If a UDP proxy receives an HTTP Datagram before it has received the
+corresponding request, it <span class="bcp14">SHALL</span> either drop that HTTP Datagram silently or
+buffer it temporarily (on the order of a round trip) while awaiting the
+corresponding request.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-7">Note that buffering datagrams (either because the request was not yet received
+or because the Context ID is not yet known) consumes resources. Receivers that
+buffer datagrams <span class="bcp14">SHOULD</span> apply buffering limits in order to reduce the risk of
+resource exhaustion occurring. For example, receivers can limit the total number
+of buffered datagrams or the cumulative size of buffered datagrams on a
+per-stream, per-context, or per-connection basis.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-8">A client <span class="bcp14">MAY</span> optimistically start sending UDP packets in HTTP Datagrams before
+receiving the response to its UDP proxying request. However, implementers should
+note that such proxied packets may not be processed by the UDP proxy if it
+responds to the request with a failure or if the proxied packets are received by
+the UDP proxy before the request and the UDP proxy chooses to not buffer them.<a href="#section-5-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="performance">
+<section id="section-6">
+      <h2 id="name-performance-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-performance-considerations" class="section-name selfRef">Performance Considerations</a>
+      </h2>
+<p id="section-6-1">Bursty traffic can often lead to temporally correlated packet losses; in turn,
+this can lead to suboptimal responses from congestion controllers in protocols
+running over UDP. To avoid this, UDP proxies <span class="bcp14">SHOULD</span> strive to avoid increasing
+burstiness of UDP traffic; they <span class="bcp14">SHOULD NOT</span> queue packets in order to increase
+batching.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">When the protocol running over UDP that is being proxied uses congestion control
+(e.g., <span>[<a href="#QUIC" class="xref">QUIC</a>]</span>), the proxied traffic will incur at least two nested congestion
+controllers. The underlying HTTP connection <span class="bcp14">MUST NOT</span> disable congestion control
+unless it has an out-of-band way of knowing with absolute certainty that the
+inner traffic is congestion-controlled.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">If a client or UDP proxy with a connection containing a UDP Proxying request
+stream disables congestion control, it <span class="bcp14">MUST NOT</span> signal Explicit Congestion
+Notification (ECN) <span>[<a href="#ECN" class="xref">ECN</a>]</span> support on that connection. That is, it <span class="bcp14">MUST</span>
+mark all IP headers with the Not-ECT codepoint. It <span class="bcp14">MAY</span> continue to report ECN
+feedback via QUIC ACK_ECN frames or the TCP ECE bit, as the peer may not have
+disabled congestion control.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">When the protocol running over UDP that is being proxied uses loss recovery
+(e.g., <span>[<a href="#QUIC" class="xref">QUIC</a>]</span>), and the underlying HTTP connection runs over TCP, the proxied
+traffic will incur at least two nested loss recovery mechanisms. This can reduce
+performance as both can sometimes independently retransmit the same data. To
+avoid this, UDP proxying <span class="bcp14">SHOULD</span> be performed over HTTP/3 to allow leveraging the
+QUIC DATAGRAM frame.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<div id="mtu-considerations">
+<section id="section-6.1">
+        <h3 id="name-mtu-considerations">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-mtu-considerations" class="section-name selfRef">MTU Considerations</a>
+        </h3>
+<p id="section-6.1-1">When using HTTP/3 with the QUIC Datagram extension <span>[<a href="#QUIC-DGRAM" class="xref">QUIC-DGRAM</a>]</span>, UDP payloads
+are transmitted in QUIC DATAGRAM frames. Since those cannot be fragmented, they
+can only carry payloads up to a given length determined by the QUIC connection
+configuration and the Path MTU (PMTU). If a UDP proxy is using QUIC DATAGRAM
+frames and it receives a UDP payload from the target that will not fit inside a
+QUIC DATAGRAM frame, the UDP proxy <span class="bcp14">SHOULD NOT</span> send the UDP payload in a DATAGRAM
+capsule, as that defeats the end-to-end unreliability characteristic that
+methods such as Datagram Packetization Layer PMTU Discovery (DPLPMTUD) depend on
+<span>[<a href="#DPLPMTUD" class="xref">DPLPMTUD</a>]</span>. In this scenario, the UDP proxy <span class="bcp14">SHOULD</span> drop the UDP
+payload and send an ICMP Packet Too Big message to the target; see <span><a href="https://rfc-editor.org/rfc/rfc4443#section-3.2" class="relref">Section 3.2</a> of [<a href="#ICMP6" class="xref">ICMP6</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="tunneling-of-ecn-marks">
+<section id="section-6.2">
+        <h3 id="name-tunneling-of-ecn-marks">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-tunneling-of-ecn-marks" class="section-name selfRef">Tunneling of ECN Marks</a>
+        </h3>
+<p id="section-6.2-1">UDP proxying does not create an IP-in-IP tunnel, so the guidance in
+<span>[<a href="#ECN-TUNNEL" class="xref">ECN-TUNNEL</a>]</span> about transferring ECN marks between inner and outer IP
+headers does not apply. There is no inner IP header in UDP proxying tunnels.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">In this specification, note that UDP proxying clients do not have the ability to
+control the ECN codepoints on UDP packets the UDP proxy sends to the target, nor
+can UDP proxies communicate the markings of each UDP packet from target to UDP
+proxy.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.2-3">A UDP proxy <span class="bcp14">MUST</span> ignore ECN bits in the IP header of UDP packets received from
+the target, and it <span class="bcp14">MUST</span> set the ECN bits to Not-ECT on UDP packets it sends to
+the target. These do not relate to the ECN markings of packets sent between
+client and UDP proxy in any way.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security">
+<section id="section-7">
+      <h2 id="name-security-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-7-1">There are significant risks in allowing arbitrary clients to establish a tunnel
+to arbitrary targets, as that could allow bad actors to send traffic and have it
+attributed to the UDP proxy. HTTP servers that support UDP proxying ought to
+restrict its use to authenticated users.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">There exist software and network deployments that perform access control checks
+based on the source IP address of incoming requests. For example, some software
+allows unauthenticated configuration changes if they originated from 127.0.0.1.
+Such software could be running on the same host as the UDP proxy or in the same
+broadcast domain. Proxied UDP traffic would then be received with a source IP
+address belonging to the UDP proxy. If this source address is used for access
+control, UDP proxying clients could use the UDP proxy to escalate their access
+privileges beyond those they might otherwise have. This could lead to
+unauthorized access by UDP proxying clients unless the UDP proxy disallows UDP
+proxying requests to vulnerable targets, such as the UDP proxy's own addresses
+and localhost, link-local, multicast, and broadcast addresses. UDP proxies can
+use the destination_ip_prohibited Proxy Error Type from <span><a href="https://rfc-editor.org/rfc/rfc9209#section-2.3.5" class="relref">Section 2.3.5</a> of [<a href="#PROXY-STATUS" class="xref">PROXY-STATUS</a>]</span> when rejecting such requests.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">UDP proxies share many similarities with TCP CONNECT proxies when considering
+them as infrastructure for abuse to enable denial-of-service (DoS) attacks. Both
+can obfuscate the attacker's source address from the attack target. In the case
+of a stateless volumetric attack (e.g., a TCP SYN flood or a UDP flood), both
+types of proxies pass the traffic to the target host. With stateful volumetric
+attacks (e.g., HTTP flooding) being sent over a TCP CONNECT proxy, the proxy
+will only send data if the target has indicated its willingness to accept data
+by responding with a TCP SYN-ACK. Once the path to the target is flooded, the
+TCP CONNECT proxy will no longer receive replies from the target and will stop
+sending data. Since UDP does not establish shared state between the UDP proxy
+and the target, the UDP proxy could continue sending data to the target in such
+a situation. While a UDP proxy could potentially limit the number of UDP packets
+it is willing to forward until it has observed a response from the target, that
+provides limited protection against DoS attacks when attacks target open UDP
+ports where the protocol running over UDP would respond and that would be
+interpreted as willingness to accept UDP by the UDP proxy. Such a packet limit
+could also cause issues for valid traffic.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">The security considerations described in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11#section-4" class="relref">Section 4</a> of [<a href="#HTTP-DGRAM" class="xref">HTTP-DGRAM</a>]</span> also apply
+here. Since it is possible to tunnel IP packets over UDP, the guidance in
+<span>[<a href="#TUNNEL-SECURITY" class="xref">TUNNEL-SECURITY</a>]</span> can apply.<a href="#section-7-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana">
+<section id="section-8">
+      <h2 id="name-iana-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="iana-upgrade">
+<section id="section-8.1">
+        <h3 id="name-http-upgrade-token">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-http-upgrade-token" class="section-name selfRef">HTTP Upgrade Token</a>
+        </h3>
+<p id="section-8.1-1">IANA has registered "connect-udp" in the "HTTP Upgrade Tokens" registry
+maintained at &lt;<span><a href="https://www.iana.org/assignments/http-upgrade-tokens">https://www.iana.org/assignments/http-upgrade-tokens</a></span>&gt;.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-8.1-2">
+          <dt id="section-8.1-2.1">Value:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.2">
+            <p id="section-8.1-2.2.1">connect-udp<a href="#section-8.1-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-2.3">Description:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.4">
+            <p id="section-8.1-2.4.1">Proxying of UDP Payloads<a href="#section-8.1-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-2.5">Expected Version Tokens:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.6">
+            <p id="section-8.1-2.6.1">None<a href="#section-8.1-2.6.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-2.7">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.8">
+            <p id="section-8.1-2.8.1">RFC 9298<a href="#section-8.1-2.8.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="iana-uri">
+<section id="section-8.2">
+        <h3 id="name-well-known-uri">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-well-known-uri" class="section-name selfRef">Well-Known URI</a>
+        </h3>
+<p id="section-8.2-1">IANA has registered "masque" in the "Well-Known URIs" registry maintained at
+&lt;<span><a href="https://www.iana.org/assignments/well-known-uris">https://www.iana.org/assignments/well-known-uris</a></span>&gt;.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-8.2-2">
+          <dt id="section-8.2-2.1">URI Suffix:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.2">
+            <p id="section-8.2-2.2.1">masque<a href="#section-8.2-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.3">Change Controller:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.4">
+            <p id="section-8.2-2.4.1">IETF<a href="#section-8.2-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.5">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.6">
+            <p id="section-8.2-2.6.1">RFC 9298<a href="#section-8.2-2.6.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.7">Status:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.8">
+            <p id="section-8.2-2.8.1">permanent<a href="#section-8.2-2.8.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.9">Related Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.10">
+            <p id="section-8.2-2.10.1">Includes all resources identified with the path prefix
+"/.well-known/masque/udp/"<a href="#section-8.2-2.10.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-9.1">
+        <h3 id="name-normative-references">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="ABNF">[ABNF]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span> and <span class="refAuthor">P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">RFC 2234</span>, <span class="seriesInfo">DOI 10.17487/RFC2234</span>, <time datetime="1997-11" class="refDate">November 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2234">https://www.rfc-editor.org/rfc/rfc2234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ECN">[ECN]</dt>
+        <dd>
+<span class="refAuthor">Ramakrishnan, K.</span>, <span class="refAuthor">Floyd, S.</span>, and <span class="refAuthor">D. Black</span>, <span class="refTitle">"The Addition of Explicit Congestion Notification (ECN) to IP"</span>, <span class="seriesInfo">RFC 3168</span>, <span class="seriesInfo">DOI 10.17487/RFC3168</span>, <time datetime="2001-09" class="refDate">September 2001</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3168">https://www.rfc-editor.org/rfc/rfc3168</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="EXT-CONNECT2">[EXT-CONNECT2]</dt>
+        <dd>
+<span class="refAuthor">McManus, P.</span>, <span class="refTitle">"Bootstrapping WebSockets with HTTP/2"</span>, <span class="seriesInfo">RFC 8441</span>, <span class="seriesInfo">DOI 10.17487/RFC8441</span>, <time datetime="2018-09" class="refDate">September 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8441">https://www.rfc-editor.org/rfc/rfc8441</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="EXT-CONNECT3">[EXT-CONNECT3]</dt>
+        <dd>
+<span class="refAuthor">Hamilton, R.</span>, <span class="refTitle">"Bootstrapping WebSockets with HTTP/3"</span>, <span class="seriesInfo">RFC 9220</span>, <span class="seriesInfo">DOI 10.17487/RFC9220</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9220">https://www.rfc-editor.org/rfc/rfc9220</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="HTTP">[HTTP]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="seriesInfo">STD 97</span>, <span class="seriesInfo">RFC 9110</span>, <span class="seriesInfo">DOI 10.17487/RFC9110</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9110">https://www.rfc-editor.org/rfc/rfc9110</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="HTTP-DGRAM">[HTTP-DGRAM]</dt>
+        <dd>
+<span class="refAuthor">Schinazi, D.</span> and <span class="refAuthor">L. Pardue</span>, <span class="refTitle">"HTTP Datagrams and the Capsule Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-masque-h3-datagram-11</span>, <time datetime="2022-06-17" class="refDate">17 June 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11">https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="H1">[HTTP/1.1]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP/1.1"</span>, <span class="seriesInfo">STD 99</span>, <span class="seriesInfo">RFC 9112</span>, <span class="seriesInfo">DOI 10.17487/RFC9112</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9112">https://www.rfc-editor.org/rfc/rfc9112</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="H2">[HTTP/2]</dt>
+        <dd>
+<span class="refAuthor">Thomson, M., Ed.</span> and <span class="refAuthor">C. Benfield, Ed.</span>, <span class="refTitle">"HTTP/2"</span>, <span class="seriesInfo">RFC 9113</span>, <span class="seriesInfo">DOI 10.17487/RFC9113</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9113">https://www.rfc-editor.org/rfc/rfc9113</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="H3">[HTTP/3]</dt>
+        <dd>
+<span class="refAuthor">Bishop, M., Ed.</span>, <span class="refTitle">"HTTP/3"</span>, <span class="seriesInfo">RFC 9114</span>, <span class="seriesInfo">DOI 10.17487/RFC9114</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9114">https://www.rfc-editor.org/rfc/rfc9114</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="PROXY-STATUS">[PROXY-STATUS]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">P. Sikora</span>, <span class="refTitle">"The Proxy-Status HTTP Response Header Field"</span>, <span class="seriesInfo">RFC 9209</span>, <span class="seriesInfo">DOI 10.17487/RFC9209</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9209">https://www.rfc-editor.org/rfc/rfc9209</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="QUIC">[QUIC]</dt>
+        <dd>
+<span class="refAuthor">Iyengar, J., Ed.</span> and <span class="refAuthor">M. Thomson, Ed.</span>, <span class="refTitle">"QUIC: A UDP-Based Multiplexed and Secure Transport"</span>, <span class="seriesInfo">RFC 9000</span>, <span class="seriesInfo">DOI 10.17487/RFC9000</span>, <time datetime="2021-05" class="refDate">May 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9000">https://www.rfc-editor.org/rfc/rfc9000</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="QUIC-DGRAM">[QUIC-DGRAM]</dt>
+        <dd>
+<span class="refAuthor">Pauly, T.</span>, <span class="refAuthor">Kinnear, E.</span>, and <span class="refAuthor">D. Schinazi</span>, <span class="refTitle">"An Unreliable Datagram Extension to QUIC"</span>, <span class="seriesInfo">RFC 9221</span>, <span class="seriesInfo">DOI 10.17487/RFC9221</span>, <time datetime="2022-03" class="refDate">March 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9221">https://www.rfc-editor.org/rfc/rfc9221</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TCP">[TCP]</dt>
+        <dd>
+<span class="refAuthor">Postel, J.</span>, <span class="refTitle">"Transmission Control Protocol"</span>, <span class="seriesInfo">RFC 793</span>, <span class="seriesInfo">DOI 10.17487/RFC0793</span>, <time datetime="1981-09" class="refDate">September 1981</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc793">https://www.rfc-editor.org/rfc/rfc793</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TEMPLATE">[TEMPLATE]</dt>
+        <dd>
+<span class="refAuthor">Gregorio, J.</span>, <span class="refAuthor">Fielding, R.</span>, <span class="refAuthor">Hadley, M.</span>, <span class="refAuthor">Nottingham, M.</span>, and <span class="refAuthor">D. Orchard</span>, <span class="refTitle">"URI Template"</span>, <span class="seriesInfo">RFC 6570</span>, <span class="seriesInfo">DOI 10.17487/RFC6570</span>, <time datetime="2012-03" class="refDate">March 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6570">https://www.rfc-editor.org/rfc/rfc6570</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="UDP">[UDP]</dt>
+        <dd>
+<span class="refAuthor">Postel, J.</span>, <span class="refTitle">"User Datagram Protocol"</span>, <span class="seriesInfo">STD 6</span>, <span class="seriesInfo">RFC 768</span>, <span class="seriesInfo">DOI 10.17487/RFC0768</span>, <time datetime="1980-08" class="refDate">August 1980</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc768">https://www.rfc-editor.org/rfc/rfc768</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="URI">[URI]</dt>
+      <dd>
+<span class="refAuthor">Berners-Lee, T.</span>, <span class="refAuthor">Fielding, R.</span>, and <span class="refAuthor">L. Masinter</span>, <span class="refTitle">"Uniform Resource Identifier (URI): Generic Syntax"</span>, <span class="seriesInfo">STD 66</span>, <span class="seriesInfo">RFC 3986</span>, <span class="seriesInfo">DOI 10.17487/RFC3986</span>, <time datetime="2005-01" class="refDate">January 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3986">https://www.rfc-editor.org/rfc/rfc3986</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-9.2">
+        <h3 id="name-informative-references">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="BEHAVE">[BEHAVE]</dt>
+        <dd>
+<span class="refAuthor">Audet, F., Ed.</span> and <span class="refAuthor">C. Jennings</span>, <span class="refTitle">"Network Address Translation (NAT) Behavioral Requirements for Unicast UDP"</span>, <span class="seriesInfo">BCP 127</span>, <span class="seriesInfo">RFC 4787</span>, <span class="seriesInfo">DOI 10.17487/RFC4787</span>, <time datetime="2007-01" class="refDate">January 2007</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4787">https://www.rfc-editor.org/rfc/rfc4787</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="DPLPMTUD">[DPLPMTUD]</dt>
+        <dd>
+<span class="refAuthor">Fairhurst, G.</span>, <span class="refAuthor">Jones, T.</span>, <span class="refAuthor">Tüxen, M.</span>, <span class="refAuthor">Rüngeler, I.</span>, and <span class="refAuthor">T. Völker</span>, <span class="refTitle">"Packetization Layer Path MTU Discovery for Datagram Transports"</span>, <span class="seriesInfo">RFC 8899</span>, <span class="seriesInfo">DOI 10.17487/RFC8899</span>, <time datetime="2020-09" class="refDate">September 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8899">https://www.rfc-editor.org/rfc/rfc8899</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ECN-TUNNEL">[ECN-TUNNEL]</dt>
+        <dd>
+<span class="refAuthor">Briscoe, B.</span>, <span class="refTitle">"Tunnelling of Explicit Congestion Notification"</span>, <span class="seriesInfo">RFC 6040</span>, <span class="seriesInfo">DOI 10.17487/RFC6040</span>, <time datetime="2010-11" class="refDate">November 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6040">https://www.rfc-editor.org/rfc/rfc6040</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="HELIUM">[HELIUM]</dt>
+        <dd>
+<span class="refAuthor">Schwartz, B. M.</span>, <span class="refTitle">"Hybrid Encapsulation Layer for IP and UDP Messages (HELIUM)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-schwartz-httpbis-helium-00</span>, <time datetime="2018-06-25" class="refDate">25 June 2018</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-schwartz-httpbis-helium-00">https://datatracker.ietf.org/doc/html/draft-schwartz-httpbis-helium-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="HiNT">[HiNT]</dt>
+        <dd>
+<span class="refAuthor">Pardue, L.</span>, <span class="refTitle">"HTTP-initiated Network Tunnelling (HiNT)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-pardue-httpbis-http-network-tunnelling-00</span>, <time datetime="2018-07-02" class="refDate">2 July 2018</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-pardue-httpbis-http-network-tunnelling-00">https://datatracker.ietf.org/doc/html/draft-pardue-httpbis-http-network-tunnelling-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ICMP6">[ICMP6]</dt>
+        <dd>
+<span class="refAuthor">Conta, A.</span>, <span class="refAuthor">Deering, S.</span>, and <span class="refAuthor">M. Gupta, Ed.</span>, <span class="refTitle">"Internet Control Message Protocol (ICMPv6) for the Internet Protocol Version 6 (IPv6) Specification"</span>, <span class="seriesInfo">STD 89</span>, <span class="seriesInfo">RFC 4443</span>, <span class="seriesInfo">DOI 10.17487/RFC4443</span>, <time datetime="2006-03" class="refDate">March 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4443">https://www.rfc-editor.org/rfc/rfc4443</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="MASQUE-ORIGINAL">[MASQUE-ORIGINAL]</dt>
+        <dd>
+<span class="refAuthor">Schinazi, D.</span>, <span class="refTitle">"The MASQUE Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-schinazi-masque-00</span>, <time datetime="2019-02-28" class="refDate">28 February 2019</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-schinazi-masque-00">https://datatracker.ietf.org/doc/html/draft-schinazi-masque-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TUNNEL-SECURITY">[TUNNEL-SECURITY]</dt>
+        <dd>
+<span class="refAuthor">Krishnan, S.</span>, <span class="refAuthor">Thaler, D.</span>, and <span class="refAuthor">J. Hoagland</span>, <span class="refTitle">"Security Concerns with IP Tunneling"</span>, <span class="seriesInfo">RFC 6169</span>, <span class="seriesInfo">DOI 10.17487/RFC6169</span>, <time datetime="2011-04" class="refDate">April 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6169">https://www.rfc-editor.org/rfc/rfc6169</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="UDP-USAGE">[UDP-USAGE]</dt>
+        <dd>
+<span class="refAuthor">Eggert, L.</span>, <span class="refAuthor">Fairhurst, G.</span>, and <span class="refAuthor">G. Shepherd</span>, <span class="refTitle">"UDP Usage Guidelines"</span>, <span class="seriesInfo">BCP 145</span>, <span class="seriesInfo">RFC 8085</span>, <span class="seriesInfo">DOI 10.17487/RFC8085</span>, <time datetime="2017-03" class="refDate">March 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8085">https://www.rfc-editor.org/rfc/rfc8085</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="WEBSOCKET">[WEBSOCKET]</dt>
+      <dd>
+<span class="refAuthor">Fette, I.</span> and <span class="refAuthor">A. Melnikov</span>, <span class="refTitle">"The WebSocket Protocol"</span>, <span class="seriesInfo">RFC 6455</span>, <span class="seriesInfo">DOI 10.17487/RFC6455</span>, <time datetime="2011-12" class="refDate">December 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6455">https://www.rfc-editor.org/rfc/rfc6455</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">This document is a product of the MASQUE Working Group, and the author thanks
+all MASQUE enthusiasts for their contributions. This proposal was inspired
+directly or indirectly by prior work from many people, in particular
+<span>[<a href="#HELIUM" class="xref">HELIUM</a>]</span> by Ben Schwartz,
+<span>[<a href="#HiNT" class="xref">HiNT</a>]</span> by Lucas Pardue, and the
+original MASQUE Protocol <span>[<a href="#MASQUE-ORIGINAL" class="xref">MASQUE-ORIGINAL</a>]</span> by the
+author of this document.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">The author would like to thank Eric Rescorla for suggesting the use of an HTTP
+method to proxy UDP. The author is indebted to Mark Nottingham and Lucas Pardue
+for the many improvements they contributed to this document. The extensibility
+design in this document came out of the HTTP Datagrams Design Team, whose
+members were Alan Frindell, Alex Chernyakhovsky, Ben Schwartz, Eric Rescorla,
+Lucas Pardue, Marcus Ihlar, Martin Thomson, Mike Bishop, Tommy Pauly, Victor
+Vasiliev, and the author of this document.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">David Schinazi</span></div>
+<div dir="auto" class="left"><span class="org">Google LLC</span></div>
+<div dir="auto" class="left"><span class="street-address">1600 Amphitheatre Parkway</span></div>
+<div dir="auto" class="left">
+<span class="locality">Mountain View</span>, <span class="region">CA</span> <span class="postal-code">94043</span>
+</div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:dschinazi.ietf@gmail.com" class="email">dschinazi.ietf@gmail.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
