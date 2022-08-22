@@ -272,11 +272,11 @@ use the 400 (Bad Request) status code.
 
 For example, if the client is configured with URI Template
 "https://example.org/.well-known/masque/udp/{target_host}/{target_port}/" and
-wishes to open a UDP proxying tunnel to target 192.0.2.6:443, it could send the
+wishes to open a UDP proxying tunnel to target 192.0.2.6:17, it could send the
 following request:
 
 ~~~ http-message
-GET https://example.org/.well-known/masque/udp/192.0.2.6/443/ HTTP/1.1
+GET https://example.org/.well-known/masque/udp/192.0.2.6/17/ HTTP/1.1
 Host: example.org
 Connection: Upgrade
 Upgrade: connect-udp
@@ -342,7 +342,7 @@ malformed (see {{Section 8.1.1 of H2}} and {{Section 4.1.2 of H3}}).
 
 For example, if the client is configured with URI Template
 "https://example.org/.well-known/masque/udp/{target_host}/{target_port}/" and
-wishes to open a UDP proxying tunnel to target 192.0.2.6:443, it could send the
+wishes to open a UDP proxying tunnel to target 192.0.2.6:17, it could send the
 following request:
 
 ~~~ http-message
@@ -350,7 +350,7 @@ HEADERS
 :method = CONNECT
 :protocol = connect-udp
 :scheme = https
-:path = /.well-known/masque/udp/192.0.2.6/443/
+:path = /.well-known/masque/udp/192.0.2.6/17/
 :authority = example.org
 capsule-protocol = ?1
 ~~~
