@@ -645,7 +645,7 @@ Related Information:
 {:numbered="false"}
 
 This document is a product of the MASQUE Working Group, and the author thanks
-all MASQUE enthusiasts for their contibutions. This proposal was inspired
+all MASQUE enthusiasts for their contributions. This proposal was inspired
 directly or indirectly by prior work from many people, in particular
 {{?HELIUM=I-D.schwartz-httpbis-helium-00}} by Ben Schwartz,
 {{?HiNT=I-D.pardue-httpbis-http-network-tunnelling-00}} by Lucas Pardue, and the
